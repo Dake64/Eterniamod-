@@ -1,0 +1,17 @@
+Mods: {
+	Eternia: {
+		Items: {
+			EmptySoul: {
+				DisplayName: Empty Soul
+				Tooltip: Esta SOUL está vacía...
+			}
+		}
+
+		Buffs: {
+			SoulLessDebuff: {
+				DisplayName: Alma Perdida
+				Description: Un cuerpo sin alma no sirve...
+			}
+		}
+	}
+}

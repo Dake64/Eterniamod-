@@ -1,0 +1,102 @@
+Mods: {
+	Eternia: {
+		Items: {
+			EmptySoul: {
+				DisplayName: Empty Soul
+				Tooltip: ""
+			}
+
+			WarriorSoul: {
+				DisplayName: Warrior Soul
+				Tooltip: ""
+			}
+
+			MageSoul: {
+				DisplayName: Mage Soul
+				Tooltip: ""
+			}
+
+			RangerSoul: {
+				DisplayName: Ranger Soul
+				Tooltip: ""
+			}
+
+			SummonerSoul: {
+				DisplayName: Summoner Soul
+				Tooltip: ""
+			}
+
+			TrainingGauntlet: {
+				DisplayName: Training Gauntlet
+				Tooltip: ""
+			}
+
+			TrainingShield: {
+				DisplayName: Training Shield
+				Tooltip: ""
+			}
+
+			ElementalApprenticeStaff: {
+				Tooltip: ""
+				DisplayName: Elemental Apprentice Staff
+			}
+
+			ApprenticeDeck: {
+				Tooltip: ""
+				DisplayName: Apprentice Deck
+			}
+
+			CursedApprenticeTome: {
+				Tooltip: ""
+				DisplayName: Cursed Apprentice Tome
+			}
+
+			WeakCurse: {
+				Tooltip: ""
+				DisplayName: Weak Curse
+			}
+
+			BeginnerNecromancyBook: {
+				Tooltip: ""
+				DisplayName: Beginner Necromancy Book
+			}
+		}
+
+		Buffs: {
+			SoulLessDebuff: {
+				DisplayName: Alma Perdida
+				Description: Un cuerpo sin alma no sirve...
+			}
+		}
+
+		NPCs.EternalNPC.DisplayName: Eternal
+
+		Keybinds: {
+			"Open Soul UI.DisplayName": Open  Soul  U I
+			"Toggle Soul UI.DisplayName": Toggle  Soul  U I
+			"Toggle Stats UI.DisplayName": Toggle  Stats  U I
+			"Toggle Passive UI.DisplayName": Toggle  Passive  U I
+			"Class Skill.DisplayName": Class  Skill
+			"Change Note.DisplayName": Change  Note
+			"Elemental Ultimate.DisplayName": Elemental  Ultimate
+			"Card Slot 3.DisplayName": Card  Slot 3
+			"Card Slot 2.DisplayName": Card  Slot 2
+			"Card Slot 1.DisplayName": Card  Slot 1
+			"Draw Cards.DisplayName": Draw  Cards
+			"Cursed Burst.DisplayName": Cursed  Burst
+		}
+
+		Projectiles: {
+			YoyoWeakpointProjectile.DisplayName: Yoyo Weakpoint Projectile
+			FighterPunchProjectile.DisplayName: Fighter Punch Projectile
+			GuardianShieldProjectile.DisplayName: Guardian Shield Projectile
+			FireBoltProjectile.DisplayName: Fire Bolt Projectile
+			IceBoltProjectile.DisplayName: Ice Bolt Projectile
+			LightningBoltProjectile.DisplayName: Lightning Bolt Projectile
+			StrikeCardProjectile.DisplayName: Strike Card Projectile
+			BasicCardProjectile.DisplayName: Basic Card Projectile
+			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
+			SkeletonMinion.DisplayName: Skeleton Minion
+		}
+	}
+}
