@@ -1,1 +1,17 @@
-This description will show up on the steam page, check out https://steamcommunity.com/comment/Guide/formattinghelp.
+Eternia is an early RPG overhaul for tModLoader focused on Soul-bound class identity.
+
+Core loop:
+- Begin with an Empty Soul, then craft it into Warrior, Mage, Ranger or Summoner.
+- Level through combat EXP while a class Soul is active.
+- Spend stat points and passive points to shape your build.
+- After Wall of Flesh, your dominant passive affinity determines your promotion.
+
+Current promotion direction:
+- Warrior paths include Swordsman, Fighter, Guardian, Yoyo Master, Berserker and Stunner.
+- Mage paths include Elementalist, Cursed Mage, Infinity Mage and Arcane Bard.
+- Ranger paths include Energy Gunner, Archer, Gunner and Virtuoso.
+- Summoner paths include Beast Tamer, Advanced Summoner, Tech Summoner and Necromancer.
+
+Soul rules are strict by design: using the wrong weapon class while bound to a class Soul is heavily punished, and owning a class Soul without keeping one active weakens the player.
+
+This is a development build focused on the foundation, UI rework, class progression and a playable vertical slice.

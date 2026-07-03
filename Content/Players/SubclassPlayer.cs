@@ -1,29 +1,24 @@
-﻿using Terraria;
+using Eternia.Content.Progression;
+using Eternia.Content.Souls;
+using Terraria;
 using Terraria.ModLoader;
-using Eternia.Content.Players;
+using Terraria.ModLoader.IO;
 
 namespace Eternia.Content.Players
 {
     public class SubclassPlayer : ModPlayer
     {
-        // =================================================
-        // CURRENT SUBCLASS
-        // =================================================
-
         public string CurrentSubclass = "None";
 
-        // =================================================
-        // RESET
-        // =================================================
+        private string lockedWarriorPromotion = ClassPromotionRules.None;
+        private string lockedMagePromotion = ClassPromotionRules.None;
+        private string lockedRangerPromotion = ClassPromotionRules.None;
+        private string lockedSummonerPromotion = ClassPromotionRules.None;
 
         public override void PostUpdateEquips()
         {
             DetectSubclass();
         }
-
-        // =================================================
-        // DETECT SUBCLASS
-        // =================================================
 
         private void DetectSubclass()
         {
@@ -31,235 +26,117 @@ namespace Eternia.Content.Players
                 Player.GetModPlayer<EterniaStatsPlayer>();
 
             var soulPlayer =
-                Player.GetModPlayer
-                    <Eternia.Content.Players.EterniaPlayer>();
+                Player.GetModPlayer<EterniaPlayer>();
 
-            CurrentSubclass = "None";
+            CurrentSubclass =
+                ClassPromotionRules.ResolveSubclass(
+                    soulPlayer.ActiveSoul,
+                    Main.hardMode,
+                    CreateAffinitySnapshot(stats),
+                    GetLockedPromotion(soulPlayer.ActiveSoul));
 
+            string baseClass =
+                ClassPromotionRules.GetBaseClassName(
+                    soulPlayer.ActiveSoul);
 
-            // =================================================
-            // WARRIOR
-            // =================================================
-
-            if (soulPlayer.warriorSoul)
+            if (CurrentSubclass != baseClass &&
+                ClassPromotionRules.IsPromotionForSoul(
+                    soulPlayer.ActiveSoul,
+                    CurrentSubclass))
             {
-                int highest =
-                    GetHighestValue(
-                        stats.BleedAffinity,
-                        stats.ComboAffinity,
-                        stats.DefenseAffinity,
-                        stats.PrecisionAffinity,
-                        stats.RageAffinity,
-                        stats.ControlAffinity
-                    );
-
-               
-
-                // =============================================
-                // SWORDSMAN
-                // =============================================
-
-                if (highest == stats.BleedAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Swordsman";
-                }
-
-                // =============================================
-                // FIGHTER
-                // =============================================
-
-                else if (highest == stats.ComboAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Fighter";
-                }
-
-                // =============================================
-                // GUARDIAN
-                // =============================================
-
-                else if (highest == stats.DefenseAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Guardian";
-                }
-
-                // =============================================
-                // YOYO MASTER
-                // =============================================
-
-                else if (highest == stats.PrecisionAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Yoyo Master";
-                }
-
-                // =============================================
-                // BERSERKER
-                // =============================================
-
-                else if (highest == stats.RageAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Berserker";
-                }
-
-                // =============================================
-                // STUNNER
-                // =============================================
-
-                else if (highest == stats.ControlAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Stunner";
-                }
+                SetLockedPromotion(
+                    soulPlayer.ActiveSoul,
+                    CurrentSubclass);
             }
-
-            // =================================================
-            // RANGER
-            // =================================================
-
-            else if (soulPlayer.rangerSoul)
-            {
-                int highest =
-                    GetHighestValue(
-                        stats.EnergyAffinity,
-                        stats.BowAffinity,
-                        stats.GunAffinity,
-                        stats.MusicAffinity
-                    );
-
-                if (highest == stats.EnergyAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Energy Gunner";
-                }
-                else if (highest == stats.BowAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Archer";
-                }
-                else if (highest == stats.GunAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Gunner";
-                }
-                else if (highest == stats.MusicAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Virtuoso";
-                }
-            }
-
-            // =================================================
-            // MAGE
-            // =================================================
-
-            else if (soulPlayer.mageSoul)
-            {
-                int highest =
-                    GetHighestValue(
-                        stats.ElementalAffinity,
-                        stats.CardAffinity,
-                        stats.CurseAffinity,
-                        stats.NecroAffinity,
-                        stats.InfinityAffinity,
-                        stats.ArcaneAffinity
-                    );
-
-                if (highest == stats.ElementalAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Elementalist";
-                }
-                else if (highest == stats.CardAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Card Master";
-                }
-                else if (highest == stats.CurseAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Cursed Mage";
-                }
-                else if (highest == stats.NecroAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Necromancer";
-                }
-                else if (highest == stats.InfinityAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Infinity Mage";
-                }
-                else if (highest == stats.ArcaneAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Arcane Bard";
-                }
-            }
-
-            // =================================================
-            // SUMMONER
-            // =================================================
-
-            else if (soulPlayer.summonerSoul)
-            {
-                int highest =
-                    GetHighestValue(
-                        stats.BeastAffinity,
-                        stats.FusionAffinity,
-                        stats.TechAffinity,
-                        stats.ShadowAffinity
-                    );
-
-                if (highest == stats.BeastAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Beast Tamer";
-                }
-                else if (highest == stats.FusionAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Advanced Summoner";
-                }
-                else if (highest == stats.TechAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Tech Summoner";
-                }
-                else if (highest == stats.ShadowAffinity
-                    && highest > 0)
-                {
-                    CurrentSubclass = "Shadow Monarch";
-                }
-            }
-
-            // =================================================
-            // DEBUG SUBCLASS
-            // =================================================
-
-            
         }
 
-        // =================================================
-        // GET HIGHEST VALUE
-        // =================================================
-
-        private int GetHighestValue(params int[] values)
+        private static ClassAffinitySnapshot CreateAffinitySnapshot(
+            EterniaStatsPlayer stats)
         {
-            int highest = 0;
+            return new ClassAffinitySnapshot(
+                stats.BleedAffinity,
+                stats.ComboAffinity,
+                stats.DefenseAffinity,
+                stats.PrecisionAffinity,
+                stats.RageAffinity,
+                stats.ControlAffinity,
+                stats.EnergyAffinity,
+                stats.BowAffinity,
+                stats.GunAffinity,
+                stats.MusicAffinity,
+                stats.ElementalAffinity,
+                stats.CurseAffinity,
+                stats.InfinityAffinity,
+                stats.ArcaneAffinity,
+                stats.BeastAffinity,
+                stats.FusionAffinity,
+                stats.TechAffinity,
+                stats.ShadowAffinity);
+        }
 
-            foreach (int value in values)
+        public string GetLockedPromotion(SoulId soul)
+        {
+            return soul switch
             {
-                if (value > highest)
-                {
-                    highest = value;
-                }
-            }
+                SoulId.Warrior => lockedWarriorPromotion,
+                SoulId.Mage => lockedMagePromotion,
+                SoulId.Ranger => lockedRangerPromotion,
+                SoulId.Summoner => lockedSummonerPromotion,
+                _ => ClassPromotionRules.None
+            };
+        }
 
-            return highest;
+        private void SetLockedPromotion(
+            SoulId soul,
+            string promotion)
+        {
+            switch (soul)
+            {
+                case SoulId.Warrior:
+                    lockedWarriorPromotion = promotion;
+                    break;
+                case SoulId.Mage:
+                    lockedMagePromotion = promotion;
+                    break;
+                case SoulId.Ranger:
+                    lockedRangerPromotion = promotion;
+                    break;
+                case SoulId.Summoner:
+                    lockedSummonerPromotion = promotion;
+                    break;
+            }
+        }
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag["LockedWarriorPromotion"] = lockedWarriorPromotion;
+            tag["LockedMagePromotion"] = lockedMagePromotion;
+            tag["LockedRangerPromotion"] = lockedRangerPromotion;
+            tag["LockedSummonerPromotion"] = lockedSummonerPromotion;
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            lockedWarriorPromotion =
+                GetSavedPromotion(tag, "LockedWarriorPromotion");
+
+            lockedMagePromotion =
+                GetSavedPromotion(tag, "LockedMagePromotion");
+
+            lockedRangerPromotion =
+                GetSavedPromotion(tag, "LockedRangerPromotion");
+
+            lockedSummonerPromotion =
+                GetSavedPromotion(tag, "LockedSummonerPromotion");
+        }
+
+        private static string GetSavedPromotion(
+            TagCompound tag,
+            string key)
+        {
+            return tag.ContainsKey(key)
+                ? tag.GetString(key)
+                : ClassPromotionRules.None;
         }
     }
 }

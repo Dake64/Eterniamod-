@@ -36,28 +36,22 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
+            {
+                return true;
+            }
+
             var berserker =
                 player.GetModPlayer<BerserkerPlayer>();
-
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
 
             // =================================================
             // ONLY BERSERKER
             // =================================================
 
-            if (subclass.CurrentSubclass
-                != "Berserker")
+            if (!berserker.IsActiveBerserker())
             {
                 return true;
             }
-
-            // =================================================
-            // TEXTURE
-            // =================================================
-
-            Texture2D texture =
-                TextureAssets.MagicPixel.Value;
 
             SpriteBatch spriteBatch =
                 Main.spriteBatch;
@@ -85,10 +79,6 @@ namespace Eternia.Content.UI
                 (int)drawPos.Y
                 - 70;
 
-            // =================================================
-            // BACKGROUND
-            // =================================================
-
             Rectangle background =
                 new Rectangle(
                     x,
@@ -97,26 +87,8 @@ namespace Eternia.Content.UI
                     barHeight
                 );
 
-            spriteBatch.Draw(
-                texture,
-                background,
-                Color.Black * 0.7f
-            );
-
-            // =================================================
-            // FILL
-            // =================================================
-
             float percent =
                 berserker.Rage / 100f;
-
-            Rectangle fill =
-                new Rectangle(
-                    x + 2,
-                    y + 2,
-                    (int)((barWidth - 4) * percent),
-                    barHeight - 4
-                );
 
             Color barColor =
                 Color.DarkRed;
@@ -137,34 +109,14 @@ namespace Eternia.Content.UI
             if (berserker.Overrage)
             {
                 barColor = Color.OrangeRed;
-
-                // PULSE EFFECT
-
-                if (Main.GameUpdateCount % 20 < 10)
-                {
-                    fill.Height += 2;
-                }
             }
 
-            spriteBatch.Draw(
-                texture,
-                fill,
-                barColor
-            );
-
-            // =================================================
-            // TEXT
-            // =================================================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                $"RAGE: {berserker.Rage}",
-                new Vector2(
-                    x + 18,
-                    y - 24
-                ),
-                Color.White,
-                0.7f
+                background,
+                percent,
+                barColor,
+                $"RAGE: {berserker.Rage}"
             );
 
             // =================================================
@@ -173,15 +125,12 @@ namespace Eternia.Content.UI
 
             if (berserker.Overrage)
             {
-                Utils.DrawBorderString(
+                EterniaUI.DrawPill(
                     spriteBatch,
+                    new Rectangle(x, y + 23, 84, 20),
                     "OVERRAGE",
-                    new Vector2(
-                        x + 20,
-                        y + 22
-                    ),
                     Color.OrangeRed,
-                    0.75f
+                    0.48f
                 );
             }
 
@@ -192,7 +141,7 @@ namespace Eternia.Content.UI
             float seconds =
                 berserker.RageTimer / 60f;
 
-            Utils.DrawBorderString(
+            EterniaUI.DrawText(
                 spriteBatch,
                 $"{seconds:0.0}s",
                 new Vector2(

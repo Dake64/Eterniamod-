@@ -2,6 +2,7 @@
 
 using Terraria;
 using Terraria.ID;
+using Eternia.Content.Souls;
 using Terraria.ModLoader;
 
 namespace Eternia.Content.Players
@@ -20,11 +21,7 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclassPlayer.CurrentSubclass
-                != "Yoyo Master")
+            if (!IsActiveYoyoMaster())
             {
                 precisionStacks = 0;
             }
@@ -39,15 +36,11 @@ namespace Eternia.Content.Players
             NPC target,
             ref NPC.HitModifiers modifiers)
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
             // =============================================
             // SUBCLASS CHECK
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Yoyo Master")
+            if (!IsActiveYoyoMaster())
             {
                 return;
             }
@@ -59,6 +52,11 @@ namespace Eternia.Content.Players
             if (proj.aiStyle != ProjAIStyleID.Yoyo)
             {
                 return;
+            }
+
+            if (HasActivePassive("Weakpoint Detection"))
+            {
+                modifiers.SourceDamage += 0.08f;
             }
 
             // =============================================
@@ -87,12 +85,39 @@ namespace Eternia.Content.Players
                 modifiers.SourceDamage
                     += 1.00f;
 
+                if (HasActivePassive("True Strike"))
+                {
+                    modifiers.SourceDamage += 0.15f;
+                }
+
                 CombatText.NewText(
                     target.Hitbox,
                     Color.Red,
                     "TRUE STRIKE!"
                 );
             }
+        }
+
+        private bool HasActivePassive(string passiveName)
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .HasActivePassive(
+                    soul.ActiveSoul,
+                    passiveName);
+        }
+
+        public bool IsActiveYoyoMaster()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Warrior &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                    "Yoyo Master";
         }
     }
 }

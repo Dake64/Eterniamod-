@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
@@ -30,11 +31,7 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!IsActiveEnergyGunner())
             {
                 Heat = 0f;
 
@@ -52,11 +49,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!IsActiveEnergyGunner())
             {
                 return;
             }
@@ -175,11 +168,7 @@ namespace Eternia.Content.Players
 
         public override bool CanUseItem(Item item)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!IsActiveEnergyGunner())
             {
                 return true;
             }
@@ -188,8 +177,8 @@ namespace Eternia.Content.Players
             // ONLY RANGED
             // =============================================
 
-            if (item.DamageType
-                != DamageClass.Ranged)
+            if (!item.DamageType
+                .CountsAsClass(DamageClass.Ranged))
             {
                 return true;
             }
@@ -227,17 +216,13 @@ namespace Eternia.Content.Players
             Item item,
             ref StatModifier damage)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!IsActiveEnergyGunner())
             {
                 return;
             }
 
-            if (item.DamageType
-                != DamageClass.Ranged)
+            if (!item.DamageType
+                .CountsAsClass(DamageClass.Ranged))
             {
                 return;
             }
@@ -269,17 +254,13 @@ namespace Eternia.Content.Players
         public override float UseSpeedMultiplier(
             Item item)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!IsActiveEnergyGunner())
             {
                 return 1f;
             }
 
-            if (item.DamageType
-                != DamageClass.Ranged)
+            if (!item.DamageType
+                .CountsAsClass(DamageClass.Ranged))
             {
                 return 1f;
             }
@@ -302,11 +283,7 @@ namespace Eternia.Content.Players
             NPC.HitInfo hit,
             int damageDone)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!IsActiveEnergyGunner())
             {
                 return;
             }
@@ -315,8 +292,8 @@ namespace Eternia.Content.Players
             // ONLY RANGED
             // =============================================
 
-            if (proj.DamageType
-                != DamageClass.Ranged)
+            if (!proj.DamageType
+                .CountsAsClass(DamageClass.Ranged))
             {
                 return;
             }
@@ -357,6 +334,17 @@ namespace Eternia.Content.Players
                     );
                 }
             }
+        }
+
+        public bool IsActiveEnergyGunner()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Ranger &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                "Energy Gunner";
         }
     }
 }

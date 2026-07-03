@@ -41,21 +41,22 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
-
-            // =============================================
-            // ONLY ARCHER
-            // =============================================
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return true;
             }
 
             var archerPlayer =
                 player.GetModPlayer<ArcherPlayer>();
+
+            // =============================================
+            // ONLY ARCHER
+            // =============================================
+
+            if (!archerPlayer.IsActiveArcher())
+            {
+                return true;
+            }
 
             SpriteBatch spriteBatch =
                 Main.spriteBatch;
@@ -142,13 +143,18 @@ namespace Eternia.Content.UI
                     diamond,
                     color
                 );
+
+                EterniaUI.DrawBorder(
+                    spriteBatch,
+                    diamond,
+                    EterniaUI.Border * 0.45f);
             }
 
             // =============================================
             // TEXT
             // =============================================
 
-            Utils.DrawBorderString(
+            EterniaUI.DrawText(
                 spriteBatch,
                 "FOCUS",
                 drawPos + new Vector2(8, -20),
@@ -163,12 +169,12 @@ namespace Eternia.Content.UI
             if (archerPlayer.Focus
                 >= ArcherPlayer.MaxFocus)
             {
-                Utils.DrawBorderString(
+                EterniaUI.DrawPill(
                     spriteBatch,
+                    new Rectangle((int)drawPos.X - 6, (int)drawPos.Y - 42, 72, 20),
                     "PRESS Q",
-                    drawPos + new Vector2(-2, -40),
                     Color.Gold,
-                    0.7f
+                    0.48f
                 );
             }
 
@@ -178,12 +184,12 @@ namespace Eternia.Content.UI
 
             if (archerPlayer.PerfectShot)
             {
-                Utils.DrawBorderString(
+                EterniaUI.DrawPill(
                     spriteBatch,
+                    new Rectangle((int)drawPos.X - 22, (int)drawPos.Y - 64, 114, 20),
                     "PERFECT SHOT",
-                    drawPos + new Vector2(-18, -60),
                     Color.Yellow,
-                    0.7f
+                    0.48f
                 );
             }
 

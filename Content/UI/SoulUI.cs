@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+using Eternia.Content.Players;
+using Eternia.Content.Souls;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.UI;
-using Eternia.Content.Players;
 
 namespace Eternia.Content.UI
 {
@@ -16,35 +16,35 @@ namespace Eternia.Content.UI
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             Player player = Main.LocalPlayer;
-            var modPlayer = player.GetModPlayer<EterniaPlayer>();
 
-            // ===== SOLO SI TIENE SOUL =====
-            if (!modPlayer.hasSoul)
-                return;
-
-            Vector2 panelPos = modPlayer.soulUIPosition;
-
-            Rectangle panel = new Rectangle(
-                (int)panelPos.X,
-                (int)panelPos.Y,
-                340,
-                360
-            );
-
-            // =====================================================
-            // DRAG
-            // =====================================================
-
-            if (panel.Contains(Main.MouseScreen.ToPoint()))
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
-                Main.LocalPlayer.mouseInterface = true;
-
-                if (Main.mouseLeft && !dragging)
-                {
-                    dragging = true;
-                    offset = Main.MouseScreen - panelPos;
-                }
+                dragging = false;
+                return;
             }
+
+            var soulPlayer =
+                player.GetModPlayer<EterniaPlayer>();
+
+            if (!soulPlayer.HasAnySoul)
+            {
+                dragging = false;
+                return;
+            }
+
+            Vector2 panelPos =
+                soulPlayer.soulUIPosition;
+
+            Rectangle panel =
+                EterniaUI.ClampToScreen(
+                    new Rectangle(
+                        (int)panelPos.X,
+                        (int)panelPos.Y,
+                        368,
+                        402));
+
+            panelPos =
+                new Vector2(panel.X, panel.Y);
 
             if (!Main.mouseLeft)
             {
@@ -53,172 +53,253 @@ namespace Eternia.Content.UI
 
             if (dragging)
             {
-                modPlayer.soulUIPosition =
-                    Main.MouseScreen - offset;
+                panel =
+                    EterniaUI.ClampToScreen(
+                        new Rectangle(
+                            (int)(Main.MouseScreen.X - offset.X),
+                            (int)(Main.MouseScreen.Y - offset.Y),
+                            panel.Width,
+                            panel.Height));
 
-                panelPos = modPlayer.soulUIPosition;
+                soulPlayer.soulUIPosition =
+                    new Vector2(panel.X, panel.Y);
+
+                panelPos =
+                    new Vector2(panel.X, panel.Y);
             }
 
-            // ===== FONDO =====
+            if (panel.Contains(Main.MouseScreen.ToPoint()) ||
+                dragging)
+            {
+                Main.LocalPlayer.mouseInterface = true;
+            }
+
+            Color accent =
+                GetSoulColor(soulPlayer.ActiveSoul);
+
+            EterniaUI.DrawPanel(spriteBatch, panel, accent);
+            EterniaUI.DrawHeader(
+                spriteBatch,
+                panel,
+                SoulRules.GetDisplayName(soulPlayer.ActiveSoul),
+                "Soul status and combat identity.",
+                accent);
+
+            if (EterniaUI.DrawCloseButton(spriteBatch, panel, accent))
+            {
+                dragging = false;
+                SoulUISystem.CloseSoulPanel();
+                return;
+            }
+
+            Rectangle dragHandle =
+                new Rectangle(
+                    panel.X,
+                    panel.Y,
+                    panel.Width - 48,
+                    64);
+
+            if (dragHandle.Contains(Main.MouseScreen.ToPoint()) &&
+                Main.mouseLeft &&
+                Main.mouseLeftRelease &&
+                !dragging)
+            {
+                Main.mouseLeftRelease = false;
+                dragging = true;
+                offset = Main.MouseScreen - panelPos;
+            }
+
+            Rectangle content =
+                new Rectangle(
+                    panel.X + 18,
+                    panel.Y + 74,
+                    panel.Width - 36,
+                    panel.Height - 92);
+
+            string subclass =
+                player.GetModPlayer<SubclassPlayer>().CurrentSubclass;
+
+            EterniaUI.DrawPill(
+                spriteBatch,
+                new Rectangle(content.X, content.Y, content.Width, 28),
+                $"Subclass: {subclass}",
+                accent,
+                0.58f);
+
+            if (!soulPlayer.HasClassSoul)
+            {
+                EterniaUI.DrawWrappedText(
+                    spriteBatch,
+                    "Empty Soul is equipped. Choose a base class to enable EXP, passives and weapon rules.",
+                    new Rectangle(
+                        content.X,
+                        content.Y + 48,
+                        content.Width,
+                        content.Height - 48),
+                    EterniaUI.MutedText,
+                    0.62f);
+                return;
+            }
+
+            var baseClass =
+                player.GetModPlayer<BaseClassPlayer>();
+
+            int y = content.Y + 44;
+
+            foreach (SoulMetric metric in GetMetrics(player, soulPlayer, baseClass, subclass))
+            {
+                DrawMetric(
+                    spriteBatch,
+                    new Rectangle(content.X, y, content.Width, 42),
+                    metric);
+
+                y += 48;
+            }
+        }
+
+        private static void DrawMetric(
+            SpriteBatch spriteBatch,
+            Rectangle rect,
+            SoulMetric metric)
+        {
+            Texture2D pixel =
+                Terraria.GameContent.TextureAssets.MagicPixel.Value;
 
             spriteBatch.Draw(
-                TextureAssets.MagicPixel.Value,
-                panel,
-                Color.Black * 0.75f
-            );
+                pixel,
+                rect,
+                EterniaUI.PanelSurface * 0.76f);
 
-            DrawBorder(spriteBatch, panel);
+            EterniaUI.DrawBorder(
+                spriteBatch,
+                rect,
+                metric.Color * 0.35f);
 
-            string text = "";
-            Color color = Color.White;
+            EterniaUI.DrawText(
+                spriteBatch,
+                metric.Label,
+                new Vector2(rect.X + 10, rect.Y + 7),
+                EterniaUI.MutedText,
+                0.52f);
 
-            // =====================================================
-            // ⚔️ WARRIOR
-            // =====================================================
+            EterniaUI.DrawTrimmedText(
+                spriteBatch,
+                metric.Value,
+                new Vector2(rect.X + 10, rect.Y + 22),
+                rect.Width - 20,
+                Color.White,
+                0.62f);
+        }
 
-            if (modPlayer.warriorSoul)
+        private static SoulMetric[] GetMetrics(
+            Player player,
+            EterniaPlayer soulPlayer,
+            BaseClassPlayer baseClass,
+            string subclass)
+        {
+            float genericDamage =
+                player.GetDamage(DamageClass.Generic).ApplyTo(100f) - 100f;
+
+            float critChance =
+                player.GetCritChance(DamageClass.Generic);
+
+            if (soulPlayer.warriorSoul)
             {
-                color = Color.Red;
-
                 float meleeDamage =
                     player.GetDamage(DamageClass.Melee).ApplyTo(100f) - 100f;
 
-                float genericDamage =
-                    player.GetDamage(DamageClass.Generic).ApplyTo(100f) - 100f;
-
-                float critChance =
-                    player.GetCritChance(DamageClass.Generic);
-
-                text =
-                    "WARRIOR\n\n" +
-                    $"Vida: {player.statLifeMax2}\n" +
-                    $"Regen: {player.lifeRegen}\n" +
-                    $"Defense: {player.statDefense}\n\n" +
-
-                    $"Melee dmg: +{(int)meleeDamage}%\n" +
-                    $"Bonus general: +{(int)genericDamage}%\n" +
-                    $"Critico: {critChance}%\n" +
-                    $"Atk Speed: {(int)(player.GetAttackSpeed(DamageClass.Melee) * 100)}%\n" +
-                    $"Armor Pen: {player.GetArmorPenetration(DamageClass.Melee)}\n\n" ;
+                return new[]
+                {
+                    new SoulMetric("Survival", $"HP {player.statLifeMax2} | DEF {player.statDefense}", Color.IndianRed),
+                    new SoulMetric("Damage", $"+{(int)meleeDamage}% melee | +{(int)genericDamage}% all", Color.OrangeRed),
+                    new SoulMetric("Combat", $"{critChance}% crit | {player.GetArmorPenetration(DamageClass.Melee)} armor pen", Color.Gold),
+                    new SoulMetric("Speed", $"{(int)(player.GetAttackSpeed(DamageClass.Melee) * 100)}% attack speed", Color.LightGreen),
+                    new SoulMetric("Base resource", GetResourceText(subclass == "Warrior", "Momentum", baseClass.WarriorMomentum), Color.Orange)
+                };
             }
 
-            // =====================================================
-            // ✨ MAGE
-            // =====================================================
-
-            else if (modPlayer.mageSoul)
+            if (soulPlayer.mageSoul)
             {
-                color = Color.Cyan;
-
                 float magicDamage =
                     player.GetDamage(DamageClass.Magic).ApplyTo(100f) - 100f;
 
-                float genericDamage =
-                    player.GetDamage(DamageClass.Generic).ApplyTo(100f) - 100f;
-
-                float critChance =
-                    player.GetCritChance(DamageClass.Generic);
-
-                text =
-                    "MAGE\n\n" +
-                    $"Vida: {player.statLifeMax2}\n" +
-                    $"Mana: {player.statManaMax2}\n" +
-                    $"Mana Regen: {player.manaRegen}\n" +
-                    $"Defense: {player.statDefense}\n\n" +
-
-                    $"Magic dmg: +{(int)magicDamage}%\n" +
-                    $"Bonus general: +{(int)genericDamage}%\n" +
-                    $"Critico: {critChance}%\n" +
-                    $"Cast Speed: {(int)(player.GetAttackSpeed(DamageClass.Magic) * 100)}%\n\n" ;
+                return new[]
+                {
+                    new SoulMetric("Survival", $"HP {player.statLifeMax2} | DEF {player.statDefense}", Color.DeepSkyBlue),
+                    new SoulMetric("Mana", $"{player.statManaMax2} max | {player.manaRegen} regen", Color.Cyan),
+                    new SoulMetric("Damage", $"+{(int)magicDamage}% magic | +{(int)genericDamage}% all", Color.DeepSkyBlue),
+                    new SoulMetric("Casting", $"{critChance}% crit | {(int)(player.GetAttackSpeed(DamageClass.Magic) * 100)}% cast speed", Color.Plum),
+                    new SoulMetric("Base resource", GetResourceText(subclass == "Mage", "Charge", baseClass.MageCharge), Color.Cyan)
+                };
             }
 
-            // =====================================================
-            // 🎯 RANGER
-            // =====================================================
-
-            else if (modPlayer.rangerSoul)
+            if (soulPlayer.rangerSoul)
             {
-                color = Color.LimeGreen;
-
                 float rangedDamage =
                     player.GetDamage(DamageClass.Ranged).ApplyTo(100f) - 100f;
 
-                float genericDamage =
-                    player.GetDamage(DamageClass.Generic).ApplyTo(100f) - 100f;
-
-                float critChance =
-                    player.GetCritChance(DamageClass.Generic);
-
-                text =
-                    "RANGER\n\n" +
-                    $"Vida: {player.statLifeMax2}\n" +
-                    $"Regen: {player.lifeRegen}\n" +
-                    $"Defense: {player.statDefense}\n\n" +
-
-                    $"Ranged dmg: +{(int)rangedDamage}%\n" +
-                    $"Bonus general: +{(int)genericDamage}%\n" +
-                    $"Critico: {critChance}%\n" +
-                    $"Cadencia: {(int)(player.GetAttackSpeed(DamageClass.Ranged) * 100)}%\n" +
-                    $"Ahorro balas: {(player.ammoCost80 ? 20 : 0)}%\n\n" ;
+                return new[]
+                {
+                    new SoulMetric("Survival", $"HP {player.statLifeMax2} | DEF {player.statDefense}", Color.LimeGreen),
+                    new SoulMetric("Damage", $"+{(int)rangedDamage}% ranged | +{(int)genericDamage}% all", Color.LimeGreen),
+                    new SoulMetric("Aim", $"{critChance}% crit | ammo save {(player.ammoCost80 ? 20 : 0)}%", Color.Gold),
+                    new SoulMetric("Cadence", $"{(int)(player.GetAttackSpeed(DamageClass.Ranged) * 100)}% attack speed", Color.LightGreen),
+                    new SoulMetric("Base resource", GetResourceText(subclass == "Ranger", "Focus", baseClass.RangerFocus), Color.ForestGreen)
+                };
             }
 
-            // =====================================================
-            // 🐾 SUMMONER
-            // =====================================================
+            float summonDamage =
+                player.GetDamage(DamageClass.Summon).ApplyTo(100f) - 100f;
 
-            else if (modPlayer.summonerSoul)
+            return new[]
             {
-                color = Color.Orange;
-
-                float summonDamage =
-                    player.GetDamage(DamageClass.Summon).ApplyTo(100f) - 100f;
-
-                float genericDamage =
-                    player.GetDamage(DamageClass.Generic).ApplyTo(100f) - 100f;
-
-                float critChance =
-                    player.GetCritChance(DamageClass.Generic);
-
-                text =
-                    "SUMMONER\n\n" +
-                    $"Vida: {player.statLifeMax2}\n" +
-                    $"Regen: {player.lifeRegen}\n" +
-                    $"Defense: {player.statDefense}\n\n" +
-
-                    $"Summon dmg: +{(int)summonDamage}%\n" +
-                    $"Bonus general: +{(int)genericDamage}%\n" +
-                    $"Critico: {critChance}%\n" +
-                    $"Minions: {player.maxMinions}\n" +
-                    $"Whip Speed: {(int)(player.GetAttackSpeed(DamageClass.SummonMeleeSpeed) * 100)}%\n\n" ;
-            }
-
-            Utils.DrawBorderString(
-                spriteBatch,
-                text,
-                panelPos + new Vector2(20, 20),
-                color
-            );
+                new SoulMetric("Survival", $"HP {player.statLifeMax2} | DEF {player.statDefense}", Color.MediumPurple),
+                new SoulMetric("Damage", $"+{(int)summonDamage}% summon | +{(int)genericDamage}% all", Color.Orange),
+                new SoulMetric("Command", $"{player.maxMinions} minions | {critChance}% crit", Color.SandyBrown),
+                new SoulMetric("Whip", $"{(int)(player.GetAttackSpeed(DamageClass.SummonMeleeSpeed) * 100)}% whip speed", Color.LightSteelBlue),
+                new SoulMetric("Base resource", GetResourceText(subclass == "Summoner", "Bond", baseClass.SummonerBond), Color.MediumPurple)
+            };
         }
 
-        private void DrawBorder(SpriteBatch spriteBatch, Rectangle rect)
+        private static string GetResourceText(
+            bool visible,
+            string name,
+            int value)
         {
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
+            return visible
+                ? $"{name} {value}/100"
+                : "Inactive after promotion";
+        }
 
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.X, rect.Y, rect.Width, 2),
-                Color.DarkRed);
+        private static Color GetSoulColor(SoulId soul)
+        {
+            return soul switch
+            {
+                SoulId.Warrior => Color.OrangeRed,
+                SoulId.Mage => Color.DeepSkyBlue,
+                SoulId.Ranger => Color.LimeGreen,
+                SoulId.Summoner => Color.MediumPurple,
+                _ => Color.Gray
+            };
+        }
 
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.X, rect.Bottom, rect.Width, 2),
-                Color.DarkRed);
+        private readonly struct SoulMetric
+        {
+            public SoulMetric(
+                string label,
+                string value,
+                Color color)
+            {
+                Label = label;
+                Value = value;
+                Color = color;
+            }
 
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.X, rect.Y, 2, rect.Height),
-                Color.DarkRed);
+            public string Label { get; }
 
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.Right, rect.Y, 2, rect.Height + 2),
-                Color.DarkRed);
+            public string Value { get; }
+
+            public Color Color { get; }
         }
     }
 }

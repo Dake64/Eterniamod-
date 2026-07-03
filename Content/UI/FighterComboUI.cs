@@ -14,27 +14,22 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            if (player == null
-                || !player.active)
-            {
-                return;
-            }
-
-            var subclassPlayer =
-                player.GetModPlayer<SubclassPlayer>();
-
-            // =================================================
-            // ONLY FIGHTER
-            // =================================================
-
-            if (subclassPlayer.CurrentSubclass
-                != "Fighter")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return;
             }
 
             var fighterPlayer =
                 player.GetModPlayer<FighterPlayer>();
+
+            // =================================================
+            // ONLY FIGHTER
+            // =================================================
+
+            if (!fighterPlayer.IsActiveFighter())
+            {
+                return;
+            }
 
             // =================================================
             // NO COMBO
@@ -104,18 +99,16 @@ namespace Eternia.Content.UI
                 scale = 1.6f;
             }
 
-            // =================================================
-            // DRAW TEXT
-            // =================================================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawCenteredText(
                 spriteBatch,
                 comboText,
-                drawPosition,
+                new Rectangle(
+                    (int)drawPosition.X - 110,
+                    (int)drawPosition.Y - 18,
+                    220,
+                    36),
                 comboColor,
-                scale,
-                0.5f,
-                0.5f
+                scale
             );
 
             // =================================================
@@ -146,32 +139,12 @@ namespace Eternia.Content.UI
                     barHeight
                 );
 
-            Rectangle frontBar =
-                new Rectangle(
-                    backBar.X,
-                    backBar.Y,
-                    (int)(barWidth * progress),
-                    barHeight
-                );
-
-            // =================================================
-            // DRAW BACK
-            // =================================================
-
-            spriteBatch.Draw(
-                TextureAssets.MagicPixel.Value,
+            EterniaUI.DrawProgressBar(
+                spriteBatch,
                 backBar,
-                Color.Black
-            );
-
-            // =================================================
-            // DRAW FRONT
-            // =================================================
-
-            spriteBatch.Draw(
-                TextureAssets.MagicPixel.Value,
-                frontBar,
-                comboColor
+                progress,
+                comboColor,
+                ""
             );
         }
     }

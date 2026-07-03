@@ -46,6 +46,11 @@ namespace Eternia.Content.Projectiles
             var elementalist =
                 player.GetModPlayer<ElementalistPlayer>();
 
+            if (!elementalist.IsActiveElementalist())
+            {
+                return;
+            }
+
             int burnTime = 180;
 
             if (elementalist.FireLevel >= 2)
@@ -72,7 +77,7 @@ namespace Eternia.Content.Projectiles
             }
 
             elementalist.GainCharge(5);
-            elementalist.FireAffinity++;
+            elementalist.GainAffinity(0);
 
             
         }

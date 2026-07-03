@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
@@ -30,15 +31,11 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
             // =============================================
             // ONLY BERSERKER
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Berserker")
+            if (!IsActiveBerserker())
             {
                 Rage = 0;
 
@@ -54,11 +51,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclassPlayer.CurrentSubclass
-                != "Berserker")
+            if (!IsActiveBerserker())
             {
                 return;
             }
@@ -233,11 +226,7 @@ namespace Eternia.Content.Players
             NPC.HitInfo hit,
             int damageDone)
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclassPlayer.CurrentSubclass
-                != "Berserker")
+            if (!IsActiveBerserker())
             {
                 return;
             }
@@ -278,11 +267,7 @@ namespace Eternia.Content.Players
             NPC.HitInfo hit,
             int damageDone)
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclassPlayer.CurrentSubclass
-                != "Berserker")
+            if (!IsActiveBerserker())
             {
                 return;
             }
@@ -319,11 +304,7 @@ namespace Eternia.Content.Players
         public override void OnHurt(
             Player.HurtInfo info)
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclassPlayer.CurrentSubclass
-                != "Berserker")
+            if (!IsActiveBerserker())
             {
                 return;
             }
@@ -349,6 +330,17 @@ namespace Eternia.Content.Players
             }
 
             RageTimer = RageDuration;
+        }
+
+        public bool IsActiveBerserker()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Warrior &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                "Berserker";
         }
     }
 }

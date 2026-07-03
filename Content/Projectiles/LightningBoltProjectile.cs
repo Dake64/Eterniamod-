@@ -48,6 +48,11 @@ namespace Eternia.Content.Projectiles
             var elementalist =
                 player.GetModPlayer<ElementalistPlayer>();
 
+            if (!elementalist.IsActiveElementalist())
+            {
+                return;
+            }
+
             target.AddBuff(
                 BuffID.Electrified,
                 300);
@@ -100,7 +105,7 @@ namespace Eternia.Content.Projectiles
 
             elementalist.GainCharge(chargeGain);
 
-            elementalist.LightningAffinity++;
+            elementalist.GainAffinity(2);
 
            
         }

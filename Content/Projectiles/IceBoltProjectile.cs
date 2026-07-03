@@ -46,6 +46,11 @@ namespace Eternia.Content.Projectiles
             var elementalist =
                 player.GetModPlayer<ElementalistPlayer>();
 
+            if (!elementalist.IsActiveElementalist())
+            {
+                return;
+            }
+
             int frostTime = 180;
 
             if (elementalist.IceLevel >= 3)
@@ -67,7 +72,7 @@ namespace Eternia.Content.Projectiles
             target.velocity *= slowMultiplier;
 
             elementalist.GainCharge(5);
-            elementalist.IceAffinity++;
+            elementalist.GainAffinity(1);
 
             
         }

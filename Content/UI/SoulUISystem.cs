@@ -18,9 +18,6 @@ namespace Eternia.Content.UI
         internal static UserInterface ElementalistInterface;
         internal static ElementalistUI ElementalistUI;
 
-        internal static UserInterface CartomancerInterface;
-        internal static CartomancerUI CartomancerUI;
-
         internal static UserInterface CursedMageInterface;
         internal static CursedMageUI CursedMageUI;
         
@@ -63,16 +60,6 @@ namespace Eternia.Content.UI
                 ElementalistInterface.SetState(ElementalistUI);
 
                 // ==========================================
-                // CARTOMANCER UI
-                // ==========================================
-
-                CartomancerUI = new CartomancerUI();
-                CartomancerUI.Activate();
-
-                CartomancerInterface = new UserInterface();
-                CartomancerInterface.SetState(CartomancerUI);
-
-                // ==========================================
                 // CURSED MAGE UI
                 // ==========================================
 
@@ -90,6 +77,21 @@ namespace Eternia.Content.UI
             }
         }
 
+        public override void Unload()
+        {
+            Visible = false;
+            SoulInterface = null;
+            SoulUI = null;
+            ExpInterface = null;
+            ExpBarUI = null;
+            ElementalistInterface = null;
+            ElementalistUI = null;
+            CursedMageInterface = null;
+            CursedMageUI = null;
+            NecromancerInterface = null;
+            NecromancerUI = null;
+        }
+
         public override void UpdateUI(GameTime gameTime)
         {
             if (EterniaKeybinds.ToggleSoulUI.JustPressed)
@@ -98,24 +100,32 @@ namespace Eternia.Content.UI
 
                 if (Visible)
                 {
+                    EterniaUI.CloseMajorPanelsExcept(
+                        EterniaUI.MajorPanel.Soul);
+
                     SoulInterface?.SetState(SoulUI);
                 }
                 else
                 {
-                    SoulInterface?.SetState(null);
+                    CloseSoulPanel();
                 }
             }
 
             if (Visible)
             {
                 SoulInterface?.Update(gameTime);
-                ExpInterface?.Update(gameTime);
             }
 
+            ExpInterface?.Update(gameTime);
             ElementalistInterface?.Update(gameTime);
-            CartomancerInterface?.Update(gameTime);
             CursedMageInterface?.Update(gameTime);
             NecromancerInterface?.Update(gameTime);
+        }
+
+        internal static void CloseSoulPanel()
+        {
+            Visible = false;
+            SoulInterface?.SetState(null);
         }
 
         public override void ModifyInterfaceLayers(
@@ -126,11 +136,13 @@ namespace Eternia.Content.UI
 
             if (mouseTextIndex != -1)
             {
+                int insertIndex = mouseTextIndex;
+
                 // ==========================================
                 // SOUL UI
                 // ==========================================
 
-                layers.Insert(mouseTextIndex,
+                layers.Insert(insertIndex++,
                     new LegacyGameInterfaceLayer(
                     "Eternia: Soul UI",
                     delegate
@@ -150,7 +162,7 @@ namespace Eternia.Content.UI
                 // EXP UI
                 // ==========================================
 
-                layers.Insert(mouseTextIndex,
+                layers.Insert(insertIndex++,
                     new LegacyGameInterfaceLayer(
                     "Eternia: Exp UI",
                     delegate
@@ -167,7 +179,7 @@ namespace Eternia.Content.UI
                 // ELEMENTALIST UI
                 // ==========================================
 
-                layers.Insert(mouseTextIndex,
+                layers.Insert(insertIndex++,
                     new LegacyGameInterfaceLayer(
                     "Eternia: Elementalist UI",
                     delegate
@@ -181,27 +193,10 @@ namespace Eternia.Content.UI
                     InterfaceScaleType.UI));
 
                 // ==========================================
-                // CARTOMANCER UI
-                // ==========================================
-
-                layers.Insert(mouseTextIndex,
-                    new LegacyGameInterfaceLayer(
-                    "Eternia: Cartomancer UI",
-                    delegate
-                    {
-                        CartomancerInterface?.Draw(
-                            Main.spriteBatch,
-                            new GameTime());
-
-                        return true;
-                    },
-                    InterfaceScaleType.UI));
-
-                // ==========================================
                 // CURSED MAGE UI
                 // ==========================================
 
-                layers.Insert(mouseTextIndex,
+                layers.Insert(insertIndex++,
                     new LegacyGameInterfaceLayer(
                     "Eternia: Cursed Mage UI",
                     delegate
@@ -213,7 +208,7 @@ namespace Eternia.Content.UI
                         return true;
                     },
                     InterfaceScaleType.UI));
-                layers.Insert(mouseTextIndex,
+                layers.Insert(insertIndex++,
                     new LegacyGameInterfaceLayer(
                         "Eternia: Necromancer UI",
                         delegate

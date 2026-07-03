@@ -8,14 +8,12 @@ namespace Eternia.Content.Players
 {
     public class BerserkerSkillPlayer : ModPlayer
     {
+        private const int SkillRageCost = 100;
+
         public override void ProcessTriggers(
             Terraria.GameInput.TriggersSet triggersSet)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Berserker")
+            if (!Player.GetModPlayer<BerserkerPlayer>().IsActiveBerserker())
             {
                 return;
             }
@@ -41,7 +39,7 @@ namespace Eternia.Content.Players
                 // NEED RAGE
                 // =============================================
 
-                if (ragePlayer.Rage < 100)
+                if (ragePlayer.Rage < SkillRageCost)
                 {
                     return;
                 }
@@ -50,7 +48,12 @@ namespace Eternia.Content.Players
                 // CONSUME RAGE
                 // =============================================
 
-                ragePlayer.Rage -= 0;
+                ragePlayer.Rage -= SkillRageCost;
+
+                if (ragePlayer.Rage < 0)
+                {
+                    ragePlayer.Rage = 0;
+                }
 
                 // =============================================
                 // COOLDOWN
@@ -107,6 +110,11 @@ namespace Eternia.Content.Players
                         Vector2 knockbackDir =
                             npc.Center
                             - Player.Center;
+
+                        if (knockbackDir.LengthSquared() <= 0f)
+                        {
+                            continue;
+                        }
 
                         knockbackDir.Normalize();
 

@@ -1,47 +1,107 @@
-﻿using Terraria;
+using Eternia.Content.Buffs;
+using Eternia.Content.Items.Souls;
+using Eternia.Content.Items.Weapons.Magic;
+using Eternia.Content.Items.Weapons.Ranger;
+using Eternia.Content.Items.Weapons.Summoner;
+using Eternia.Content.Items.Weapons.Warrior;
+using Eternia.Content.Souls;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
 
 namespace Eternia.Content.Players
 {
     public class EterniaPlayer : ModPlayer
     {
-        // ===== UI POSITION =====
         public Vector2 soulUIPosition = new Vector2(40, 120);
 
-        // ===== SOUL FLAGS =====
+        public SoulId ActiveSoul { get; private set; } = SoulId.None;
+
+        public bool HasAnySoul => ActiveSoul != SoulId.None;
+
+        public bool HasClassSoul => SoulRules.IsClassSoul(ActiveSoul);
+
+        // Legacy facade kept while old UI/passives still read broad class flags.
         public bool hasSoul;
         public bool warriorSoul;
         public bool mageSoul;
         public bool rangerSoul;
         public bool summonerSoul;
 
-        // ===== CONTROL =====
         private bool penaltyApplied;
+        private bool warriorStarterGiven;
+        private bool mageStarterGiven;
+        private bool rangerStarterGiven;
+        private bool summonerStarterGiven;
 
         public override void PreUpdate()
         {
+            ActiveSoul = SoulId.None;
             hasSoul = false;
-
             warriorSoul = false;
             mageSoul = false;
             rangerSoul = false;
             summonerSoul = false;
         }
 
+        public void ActivateSoul(SoulId soul)
+        {
+            if (soul == SoulId.None)
+            {
+                return;
+            }
+
+            if (soul == SoulId.Empty &&
+                ActiveSoul != SoulId.None)
+            {
+                return;
+            }
+
+            if (ActiveSoul != SoulId.None &&
+                ActiveSoul != SoulId.Empty &&
+                ActiveSoul != soul)
+            {
+                return;
+            }
+
+            ActiveSoul = soul;
+            SyncLegacySoulFlags();
+            GiveStarterWeaponIfNeeded(soul);
+        }
+
+        public override bool CanUseItem(Item item)
+        {
+            if (HasClassSoul &&
+                SoulRules.IsCombatItem(item) &&
+                !SoulRules.IsWeaponAllowed(ActiveSoul, item))
+            {
+                ApplyDeathPenalty(SoulRules.GetWrongWeaponMessage(ActiveSoul));
+                return false;
+            }
+
+            return true;
+        }
+
         public override void PostUpdateEquips()
         {
-            // ===== SIN SOUL → SOLO DEBUFF =====
-            if (!hasSoul)
+            if (!HasClassSoul &&
+                HasClassSoulAvailable())
             {
                 ApplyNoSoulPenalty();
                 penaltyApplied = false;
                 return;
             }
 
-            // ===== VALIDAR ITEM =====
+            if (!HasAnySoul)
+            {
+                penaltyApplied = false;
+                return;
+            }
+
             if (Player.itemAnimation <= 0 ||
                 Player.HeldItem == null ||
                 Player.HeldItem.IsAir)
@@ -50,105 +110,135 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            Item item = Player.HeldItem;
-
-            // =====================================================
-            // IGNORAR ITEMS SIN DAÑO
-            // =====================================================
-
-            if (item.damage <= 0)
+            if (HasClassSoul &&
+                SoulRules.IsCombatItem(Player.HeldItem) &&
+                !SoulRules.IsWeaponAllowed(ActiveSoul, Player.HeldItem))
             {
-                penaltyApplied = false;
+                ApplyDeathPenalty(SoulRules.GetWrongWeaponMessage(ActiveSoul));
                 return;
             }
 
-            // =====================================================
-            // IGNORAR HERRAMIENTAS
-            // =====================================================
+            penaltyApplied = false;
+        }
 
-            if (item.pick > 0 ||
-                item.axe > 0 ||
-                item.hammer > 0)
+        private bool HasClassSoulAvailable()
+        {
+            return SoulInventory.HasAnyClassSoulItem(Player);
+        }
+
+        private void SyncLegacySoulFlags()
+        {
+            hasSoul = HasAnySoul;
+
+            warriorSoul = ActiveSoul == SoulId.Warrior;
+            mageSoul = ActiveSoul == SoulId.Mage;
+            rangerSoul = ActiveSoul == SoulId.Ranger;
+            summonerSoul = ActiveSoul == SoulId.Summoner;
+        }
+
+        private void GiveStarterWeaponIfNeeded(SoulId soul)
+        {
+            if (Player.whoAmI != Main.myPlayer)
             {
-                penaltyApplied = false;
                 return;
             }
 
-            // =====================================================
-            // IGNORAR BLOQUES Y WALLS
-            // =====================================================
-
-            if (item.createTile >= 0 ||
-                item.createWall > 0)
+            if (soul == SoulId.Warrior &&
+                !warriorStarterGiven)
             {
-                penaltyApplied = false;
-                return;
+                warriorStarterGiven = true;
+                GiveStarterWeapon(ModContent.ItemType<TrainingBlade>());
             }
-
-            var type = item.DamageType;
-
-            bool isMelee =
-                type == DamageClass.Melee ||
-                type == DamageClass.MeleeNoSpeed;
-            bool isMagic = type == DamageClass.Magic;
-            bool isRanged = type == DamageClass.Ranged;
-            bool isSummon = type == DamageClass.Summon;
-
-            // ===== COMPATIBILIDAD LATIGOS =====
-
-            if (type == DamageClass.SummonMeleeSpeed)
+            else if (soul == SoulId.Mage &&
+                !mageStarterGiven)
             {
-                isSummon = true;
-                isMelee = false;
+                mageStarterGiven = true;
+                GiveStarterWeapon(ModContent.ItemType<ApprenticeWand>());
             }
-
-            bool wrongWeapon =
-                (warriorSoul && !isMelee) ||
-                (mageSoul && !isMagic) ||
-                (rangerSoul && !isRanged) ||
-                (summonerSoul && !isSummon);
-
-            if (wrongWeapon)
+            else if (soul == SoulId.Ranger &&
+                !rangerStarterGiven)
             {
-                ApplyDeathPenalty(GetSoulDeathMessage());
+                rangerStarterGiven = true;
+                GiveStarterWeapon(ModContent.ItemType<TrainingBow>());
+                GiveStarterStack(ItemID.WoodenArrow, 250);
             }
-            else
+            else if (soul == SoulId.Summoner &&
+                !summonerStarterGiven)
             {
-                penaltyApplied = false;
+                summonerStarterGiven = true;
+                GiveStarterWeapon(ModContent.ItemType<TrainingWhip>());
             }
         }
 
-        // ===== DEBUFF SIN SOUL =====
+        private void GiveStarterWeapon(int itemType)
+        {
+            if (HasItem(Player.inventory, itemType))
+            {
+                return;
+            }
+
+            Player.QuickSpawnItem(
+                Player.GetSource_GiftOrReward(),
+                itemType
+            );
+        }
+
+        private void GiveStarterStack(int itemType, int stack)
+        {
+            if (HasItem(Player.inventory, itemType))
+            {
+                return;
+            }
+
+            Player.QuickSpawnItem(
+                Player.GetSource_GiftOrReward(),
+                itemType,
+                stack
+            );
+        }
+
+        private static bool HasItem(Item[] items, int itemType)
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i].type == itemType)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         private void ApplyNoSoulPenalty()
         {
-            // 🔻 Daño global
-            Player.GetDamage(DamageClass.Generic) -= 0.60f;
+            Player.GetDamage(DamageClass.Generic) -= 0.65f;
+            Player.GetCritChance(DamageClass.Generic) -= 20f;
+            Player.GetAttackSpeed(DamageClass.Generic) -= 0.20f;
 
-            // 🔻 Velocidad
-            Player.moveSpeed -= 0.50f;
-            Player.maxRunSpeed *= 0.7f;
-            Player.accRunSpeed *= 0.7f;
+            Player.moveSpeed -= 0.45f;
+            Player.maxRunSpeed *= 0.65f;
+            Player.accRunSpeed *= 0.65f;
+            Player.statDefense -= 10;
+            Player.lifeRegen -= 10;
 
-            // Debuff visual
             Player.AddBuff(
-                ModContent.BuffType<Content.Buffs.SoulLessDebuff>(),
+                ModContent.BuffType<NoSoulDebuff>(),
                 2
             );
         }
 
-        // ===== MUERTE POR TRAICIÓN =====
-
         private void ApplyDeathPenalty(string message)
         {
             if (penaltyApplied)
+            {
                 return;
+            }
 
             penaltyApplied = true;
 
-            // Debuff visual
             Player.AddBuff(
-                ModContent.BuffType<Content.Buffs.SoulLessDebuff>(),
+                ModContent.BuffType<SoulViolationDebuff>(),
                 60
             );
 
@@ -156,7 +246,9 @@ namespace Eternia.Content.Players
             {
                 Player.KillMe(
                     PlayerDeathReason.ByCustomReason(
-                        Player.name + " " + message
+                        NetworkText.FromLiteral(
+                            Player.name + " " + message
+                        )
                     ),
                     9999,
                     0
@@ -164,37 +256,43 @@ namespace Eternia.Content.Players
             }
         }
 
-        // ===== MENSAJES PERSONALIZADOS =====
-
-        private string GetSoulDeathMessage()
-        {
-            if (warriorSoul)
-                return "Tu cuerpo ha olvidado el arte del combate.";
-
-            if (mageSoul)
-                return "La magia te rechaza por tu traición.";
-
-            if (rangerSoul)
-                return "Tu puntería se desvanece al traicionar tu camino.";
-
-            if (summonerSoul)
-                return "Tus invocaciones te abandonan.";
-
-            return "Has perdido tu camino.";
-        }
-
-        // ===== SAVE UI POSITION =====
-
         public override void SaveData(TagCompound tag)
         {
             tag["SoulUIPosX"] = soulUIPosition.X;
             tag["SoulUIPosY"] = soulUIPosition.Y;
+            tag["WarriorStarterGiven"] = warriorStarterGiven;
+            tag["MageStarterGiven"] = mageStarterGiven;
+            tag["RangerStarterGiven"] = rangerStarterGiven;
+            tag["SummonerStarterGiven"] = summonerStarterGiven;
         }
 
         public override void LoadData(TagCompound tag)
         {
-            soulUIPosition.X = tag.GetFloat("SoulUIPosX");
-            soulUIPosition.Y = tag.GetFloat("SoulUIPosY");
+            soulUIPosition.X =
+                tag.ContainsKey("SoulUIPosX")
+                ? tag.GetFloat("SoulUIPosX")
+                : 40f;
+
+            soulUIPosition.Y =
+                tag.ContainsKey("SoulUIPosY")
+                ? tag.GetFloat("SoulUIPosY")
+                : 120f;
+
+            warriorStarterGiven =
+                tag.ContainsKey("WarriorStarterGiven") &&
+                tag.GetBool("WarriorStarterGiven");
+
+            mageStarterGiven =
+                tag.ContainsKey("MageStarterGiven") &&
+                tag.GetBool("MageStarterGiven");
+
+            rangerStarterGiven =
+                tag.ContainsKey("RangerStarterGiven") &&
+                tag.GetBool("RangerStarterGiven");
+
+            summonerStarterGiven =
+                tag.ContainsKey("SummonerStarterGiven") &&
+                tag.GetBool("SummonerStarterGiven");
         }
     }
 }

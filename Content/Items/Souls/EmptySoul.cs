@@ -1,4 +1,8 @@
-﻿using Terraria;
+using System.Collections.Generic;
+using Eternia.Content.Players;
+using Eternia.Content.Souls;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -21,10 +25,39 @@ namespace Eternia.Content.Items.Souls
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            var modPlayer = player.GetModPlayer<Eternia.Content.Players.EterniaPlayer>();
+            player.GetModPlayer<EterniaPlayer>()
+                .ActivateSoul(SoulId.Empty);
+        }
 
-            // Solo indica que tienes una soul equipada
-            modPlayer.hasSoul = true;
+        public override void ModifyTooltips(
+            List<TooltipLine> tooltips)
+        {
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "EterniaEmptySoulCraft",
+                    "Craft in your inventory into Warrior, Mage, Ranger or Summoner Soul.")
+                {
+                    OverrideColor = Color.LightSkyBlue
+                });
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "EterniaEmptySoulInactive",
+                    "Empty Soul does not activate class EXP, passives or weapon rules.")
+                {
+                    OverrideColor = Color.LightGray
+                });
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "EterniaEmptySoulChoice",
+                    "The Empty Soul is consumed when you choose a class.")
+                {
+                    OverrideColor = Color.MediumPurple
+                });
         }
     }
 }

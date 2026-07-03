@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
@@ -14,6 +16,7 @@ namespace Eternia.Content.Players
         public int CursedEnergy;
 
         public const int MaxCursedEnergy = 100;
+        public const int MinimumCastEnergy = 3;
 
         // =========================================
         // CORRUPTION
@@ -51,11 +54,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Cursed Mage")
+            if (!IsActiveCursedMage())
             {
                 return;
             }
@@ -94,7 +93,12 @@ namespace Eternia.Content.Players
 
             int regen = 0;
 
-            if (TotalCorruption >= 151)
+            if (TotalCorruption <= 0 &&
+                CursedEnergy < MinimumCastEnergy)
+            {
+                regen = 1;
+            }
+            else if (TotalCorruption >= 151)
             {
                 regen = 12;
             }
@@ -139,7 +143,9 @@ namespace Eternia.Content.Players
                 {
                     Player.Hurt(
                         PlayerDeathReason.ByCustomReason(
-                            $"{Player.name} fue consumido por la corrupción."
+                            NetworkText.FromLiteral(
+                                $"{Player.name} fue consumido por la corrupción."
+                            )
                         ),
                         5,
                         0
@@ -153,7 +159,9 @@ namespace Eternia.Content.Players
                 {
                     Player.Hurt(
                         PlayerDeathReason.ByCustomReason(
-                            $"{Player.name} fue consumido por la corrupción."
+                            NetworkText.FromLiteral(
+                                $"{Player.name} fue consumido por la corrupción."
+                            )
                         ),
                         10,
                         0
@@ -165,7 +173,9 @@ namespace Eternia.Content.Players
             {
                 Player.KillMe(
                     PlayerDeathReason.ByCustomReason(
-                        $"{Player.name} colapsó por exceso de corrupción."
+                        NetworkText.FromLiteral(
+                            $"{Player.name} colapso por exceso de corrupcion."
+                        )
                     ),
                     9999,
                     0
@@ -261,6 +271,11 @@ namespace Eternia.Content.Players
 
         public bool ConsumeEnergy(int amount)
         {
+            if (!IsActiveCursedMage())
+            {
+                return false;
+            }
+
             if (CursedEnergy < amount)
             {
                 return false;
@@ -269,6 +284,17 @@ namespace Eternia.Content.Players
             CursedEnergy -= amount;
 
             return true;
+        }
+
+        public bool IsActiveCursedMage()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Mage &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                "Cursed Mage";
         }
 
         // =========================================

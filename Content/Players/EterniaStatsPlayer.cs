@@ -2,6 +2,8 @@
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using System.Collections.Generic;
+using Eternia.Content.Passives;
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
@@ -34,9 +36,7 @@ namespace Eternia.Content.Players
         public int MusicAffinity;
         
         public int ElementalAffinity;
-        public int CardAffinity;
         public int CurseAffinity;
-        public int NecroAffinity;
         public int InfinityAffinity;
         public int ArcaneAffinity;
         
@@ -49,6 +49,14 @@ namespace Eternia.Content.Players
         public bool HasPassive(string passiveName)
         {
             return UnlockedPassives.Contains(passiveName);
+        }
+
+        public bool HasActivePassive(
+            SoulId activeSoul,
+            string passiveName)
+        {
+            return HasPassive(passiveName) &&
+                PassiveRegistry.IsPassiveAllowedForSoul(activeSoul, passiveName);
         }
         
         // =====================================================
@@ -120,47 +128,66 @@ namespace Eternia.Content.Players
             Player.statManaMax2 += Focus * 3;
 
             Player.manaRegenBonus += Focus / 2;
+
+            var soulPlayer =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            if (!soulPlayer.HasClassSoul)
+            {
+                return;
+            }
+
             // =====================================================
             // WARRIOR PASSIVES
             // =====================================================
             // Sword Mastery
 
-            if (HasPassive("Sword Mastery"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Sword Mastery"))
             {
                 Player.GetDamage(DamageClass.Melee) += 0.05f;
             }
 
             // Blood Flow
 
-            if (HasPassive("Blood Flow"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Blood Flow"))
             {
                 Player.GetArmorPenetration(DamageClass.Melee) += 3;
             }
 
             // Combo Instinct
 
-            if (HasPassive("Combo Instinct"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Combo Instinct"))
             {
                 Player.GetAttackSpeed(DamageClass.Melee) += 0.05f;
             }
 
             // Shield Training
 
-            if (HasPassive("Shield Training"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Shield Training"))
             {
                 Player.statDefense += 3;
             }
 
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Iron Wall"))
+            {
+                Player.statDefense += 6;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Fortress Body"))
+            {
+                Player.endurance += 0.10f;
+            }
+
            // Precision Flow
 
-            if (HasPassive("Precision Flow"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Precision Flow"))
             {
                 Player.yoyoString = true;
             }
 
             // Blood Rage
 
-            if (HasPassive("Blood Rage"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Blood Rage"))
             {
                 if (Player.statLife < Player.statLifeMax2 * 0.35f)
                 {
@@ -168,11 +195,219 @@ namespace Eternia.Content.Players
                 }
             }
 
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Savage Fury"))
+            {
+                if (Player.statLife < Player.statLifeMax2 * 0.50f)
+                {
+                    Player.GetAttackSpeed(DamageClass.Melee) += 0.10f;
+                }
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Last Stand"))
+            {
+                if (Player.statLife < Player.statLifeMax2 * 0.25f)
+                {
+                    Player.GetDamage(DamageClass.Melee) += 0.20f;
+                }
+            }
+
             // Heavy Impact
 
-            if (HasPassive("Heavy Impact"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Heavy Impact"))
             {
                 Player.GetKnockback(DamageClass.Melee) += 1.5f;
+            }
+
+            // =====================================================
+            // RANGER PASSIVES
+            // =====================================================
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Energy Core"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Overcharge"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Plasma Reactor"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.12f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Bow Precision"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Eagle Eye"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Hunter Instinct"))
+            {
+                Player.arrowDamage += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Quick Trigger"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.04f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Rapid Chamber"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Deadshot"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 12f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Musical Soul"))
+            {
+                Player.moveSpeed += 0.03f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Resonance"))
+            {
+                Player.endurance += 0.02f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Symphony Master"))
+            {
+                Player.GetDamage(DamageClass.Generic) += 0.05f;
+            }
+
+            // =====================================================
+            // MAGE PASSIVES
+            // =====================================================
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Control"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Surge"))
+            {
+                Player.statManaMax2 += 10;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Mastery"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Dark Ritual"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.03f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Forbidden Hex"))
+            {
+                Player.GetArmorPenetration(DamageClass.Magic) += 4;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Cursed Blood"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Infinite Pages"))
+            {
+                Player.manaCost -= 0.04f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Endless Wisdom"))
+            {
+                Player.statManaMax2 += 20;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Limit Break"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Arcane Melody"))
+            {
+                Player.manaRegenBonus += 2;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Mystic Chorus"))
+            {
+                Player.manaRegenBonus += 4;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Grand Orchestra"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.10f;
+            }
+
+            // =====================================================
+            // SUMMONER PASSIVES
+            // =====================================================
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Wild Bond"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Alpha Beast"))
+            {
+                Player.GetKnockback(DamageClass.Summon) += 1f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Primal Instinct"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Fusion Mind"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Perfect Fusion"))
+            {
+                Player.GetAttackSpeed(DamageClass.Summon) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Ultimate Fusion"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Tech Protocol"))
+            {
+                Player.GetAttackSpeed(DamageClass.Summon) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Combat AI"))
+            {
+                Player.GetCritChance(DamageClass.Summon) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "War Machine"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Necrotic Pact"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Bone Conduit"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Grave Legion"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.15f;
             }
         }
 
@@ -201,9 +436,7 @@ namespace Eternia.Content.Players
             tag["MusicAffinity"] = MusicAffinity;
             // MAGE
             tag["ElementalAffinity"] = ElementalAffinity;
-            tag["CardAffinity"] = CardAffinity;
             tag["CurseAffinity"] = CurseAffinity;
-            tag["NecroAffinity"] = NecroAffinity;
             tag["InfinityAffinity"] = InfinityAffinity;
             tag["ArcaneAffinity"] = ArcaneAffinity;
             // SUMMONER
@@ -242,9 +475,7 @@ namespace Eternia.Content.Players
             MusicAffinity = tag.GetInt("MusicAffinity");
             // MAGE
             ElementalAffinity = tag.GetInt("ElementalAffinity");
-            CardAffinity = tag.GetInt("CardAffinity");
             CurseAffinity = tag.GetInt("CurseAffinity");
-            NecroAffinity = tag.GetInt("NecroAffinity");
             InfinityAffinity = tag.GetInt("InfinityAffinity");
             ArcaneAffinity = tag.GetInt("ArcaneAffinity");
             // SUMMONER
@@ -262,159 +493,6 @@ namespace Eternia.Content.Players
             }
 
             StatPoints = tag.GetInt("StatPoints");
-        }
-        
-        public string GetWarriorSubclass()
-        {
-            int highest = 0;
-
-            string subclass = "None";
-
-            if (BleedAffinity > highest)
-            {
-                highest = BleedAffinity;
-                subclass = "Swordsman";
-            }
-
-            if (ComboAffinity > highest)
-            {
-                highest = ComboAffinity;
-                subclass = "Fighter";
-            }
-
-            if (DefenseAffinity > highest)
-            {
-                highest = DefenseAffinity;
-                subclass = "Guardian";
-            }
-
-            if (PrecisionAffinity > highest)
-            {
-                highest = PrecisionAffinity;
-                subclass = "Yoyo Master";
-            }
-
-            if (RageAffinity > highest)
-            {
-                highest = RageAffinity;
-                subclass = "Berserker";
-            }
-
-            if (ControlAffinity > highest)
-            {
-                highest = ControlAffinity;
-                subclass = "Stunner";
-            }
-
-            return subclass;
-        }
-        public string GetRangerSubclass()
-        {
-            int highest = 0;
-
-            string subclass = "None";
-
-            if (EnergyAffinity > highest)
-            {
-                highest = EnergyAffinity;
-                subclass = "Energy Gunner";
-            }
-
-            if (BowAffinity > highest)
-            {
-                highest = BowAffinity;
-                subclass = "Archer";
-            }
-
-            if (GunAffinity > highest)
-            {
-                highest = GunAffinity;
-                subclass = "Gunslinger";
-            }
-
-            if (MusicAffinity > highest)
-            {
-                highest = MusicAffinity;
-                subclass = "Virtuoso";
-            }
-
-            return subclass;
-        }
-        public string GetMageSubclass()
-        {
-            int highest = 0;
-
-            string subclass = "None";
-
-            if (ElementalAffinity > highest)
-            {
-                highest = ElementalAffinity;
-                subclass = "Elementalist";
-            }
-
-            if (CardAffinity > highest)
-            {
-                highest = CardAffinity;
-                subclass = "Card Mage";
-            }
-
-            if (CurseAffinity > highest)
-            {
-                highest = CurseAffinity;
-                subclass = "Cursed Warlock";
-            }
-
-            if (NecroAffinity > highest)
-            {
-                highest = NecroAffinity;
-                subclass = "Necromancer";
-            }
-
-            if (InfinityAffinity > highest)
-            {
-                highest = InfinityAffinity;
-                subclass = "Infinity Mage";
-            }
-
-            if (ArcaneAffinity > highest)
-            {
-                highest = ArcaneAffinity;
-                subclass = "Arcane Bard";
-            }
-
-            return subclass;
-        }
-        public string GetSummonerSubclass()
-        {
-            int highest = 0;
-
-            string subclass = "None";
-
-            if (BeastAffinity > highest)
-            {
-                highest = BeastAffinity;
-                subclass = "Beast Tamer";
-            }
-
-            if (FusionAffinity > highest)
-            {
-                highest = FusionAffinity;
-                subclass = "Advanced Summoner";
-            }
-
-            if (TechAffinity > highest)
-            {
-                highest = TechAffinity;
-                subclass = "Tech Summoner";
-            }
-
-            if (ShadowAffinity > highest)
-            {
-                highest = ShadowAffinity;
-                subclass = "Shadow Monarch";
-            }
-
-            return subclass;
         }
     }
 }

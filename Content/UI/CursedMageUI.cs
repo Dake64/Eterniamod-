@@ -1,12 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+using Eternia.Content.Players;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.UI;
-
-using Eternia.Content.Players;
 
 namespace Eternia.Content.UI
 {
@@ -16,13 +13,10 @@ namespace Eternia.Content.UI
         {
             base.Draw(spriteBatch);
 
-            Player player = Main.LocalPlayer;
+            Player player =
+                Main.LocalPlayer;
 
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Cursed Mage")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return;
             }
@@ -30,141 +24,54 @@ namespace Eternia.Content.UI
             var cursedPlayer =
                 player.GetModPlayer<CursedMagePlayer>();
 
-            Vector2 position =
-                new Vector2(20, 350);
+            if (!cursedPlayer.IsActiveCursedMage())
+            {
+                return;
+            }
 
-            // =====================================
-            // TITLE
-            // =====================================
+            Color accent =
+                Color.MediumPurple;
 
-            Utils.DrawBorderString(
+            Rectangle panel =
+                EterniaUI.GetBottomLeftPanel(306, 146, 20, 156);
+
+            EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.84f);
+
+            EterniaUI.DrawText(
                 spriteBatch,
-                "CURSED MAGE",
-                position,
-                Color.MediumPurple
-            );
+                "Cursed Mage",
+                new Vector2(panel.X + 14, panel.Y + 12),
+                Color.White,
+                0.68f);
 
-            // =====================================
-            // ENERGY
-            // =====================================
-
-            position.Y += 35;
-
-            DrawBar(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                position,
-                cursedPlayer.CursedEnergy,
-                CursedMagePlayer.MaxCursedEnergy,
-                Color.MediumPurple,
-                "Energy"
-            );
+                new Rectangle(panel.X + 14, panel.Y + 44, panel.Width - 28, 22),
+                cursedPlayer.CursedEnergy /
+                    (float)CursedMagePlayer.MaxCursedEnergy,
+                accent,
+                $"Energy {cursedPlayer.CursedEnergy}/{CursedMagePlayer.MaxCursedEnergy}");
 
-            // =====================================
-            // CORRUPTION
-            // =====================================
-
-            position.Y += 35;
-
-            DrawBar(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                position,
-                cursedPlayer.TotalCorruption,
-                200,
+                new Rectangle(panel.X + 14, panel.Y + 76, panel.Width - 28, 22),
+                cursedPlayer.TotalCorruption / 200f,
                 Color.Red,
-                "Corruption"
-            );
+                $"Corruption {cursedPlayer.TotalCorruption}/200");
 
-            // =====================================
-            // CORRUPTION INFO
-            // =====================================
+            string status =
+                cursedPlayer.CorruptionBurst
+                    ? "Burst active"
+                    : cursedPlayer.TotalCorruption >= 100
+                        ? "Press V for Burst"
+                        : $"Base {cursedPlayer.BaseCorruption} | Temp {cursedPlayer.TemporaryCorruption}";
 
-            position.Y += 25;
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawPill(
                 spriteBatch,
-                $"Base: {cursedPlayer.BaseCorruption} | Temp: {cursedPlayer.TemporaryCorruption}",
-                position,
-                Color.White,
-                0.7f
-            );
-
-            // =====================================
-            // OVERCORRUPTION
-            // =====================================
-
-            if (cursedPlayer.TotalCorruption >= 100
-                && !cursedPlayer.CorruptionBurst)
-            {
-                position.Y += 25;
-
-                Utils.DrawBorderString(
-                    spriteBatch,
-                    "Press V for Burst",
-                    position,
-                    Color.Yellow
-                );
-            }
-            // =====================================
-            // BURST
-            // =====================================
-
-            if (cursedPlayer.CorruptionBurst)
-            {
-                position.Y += 25;
-
-                Utils.DrawBorderString(
-                    spriteBatch,
-                    "BURST ACTIVE!",
-                    position,
-                    Color.Gold
-                );
-            }
-        }
-
-        private void DrawBar(
-            SpriteBatch spriteBatch,
-            Vector2 position,
-            int current,
-            int max,
-            Color color,
-            string label)
-        {
-            Texture2D pixel =
-                TextureAssets.MagicPixel.Value;
-
-            float percent =
-                MathHelper.Clamp(
-                    (float)current / max,
-                    0f,
-                    1f);
-
-            spriteBatch.Draw(
-                pixel,
-                new Rectangle(
-                    (int)position.X,
-                    (int)position.Y,
-                    200,
-                    20),
-                Color.Black * 0.7f
-            );
-
-            spriteBatch.Draw(
-                pixel,
-                new Rectangle(
-                    (int)position.X,
-                    (int)position.Y,
-                    (int)(200 * percent),
-                    20),
-                color
-            );
-
-            Utils.DrawBorderString(
-                spriteBatch,
-                $"{label}: {current}/{max}",
-                position + new Vector2(5, -2),
-                Color.White,
-                0.8f
-            );
+                new Rectangle(panel.X + 14, panel.Y + 108, panel.Width - 28, 24),
+                status,
+                cursedPlayer.CorruptionBurst ? Color.Gold : accent,
+                0.52f);
         }
     }
 }

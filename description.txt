@@ -1,1 +1,1 @@
-Modify this file with a description of your mod.
+Eternia is an RPG overhaul prototype built around Soul-bound classes. Start as Warrior, Mage, Ranger or Summoner, grow through EXP, stats and passive affinities, then unlock a hardmode promotion path shaped by the passives you choose.

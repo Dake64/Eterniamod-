@@ -40,7 +40,7 @@ namespace Eternia.Content.Projectiles.Necromancer
 
 
             Projectile.DamageType =
-                DamageClass.Magic;
+                DamageClass.Summon;
 
 
             Projectile.penetrate = -1;
@@ -62,6 +62,11 @@ namespace Eternia.Content.Projectiles.Necromancer
         public override void AI()
         {
             base.AI();
+
+            if (!Projectile.active)
+            {
+                return;
+            }
 
 
             Player player =

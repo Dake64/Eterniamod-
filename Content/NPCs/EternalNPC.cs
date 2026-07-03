@@ -1,7 +1,10 @@
-﻿using Terraria;
+using Eternia.Content.Items.Souls;
+using Eternia.Content.Players;
+using Eternia.Content.Souls;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
 
 namespace Eternia.Content.NPCs
 {
@@ -17,7 +20,7 @@ namespace Eternia.Content.NPCs
             NPC.width = 18;
             NPC.height = 40;
             NPC.friendly = true;
-            NPC.aiStyle = 7; // estilo aldeano
+            NPC.aiStyle = NPCAIStyleID.Passive;
             NPC.damage = 0;
             NPC.defense = 999;
             NPC.lifeMax = 9999;
@@ -31,56 +34,79 @@ namespace Eternia.Content.NPCs
         public override string GetChat()
         {
             Player player = Main.LocalPlayer;
-            var modPlayer = player.GetModPlayer<Eternia.Content.Players.EterniaPlayer>();
 
-            if (!modPlayer.hasSoul)
-                return "Siento el vacío dentro de ti... tu alma aún no ha despertado.";
+            var modPlayer =
+                player.GetModPlayer<EterniaPlayer>();
 
-            return "Tu camino ya ha comenzado...";
+            bool ownsSoulItem =
+                SoulInventory.HasAnySoulItem(player);
+
+            if (!ownsSoulItem)
+            {
+                return "Siento el vacio dentro de ti... tu alma aun no ha despertado.";
+            }
+
+            if (modPlayer.ActiveSoul == SoulId.Empty)
+            {
+                return "Tu Soul vacia te sostiene, pero aun no has elegido una clase base.";
+            }
+
+            if (!modPlayer.HasAnySoul)
+            {
+                return "Ya llevas una Soul contigo. Equipala o crafteala antes de pedirme otra.";
+            }
+
+            return $"Tu clase base es {SoulRules.GetDisplayName(modPlayer.ActiveSoul)}. La promocion despierta despues del Muro de Carne.";
         }
 
-        public override void SetChatButtons(ref string button, ref string button2)
+        public override void SetChatButtons(
+            ref string button,
+            ref string button2)
         {
-            button = "Destino";
+            if (SoulInventory.HasAnySoulItem(Main.LocalPlayer))
+            {
+                button = "";
+                button2 = "";
+                return;
+            }
+
+            button = "Soul vacia";
+            button2 = "";
         }
 
-        public override void OnChatButtonClicked(bool firstButton, ref string shopName)
+        public override void OnChatButtonClicked(
+            bool firstButton,
+            ref string shopName)
         {
             Player player = Main.LocalPlayer;
 
-            if (firstButton)
+            if (!firstButton)
             {
-                GiveSoul(player);
+                return;
             }
+
+            GiveEmptySoul(player);
         }
 
-        private void GiveSoul(Player player)
+        private static void GiveEmptySoul(Player player)
         {
-            bool hasSoul = false;
-
-            // Revisar inventario
-            for (int i = 0; i < player.inventory.Length; i++)
+            if (SoulInventory.HasAnySoulItem(player))
             {
-                if (player.inventory[i].type == ModContent.ItemType<Eternia.Content.Items.Souls.EmptySoul>())
-                {
-                    hasSoul = true;
-                    break;
-                }
+                Main.NewText("Ya posees una Soul.", 255, 80, 80);
+                return;
             }
 
-            if (!hasSoul)
-            {
-                player.QuickSpawnItem(
-                    player.GetSource_GiftOrReward(),
-                    ModContent.ItemType<Eternia.Content.Items.Souls.EmptySoul>()
-                );
+            player.QuickSpawnItem(
+                player.GetSource_GiftOrReward(),
+                ModContent.ItemType<EmptySoul>()
+            );
 
-                Main.NewText("Has recibido una Soul vacía...", 150, 100, 255);
-            }
-            else
-            {
-                Main.NewText("Ya posees una Soul.", 255, 50, 50);
-            }
+            Main.NewText(
+                "Has recibido una Empty Soul. Crafteala en Warrior, Mage, Ranger o Summoner desde tu inventario.",
+                150,
+                100,
+                255
+            );
         }
     }
 }

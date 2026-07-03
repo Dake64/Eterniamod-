@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Eternia.Content.Souls;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,15 +20,11 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
             // =============================================
             // ONLY GUARDIAN
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Guardian")
+            if (!IsActiveGuardian())
             {
                 return;
             }
@@ -52,15 +49,11 @@ namespace Eternia.Content.Players
         public override void OnHurt(
             Player.HurtInfo info)
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
             // =============================================
             // ONLY GUARDIAN
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Guardian")
+            if (!IsActiveGuardian())
             {
                 return;
             }
@@ -142,6 +135,17 @@ namespace Eternia.Content.Players
                     DustID.Iron
                 );
             }
+        }
+
+        public bool IsActiveGuardian()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Warrior &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                    "Guardian";
         }
     }
 }

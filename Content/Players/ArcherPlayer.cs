@@ -3,6 +3,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
@@ -28,11 +29,7 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!IsActiveArcher())
             {
                 Focus = 0f;
 
@@ -46,11 +43,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!IsActiveArcher())
             {
                 return;
             }
@@ -100,11 +93,7 @@ namespace Eternia.Content.Players
             ref int damage,
             ref float knockback)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!IsActiveArcher())
             {
                 return;
             }
@@ -176,11 +165,7 @@ namespace Eternia.Content.Players
             NPC.HitInfo hit,
             int damageDone)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!IsActiveArcher())
             {
                 return;
             }
@@ -229,11 +214,7 @@ namespace Eternia.Content.Players
             Item item,
             ref float crit)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!IsActiveArcher())
             {
                 return;
             }
@@ -265,11 +246,7 @@ namespace Eternia.Content.Players
         public override float UseSpeedMultiplier(
             Item item)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Archer")
+            if (!IsActiveArcher())
             {
                 return 1f;
             }
@@ -292,6 +269,17 @@ namespace Eternia.Content.Players
 
             return 1f
                 + (focusPercent * 0.20f);
+        }
+
+        public bool IsActiveArcher()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Ranger &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                "Archer";
         }
     }
 }

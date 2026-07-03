@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 using Microsoft.Xna.Framework;
 
 namespace Eternia.Content.Players
@@ -30,15 +31,11 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
             // =============================================
             // ONLY FIGHTER
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Fighter")
+            if (!IsActiveFighter())
             {
                 Combo = 0;
 
@@ -54,11 +51,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclassPlayer.CurrentSubclass
-                != "Fighter")
+            if (!IsActiveFighter())
             {
                 return;
             }
@@ -164,6 +157,11 @@ namespace Eternia.Content.Players
 
         public void AddCombo()
         {
+            if (!IsActiveFighter())
+            {
+                return;
+            }
+
             // =============================================
             // MAX COMBO
             // =============================================
@@ -177,7 +175,9 @@ namespace Eternia.Content.Players
             // REFRESH TIMER
             // =============================================
 
-            ComboTimer = ComboDuration;
+            ComboTimer = HasActivePassive("Adrenaline Rush")
+                ? ComboDuration + 60
+                : ComboDuration;
 
             // =============================================
             // MAX COMBO EFFECT
@@ -216,7 +216,42 @@ namespace Eternia.Content.Players
 
         public float GetComboMultiplier()
         {
-            return 1f + (Combo * 0.02f);
+            if (!IsActiveFighter())
+            {
+                return 1f;
+            }
+
+            float multiplier =
+                1f + (Combo * 0.02f);
+
+            if (HasActivePassive("Limit Breaker"))
+            {
+                multiplier += Combo * 0.003f;
+            }
+
+            return multiplier;
+        }
+
+        private bool HasActivePassive(string passiveName)
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .HasActivePassive(
+                    soul.ActiveSoul,
+                    passiveName);
+        }
+
+        public bool IsActiveFighter()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Warrior &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                    "Fighter";
         }
     }
 }

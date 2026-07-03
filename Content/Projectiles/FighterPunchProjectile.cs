@@ -86,21 +86,17 @@ namespace Eternia.Content.Projectiles
             Player player =
                 Main.player[Projectile.owner];
 
-            var subclassPlayer =
-                player.GetModPlayer<SubclassPlayer>();
+            var fighterPlayer =
+                player.GetModPlayer<FighterPlayer>();
 
             // =============================================
             // ONLY FIGHTER
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Fighter")
+            if (!fighterPlayer.IsActiveFighter())
             {
                 return;
             }
-
-            var fighterPlayer =
-                player.GetModPlayer<FighterPlayer>();
 
             // =============================================
             // DISTANCE
@@ -165,21 +161,17 @@ namespace Eternia.Content.Projectiles
             Player player =
                 Main.player[Projectile.owner];
 
-            var subclassPlayer =
-                player.GetModPlayer<SubclassPlayer>();
+            var fighterPlayer =
+                player.GetModPlayer<FighterPlayer>();
 
             // =============================================
             // ONLY FIGHTER
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Fighter")
+            if (!fighterPlayer.IsActiveFighter())
             {
                 return;
             }
-
-            var fighterPlayer =
-                player.GetModPlayer<FighterPlayer>();
 
             // =============================================
             // ADD COMBO

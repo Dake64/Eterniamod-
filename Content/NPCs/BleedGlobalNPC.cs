@@ -2,7 +2,6 @@
 using Terraria.ModLoader;
 using Eternia.Content.Players;
 using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ID;
 namespace Eternia.Content.NPCs
 {
@@ -45,23 +44,24 @@ namespace Eternia.Content.NPCs
         {
             if (BleedStacks > 0)
             {
-                Player owner =
-                    Main.player[npc.lastInteraction];
-
                 int affinity = 0;
 
-                if (owner != null &&
-                    owner.active)
+                if (!TryGetBleedOwner(npc, out Player owner))
                 {
-                    var subclassPlayer =
-                        owner.GetModPlayer<SubclassPlayer>();
+                    BleedStacks = 0;
+                    return;
+                }
+
+                if (owner.active)
+                {
+                    var swordsmanPlayer =
+                        owner.GetModPlayer<SwordsmanPlayer>();
 
                     // =============================================
                     // ONLY SWORDSMAN
                     // =============================================
 
-                    if (subclassPlayer.CurrentSubclass
-                        != "Swordsman")
+                    if (!swordsmanPlayer.IsActiveSwordsman())
                     {
                         BleedStacks = 0;
 
@@ -97,6 +97,24 @@ namespace Eternia.Content.NPCs
                     );
                 }
             }
+        }
+
+        private static bool TryGetBleedOwner(
+            NPC npc,
+            out Player owner)
+        {
+            owner = null;
+
+            if (npc.lastInteraction < 0 ||
+                npc.lastInteraction >= Main.maxPlayers)
+            {
+                return false;
+            }
+
+            owner = Main.player[npc.lastInteraction];
+
+            return owner != null &&
+                owner.active;
         }
     }
 }

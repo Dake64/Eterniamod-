@@ -46,7 +46,7 @@ namespace Eternia
             UltimateKey = KeybindLoader.RegisterKeybind(
                 Mod,
                 "Elemental Ultimate",
-                "Q");
+                "Z");
             CursedBurst = KeybindLoader.RegisterKeybind(
                 Mod,
                 "Cursed Burst",

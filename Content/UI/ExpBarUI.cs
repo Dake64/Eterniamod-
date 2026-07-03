@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+using Eternia.Content.Players;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.UI;
-using Eternia.Content.Players;
 
 namespace Eternia.Content.UI
 {
@@ -14,92 +13,39 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
+            {
+                return;
+            }
+
             var levelPlayer =
                 player.GetModPlayer<EterniaLevelPlayer>();
 
-            // =====================================================
-            // PANEL
-            // =====================================================
+            Rectangle panel =
+                EterniaUI.GetBottomLeftPanel(
+                    368,
+                    56,
+                    20,
+                    22);
 
-            Rectangle backPanel = new Rectangle(
-                20,
-                Main.screenHeight - 60,
-                300,
-                30
-            );
+            Color accent =
+                Color.DeepSkyBlue;
 
-            spriteBatch.Draw(
-                TextureAssets.MagicPixel.Value,
-                backPanel,
-                Color.Black * 0.7f
-            );
-
-            // =====================================================
-            // XP %
-            // =====================================================
+            EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.82f);
 
             float progress =
                 (float)levelPlayer.currentExp /
-                levelPlayer.expToNextLevel;
+                System.Math.Max(1, levelPlayer.expToNextLevel);
 
-            Rectangle expBar = new Rectangle(
-                20,
-                Main.screenHeight - 60,
-                (int)(300 * progress),
-                30
-            );
+            string label =
+                $"Level {levelPlayer.level}   {levelPlayer.currentExp}/{levelPlayer.expToNextLevel} EXP";
 
-            spriteBatch.Draw(
-                TextureAssets.MagicPixel.Value,
-                expBar,
-                Color.DeepSkyBlue
-            );
-
-            // =====================================================
-            // BORDER
-            // =====================================================
-
-            DrawBorder(spriteBatch, backPanel);
-
-            // =====================================================
-            // TEXT
-            // =====================================================
-
-            string text =
-                $"LVL {levelPlayer.level}  |  " +
-                $"{levelPlayer.currentExp} / {levelPlayer.expToNextLevel} EXP";
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                text,
-                new Vector2(30, Main.screenHeight - 58),
-                Color.White
-            );
-        }
-
-        // =====================================================
-        // BORDER
-        // =====================================================
-
-        private void DrawBorder(SpriteBatch spriteBatch, Rectangle rect)
-        {
-            Texture2D pixel = TextureAssets.MagicPixel.Value;
-
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.X, rect.Y, rect.Width, 2),
-                Color.Black);
-
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.X, rect.Bottom, rect.Width, 2),
-                Color.Black);
-
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.X, rect.Y, 2, rect.Height),
-                Color.Black);
-
-            spriteBatch.Draw(pixel,
-                new Rectangle(rect.Right, rect.Y, 2, rect.Height + 2),
-                Color.Black);
+                new Rectangle(panel.X + 12, panel.Y + 17, panel.Width - 24, 22),
+                progress,
+                accent,
+                label);
         }
     }
 }

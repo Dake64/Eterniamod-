@@ -1,41 +1,16 @@
-﻿using Terraria;
-using Terraria.ModLoader;
+using Eternia.Content.Projectiles.Necromancer;
+using Eternia.Content.Souls;
 using Terraria;
 using Terraria.ModLoader;
 
-using Eternia.Content.Projectiles.Necromancer;
 namespace Eternia.Content.Players
 {
     public class NecromancerPlayer : ModPlayer
     {
-        // =====================================
-        // ACTIVE SUMMONS
-        // =====================================
-
         public int ActiveNecroSummons;
-
-        // =====================================
-        // TOTAL MANA DRAIN
-        // =====================================
-
         public int ManaDrainPerSecond;
-        
-
-        // =====================================
-        // RESET
-        // =====================================
-
-        // =====================================
-// NECRO SLOTS
-// =====================================
-
         public int MaxNecroSlots = 1;
-
         public int UsedNecroSlots;
-
-        // =====================================
-        // UPDATE
-        // =====================================
 
         public override void PostUpdate()
         {
@@ -43,6 +18,11 @@ namespace Eternia.Content.Players
             ManaDrainPerSecond = 0;
             ActiveNecroSummons = 0;
 
+            if (!IsActiveNecromancer())
+            {
+                MaxNecroSlots = 0;
+                return;
+            }
 
             foreach (Projectile proj in Main.projectile)
             {
@@ -51,33 +31,32 @@ namespace Eternia.Content.Players
                     continue;
                 }
 
-
                 if (proj.owner != Player.whoAmI)
                 {
                     continue;
                 }
 
-
                 if (proj.ModProjectile is BaseNecroMinion minion)
                 {
                     ActiveNecroSummons++;
-
-                    UsedNecroSlots +=
-                        minion.SlotCost;
-
-
-                    ManaDrainPerSecond +=
-                        minion.ManaDrain;
+                    UsedNecroSlots += minion.SlotCost;
+                    ManaDrainPerSecond += minion.ManaDrain;
                 }
             }
 
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
+            var stats =
+                Player.GetModPlayer<EterniaStatsPlayer>();
 
-            if (subclass.CurrentSubclass
-                != "Necromancer")
+            MaxNecroSlots = 1 + stats.ShadowAffinity / 5;
+
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            if (stats.HasActivePassive(
+                soul.ActiveSoul,
+                "Bone Conduit"))
             {
-                return;
+                MaxNecroSlots += 1;
             }
 
             if (Main.GameUpdateCount % 60 == 0)
@@ -86,9 +65,16 @@ namespace Eternia.Content.Players
             }
         }
 
-        // =====================================
-        // DRAIN MANA
-        // =====================================
+        public bool IsActiveNecromancer()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Summoner &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                    "Necromancer";
+        }
 
         private void DrainMana()
         {

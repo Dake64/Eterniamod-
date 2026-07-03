@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-
+using System.Collections.Generic;
+using Eternia.Content.Items.Weapons.Promotion;
+using Eternia.Content.Players;
+using Eternia.Content.Projectiles.Necromancer;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-using Eternia.Content.Players;
-using Eternia.Content.Projectiles.Necromancer;
 
 namespace Eternia.Content.Items.Weapons.Summoner
 {
@@ -16,59 +16,43 @@ namespace Eternia.Content.Items.Weapons.Summoner
         {
             Item.width = 32;
             Item.height = 32;
-
             Item.damage = 8;
-
-            Item.DamageType =
-                DamageClass.Magic;
-
+            Item.DamageType = DamageClass.Summon;
             Item.useTime = 30;
             Item.useAnimation = 30;
-
-            Item.useStyle =
-                ItemUseStyleID.HoldUp;
-
+            Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
-
             Item.mana = 10;
-
-            Item.value =
-                Item.buyPrice(
-                    silver: 10);
-
-            Item.rare =
-                ItemRarityID.White;
-
-            Item.UseSound =
-                SoundID.Item44;
-
-            Item.shoot =
-                ModContent.ProjectileType<SkeletonMinion>();
-
+            Item.value = Item.buyPrice(silver: 10);
+            Item.rare = ItemRarityID.White;
+            Item.UseSound = SoundID.Item44;
+            Item.shoot = ModContent.ProjectileType<SkeletonMinion>();
             Item.shootSpeed = 0f;
         }
 
-
         public override bool CanUseItem(Player player)
         {
-            var necro =
-                player.GetModPlayer<NecromancerPlayer>();
-
-
-            // ============================
-            // REVISAR SLOTS
-            // ============================
-
-            if (necro.UsedNecroSlots >=
-                necro.MaxNecroSlots)
+            if (!SubclassLockHelper.PlayerHasSubclass(
+                player,
+                "Necromancer"))
             {
                 return false;
             }
 
+            var necro =
+                player.GetModPlayer<NecromancerPlayer>();
 
-            return true;
+            return necro.UsedNecroSlots < necro.MaxNecroSlots;
         }
 
+        public override void ModifyTooltips(
+            List<TooltipLine> tooltips)
+        {
+            SubclassLockHelper.AddTooltip(
+                Mod,
+                tooltips,
+                "Necromancer");
+        }
 
         public override bool Shoot(
             Player player,
@@ -82,13 +66,10 @@ namespace Eternia.Content.Items.Weapons.Summoner
             var necro =
                 player.GetModPlayer<NecromancerPlayer>();
 
-
-            if (necro.UsedNecroSlots >=
-                necro.MaxNecroSlots)
+            if (necro.UsedNecroSlots >= necro.MaxNecroSlots)
             {
                 return false;
             }
-
 
             Projectile.NewProjectile(
                 source,
@@ -99,10 +80,8 @@ namespace Eternia.Content.Items.Weapons.Summoner
                 knockback,
                 player.whoAmI);
 
-
             return false;
         }
-
 
         public override void AddRecipes()
         {

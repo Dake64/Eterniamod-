@@ -41,17 +41,18 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Virtuoso")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return true;
             }
 
             var virtuoso =
                 player.GetModPlayer<VirtuosoPlayer>();
+
+            if (!virtuoso.IsActiveVirtuoso())
+            {
+                return true;
+            }
 
             Vector2 drawPos =
                 player.Top
@@ -75,12 +76,19 @@ namespace Eternia.Content.UI
                 text = "♪";
             }
 
-            Utils.DrawBorderString(
+            int width =
+                System.Math.Max(72, (int)(text.Length * 8f));
+
+            EterniaUI.DrawPill(
                 Main.spriteBatch,
+                new Rectangle(
+                    (int)drawPos.X,
+                    (int)drawPos.Y,
+                    System.Math.Min(width, 220),
+                    24),
                 text,
-                drawPos,
                 Color.Cyan,
-                0.8f
+                0.52f
             );
 
             return true;

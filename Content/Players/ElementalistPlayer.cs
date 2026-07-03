@@ -3,7 +3,9 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
+using Eternia.Content.Souls;
 using Eternia.Content.Systems;
 
 namespace Eternia.Content.Players
@@ -44,11 +46,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Elementalist")
+            if (!IsActiveElementalist())
             {
                 return;
             }
@@ -104,14 +102,32 @@ namespace Eternia.Content.Players
         // CHARGE
         // =================================================
 
-        public void GainCharge(int amount)
+        public bool IsActiveElementalist()
         {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Mage &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                "Elementalist";
+        }
+
+        public bool GainCharge(int amount)
+        {
+            if (!IsActiveElementalist())
+            {
+                return false;
+            }
+
             ElementCharge += amount;
 
             if (ElementCharge > MaxElementCharge)
             {
                 ElementCharge = MaxElementCharge;
             }
+
+            return true;
         }
 
         public void ConsumeCharge()
@@ -123,22 +139,34 @@ namespace Eternia.Content.Players
         // AFFINITY
         // =================================================
 
-        public void GainAffinity()
+        public bool GainAffinity()
         {
-            switch (CurrentElement)
+            return GainAffinity(CurrentElement);
+        }
+
+        public bool GainAffinity(int element)
+        {
+            if (!IsActiveElementalist())
+            {
+                return false;
+            }
+
+            switch (element)
             {
                 case 0:
                     FireAffinity++;
-                    break;
+                    return true;
 
                 case 1:
                     IceAffinity++;
-                    break;
+                    return true;
 
                 case 2:
                     LightningAffinity++;
-                    break;
+                    return true;
             }
+
+            return false;
         }
 
         // =================================================
@@ -148,6 +176,43 @@ namespace Eternia.Content.Players
         public string GetCurrentElement()
         {
             return Elements[CurrentElement];
+        }
+
+        public override void SaveData(TagCompound tag)
+        {
+            tag["FireAffinity"] = FireAffinity;
+            tag["IceAffinity"] = IceAffinity;
+            tag["LightningAffinity"] = LightningAffinity;
+            tag["CurrentElement"] = CurrentElement;
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            FireAffinity =
+                tag.ContainsKey("FireAffinity")
+                    ? tag.GetInt("FireAffinity")
+                    : 0;
+
+            IceAffinity =
+                tag.ContainsKey("IceAffinity")
+                    ? tag.GetInt("IceAffinity")
+                    : 0;
+
+            LightningAffinity =
+                tag.ContainsKey("LightningAffinity")
+                    ? tag.GetInt("LightningAffinity")
+                    : 0;
+
+            CurrentElement =
+                tag.ContainsKey("CurrentElement")
+                    ? tag.GetInt("CurrentElement")
+                    : 0;
+
+            if (CurrentElement < 0 ||
+                CurrentElement >= Elements.Length)
+            {
+                CurrentElement = 0;
+            }
         }
 
         // =================================================

@@ -40,17 +40,18 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Gunner")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return true;
             }
 
             var gunnerPlayer =
                 player.GetModPlayer<GunnerPlayer>();
+
+            if (!gunnerPlayer.IsActiveGunner())
+            {
+                return true;
+            }
 
             SpriteBatch spriteBatch =
                 Main.spriteBatch;
@@ -82,8 +83,13 @@ namespace Eternia.Content.UI
             spriteBatch.Draw(
                 texture,
                 backRect,
-                Color.Black * 0.7f
+                EterniaUI.PanelSurface * 0.86f
             );
+
+            EterniaUI.DrawBorder(
+                spriteBatch,
+                backRect,
+                Color.Silver * 0.55f);
 
             // =============================================
             // PERFECT ZONE
@@ -141,7 +147,7 @@ namespace Eternia.Content.UI
             // TITLE
             // =============================================
 
-            Utils.DrawBorderString(
+            EterniaUI.DrawText(
                 spriteBatch,
                 "SWEET SPOT",
                 drawPos + new Vector2(8, -20),
@@ -155,12 +161,12 @@ namespace Eternia.Content.UI
 
             if (gunnerPlayer.DeadEye)
             {
-                Utils.DrawBorderString(
+                EterniaUI.DrawPill(
                     spriteBatch,
+                    new Rectangle((int)drawPos.X + 12, (int)drawPos.Y - 44, 86, 20),
                     "DEAD EYE",
-                    drawPos + new Vector2(18, -42),
                     Color.Gold,
-                    0.8f
+                    0.48f
                 );
 
                 // =========================================
@@ -179,32 +185,12 @@ namespace Eternia.Content.UI
                         6
                     );
 
-                spriteBatch.Draw(
-                    texture,
-                    energyBack,
-                    Color.Black * 0.7f
-                );
-
-                Rectangle energyFill =
-                    new Rectangle(
-                        (int)drawPos.X,
-                        (int)drawPos.Y + 18,
-                        (int)(120 * energyPercent),
-                        6
-                    );
-
-                spriteBatch.Draw(
-                    texture,
-                    energyFill,
-                    Color.Gold
-                );
-
-                Utils.DrawBorderString(
+                EterniaUI.DrawProgressBar(
                     spriteBatch,
-                    $"{(int)gunnerPlayer.DeadEyeEnergy}",
-                    drawPos + new Vector2(40, 24),
+                    energyBack,
+                    energyPercent,
                     Color.Gold,
-                    0.6f
+                    $"{(int)gunnerPlayer.DeadEyeEnergy}"
                 );
             }
 

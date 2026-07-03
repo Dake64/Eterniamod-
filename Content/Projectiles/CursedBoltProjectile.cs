@@ -48,6 +48,11 @@ namespace Eternia.Content.Projectiles
             var cursed =
                 player.GetModPlayer<CursedMagePlayer>();
 
+            if (!cursed.IsActiveCursedMage())
+            {
+                return;
+            }
+
             cursed.GainEnergy(2);
 
             target.AddBuff(

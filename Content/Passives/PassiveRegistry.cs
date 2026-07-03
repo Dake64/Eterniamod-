@@ -1,9 +1,53 @@
 ﻿using System.Collections.Generic;
 
+using Eternia.Content.Souls;
+
 namespace Eternia.Content.Passives
 {
     public static class PassiveRegistry
     {
+        public static List<PassiveNode> GetPassivesForSoul(SoulId soul)
+        {
+            return soul switch
+            {
+                SoulId.Warrior => WarriorPassives,
+                SoulId.Mage => MagePassives,
+                SoulId.Ranger => RangerPassives,
+                SoulId.Summoner => SummonerPassives,
+                _ => null
+            };
+        }
+
+        public static bool IsPassiveAllowedForSoul(
+            SoulId soul,
+            PassiveNode passive)
+        {
+            if (passive == null)
+            {
+                return false;
+            }
+
+            return IsPassiveAllowedForSoul(
+                soul,
+                passive.Name);
+        }
+
+        public static bool IsPassiveAllowedForSoul(
+            SoulId soul,
+            string passiveName)
+        {
+            List<PassiveNode> passives =
+                GetPassivesForSoul(soul);
+
+            if (passives == null)
+            {
+                return false;
+            }
+
+            return passives.Exists(
+                node => node.Name == passiveName);
+        }
+
         public static List<PassiveNode> WarriorPassives =
 new List<PassiveNode>()
 {
@@ -416,41 +460,6 @@ new List<PassiveNode>()
         360
     ),
 
-    // CARD
-
-    new PassiveNode(
-        "Card Knowledge",
-        "+5 max mana",
-        1,
-        "Card",
-        3,
-        "",
-        320,
-        140
-    ),
-
-    new PassiveNode(
-        "Arcane Deck",
-        "+8% magic crit",
-        1,
-        "Card",
-        4,
-        "Card Knowledge",
-        320,
-        250
-    ),
-
-    new PassiveNode(
-        "Royal Flush",
-        "+15% card power",
-        2,
-        "Card",
-        5,
-        "Arcane Deck",
-        320,
-        360
-    ),
-
     // CURSE
 
     new PassiveNode(
@@ -483,41 +492,6 @@ new List<PassiveNode>()
         5,
         "Forbidden Hex",
         600,
-        360
-    ),
-
-    // NECRO
-
-    new PassiveNode(
-        "Necrotic Energy",
-        "+1 minion slot",
-        1,
-        "Necro",
-        3,
-        "",
-        880,
-        140
-    ),
-
-    new PassiveNode(
-        "Soul Harvest",
-        "+10% summon damage",
-        1,
-        "Necro",
-        4,
-        "Necrotic Energy",
-        880,
-        250
-    ),
-
-    new PassiveNode(
-        "Army of Death",
-        "+2 max minions",
-        2,
-        "Necro",
-        5,
-        "Soul Harvest",
-        880,
         360
     ),
 
@@ -701,11 +675,11 @@ new List<PassiveNode>()
         360
     ),
 
-    // SHADOW
+    // NECROMANCER
 
     new PassiveNode(
-        "Shadow Dominion",
-        "+5% soul damage",
+        "Necrotic Pact",
+        "+5% summon damage",
         1,
         "Shadow",
         3,
@@ -715,23 +689,23 @@ new List<PassiveNode>()
     ),
 
     new PassiveNode(
-        "Soul Extraction",
-        "+10% shadow damage",
+        "Bone Conduit",
+        "+1 necro slot scaling",
         1,
         "Shadow",
         4,
-        "Shadow Dominion",
+        "Necrotic Pact",
         880,
         250
     ),
 
     new PassiveNode(
-        "Monarch Awakening",
-        "+15% shadow power",
+        "Grave Legion",
+        "+15% necromancy power",
         2,
         "Shadow",
         5,
-        "Soul Extraction",
+        "Bone Conduit",
         880,
         360
     )

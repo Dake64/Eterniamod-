@@ -1,4 +1,5 @@
-﻿using Terraria;
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -6,33 +7,32 @@ namespace Eternia.Content.Players
 {
     public class EterniaLevelPlayer : ModPlayer
     {
-        // =====================================================
-        // LEVEL SYSTEM
-        // =====================================================
+        private const int BaseExpRequirement = 100;
+        private const int StatPointsPerLevel = 3;
+        private const int PassivePointsPerLevel = 1;
 
         public int level = 1;
+        public int currentExp;
+        public int expToNextLevel = BaseExpRequirement;
 
-        public int currentExp = 0;
+        // Legacy field kept for save compatibility; spendable stat points live
+        // in EterniaStatsPlayer.StatPoints.
+        public int statPoints;
+        public int passivePoints;
 
-        public int expToNextLevel = 100;
-
-        // =====================================================
-        // RPG POINTS
-        // =====================================================
-
-        public int statPoints = 0;
-
-        public int passivePoints = 0;
-
-        // =====================================================
-        // ADD EXP
-        // =====================================================
-
-        public void AddExperience(int amount)
+        public bool AddExperience(int amount)
         {
             if (amount <= 0)
             {
-                return;
+                return false;
+            }
+
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            if (!soul.HasClassSoul)
+            {
+                return false;
             }
 
             currentExp += amount;
@@ -41,45 +41,22 @@ namespace Eternia.Content.Players
             {
                 LevelUp();
             }
-        }
 
-        // =====================================================
-        // LEVEL UP
-        // =====================================================
+            return true;
+        }
 
         private void LevelUp()
         {
             currentExp -= expToNextLevel;
-
             level++;
+            expToNextLevel = GetExpRequirement(level);
 
-            // =================================================
-            // NUEVA XP NECESARIA
-            // =================================================
-
-            expToNextLevel =
-                (int)(100 * System.Math.Pow(level, 1.5));
-
-            // =================================================
-            // RECOMPENSAS
-            // =================================================
-
-            statPoints += 3;
-
-            passivePoints += 1;
-
-            // =================================================
-            // DAR STAT POINTS AL SISTEMA DE STATS
-            // =================================================
+            passivePoints += PassivePointsPerLevel;
 
             var statsPlayer =
                 Player.GetModPlayer<EterniaStatsPlayer>();
 
-            statsPlayer.StatPoints += 2;
-
-            // =================================================
-            // MENSAJE LEVEL UP
-            // =================================================
+            statsPlayer.StatPoints += StatPointsPerLevel;
 
             Main.NewText(
                 $"LEVEL UP! Ahora eres nivel {level}",
@@ -88,62 +65,83 @@ namespace Eternia.Content.Players
                 0
             );
 
-            // =================================================
-            // MENSAJE STAT POINTS
-            // =================================================
-
             Main.NewText(
-                $"+2 Stat Points obtenidos",
+                $"+{StatPointsPerLevel} Stat Points obtenidos",
                 100,
                 255,
                 100
             );
 
-            // =================================================
-            // RECOMPENSAS BASE
-            // =================================================
+            Main.NewText(
+                $"+{PassivePointsPerLevel} Passive Point obtenido",
+                180,
+                120,
+                255
+            );
 
             Player.statLife = Player.statLifeMax2;
-
             Player.HealEffect(Player.statLifeMax2);
-
-            // =================================================
-            // EFECTO VISUAL
-            // =================================================
 
             CombatText.NewText(
                 Player.getRect(),
-                Microsoft.Xna.Framework.Color.Gold,
+                Color.Gold,
                 $"LEVEL {level}"
             );
         }
-
-        // =====================================================
-        // SAVE DATA
-        // =====================================================
 
         public override void SaveData(TagCompound tag)
         {
             tag["level"] = level;
             tag["currentExp"] = currentExp;
             tag["expToNextLevel"] = expToNextLevel;
-
             tag["statPoints"] = statPoints;
             tag["passivePoints"] = passivePoints;
         }
 
-        // =====================================================
-        // LOAD DATA
-        // =====================================================
-
         public override void LoadData(TagCompound tag)
         {
-            level = tag.GetInt("level");
-            currentExp = tag.GetInt("currentExp");
-            expToNextLevel = tag.GetInt("expToNextLevel");
+            level =
+                tag.ContainsKey("level")
+                ? tag.GetInt("level")
+                : 1;
 
-            statPoints = tag.GetInt("statPoints");
-            passivePoints = tag.GetInt("passivePoints");
+            currentExp =
+                tag.ContainsKey("currentExp")
+                ? tag.GetInt("currentExp")
+                : 0;
+
+            expToNextLevel =
+                tag.ContainsKey("expToNextLevel")
+                ? tag.GetInt("expToNextLevel")
+                : GetExpRequirement(level);
+
+            if (level <= 0)
+            {
+                level = 1;
+            }
+
+            if (expToNextLevel <= 0)
+            {
+                expToNextLevel = GetExpRequirement(level);
+            }
+
+            statPoints =
+                tag.ContainsKey("statPoints")
+                ? tag.GetInt("statPoints")
+                : 0;
+
+            passivePoints =
+                tag.ContainsKey("passivePoints")
+                ? tag.GetInt("passivePoints")
+                : 0;
+        }
+
+        private static int GetExpRequirement(int targetLevel)
+        {
+            return (int)(
+                BaseExpRequirement *
+                System.Math.Pow(targetLevel, 1.5)
+            );
         }
     }
 }

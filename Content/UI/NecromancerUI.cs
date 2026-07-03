@@ -1,12 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+using Eternia.Content.Players;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using Terraria;
-using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.UI;
-
-using Eternia.Content.Players;
 
 namespace Eternia.Content.UI
 {
@@ -17,89 +14,61 @@ namespace Eternia.Content.UI
         {
             base.Draw(spriteBatch);
 
-
             Player player =
                 Main.LocalPlayer;
 
-
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
-
-
-            if (subclass.CurrentSubclass
-                != "Necromancer")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return;
             }
 
-
             var necro =
                 player.GetModPlayer<NecromancerPlayer>();
 
+            if (!necro.IsActiveNecromancer())
+            {
+                return;
+            }
 
-            Vector2 position =
-                new Vector2(20, 450);
+            Color accent =
+                Color.MediumPurple;
 
+            Rectangle panel =
+                EterniaUI.GetBottomLeftPanel(306, 136, 20, 156);
 
+            EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.84f);
 
-            // =============================
-            // TITLE
-            // =============================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawText(
                 spriteBatch,
-                "NECROMANCER",
-                position,
-                Color.Purple
-            );
+                "Necromancer",
+                new Vector2(panel.X + 14, panel.Y + 12),
+                Color.White,
+                0.68f);
 
-
-            position.Y += 35;
-
-
-
-            // =============================
-            // SLOTS
-            // =============================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                $"Slots: {necro.UsedNecroSlots}/{necro.MaxNecroSlots}",
-                position,
-                Color.White
-            );
+                new Rectangle(panel.X + 14, panel.Y + 44, panel.Width - 28, 22),
+                necro.MaxNecroSlots <= 0
+                    ? 0f
+                    : necro.UsedNecroSlots / (float)necro.MaxNecroSlots,
+                accent,
+                $"Slots {necro.UsedNecroSlots}/{necro.MaxNecroSlots}");
 
-
-            position.Y += 25;
-
-
-
-            // =============================
-            // MANA DRAIN
-            // =============================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                $"Mana Drain: {necro.ManaDrainPerSecond}/s",
-                position,
-                Color.Cyan
-            );
+                new Rectangle(panel.X + 14, panel.Y + 76, panel.Width - 28, 22),
+                player.statManaMax2 <= 0
+                    ? 0f
+                    : player.statMana / (float)player.statManaMax2,
+                Color.DeepSkyBlue,
+                $"Mana {player.statMana}/{player.statManaMax2}");
 
-
-            position.Y += 25;
-
-
-
-            // =============================
-            // MANA
-            // =============================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawPill(
                 spriteBatch,
-                $"Mana: {player.statMana}/{player.statManaMax2}",
-                position,
-                Color.LightBlue
-            );
+                new Rectangle(panel.X + 14, panel.Y + 108, panel.Width - 28, 20),
+                $"Drain {necro.ManaDrainPerSecond}/s",
+                Color.Cyan,
+                0.48f);
         }
     }
 }

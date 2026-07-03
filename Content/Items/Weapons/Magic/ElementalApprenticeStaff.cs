@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-
+using System.Collections.Generic;
+using Eternia.Content.Items.Weapons.Promotion;
+using Eternia.Content.Players;
+using Eternia.Content.Projectiles;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-using Eternia.Content.Players;
-using Eternia.Content.Projectiles;
 
 namespace Eternia.Content.Items.Weapons.Magic
 {
@@ -21,32 +21,35 @@ namespace Eternia.Content.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 40;
-
             Item.damage = 12;
             Item.DamageType = DamageClass.Magic;
-
             Item.mana = 5;
-
             Item.useTime = 20;
             Item.useAnimation = 20;
-
             Item.useStyle = ItemUseStyleID.Shoot;
-
             Item.knockBack = 3f;
-
             Item.noMelee = true;
-
-            Item.value = Item.buyPrice(
-                silver: 50);
-
+            Item.value = Item.buyPrice(silver: 50);
             Item.rare = ItemRarityID.Blue;
-
             Item.UseSound = SoundID.Item20;
-
-            Item.shoot =
-                ModContent.ProjectileType<FireBoltProjectile>();
-
+            Item.shoot = ModContent.ProjectileType<FireBoltProjectile>();
             Item.shootSpeed = 10f;
+        }
+
+        public override bool CanUseItem(Player player)
+        {
+            return SubclassLockHelper.PlayerHasSubclass(
+                player,
+                "Elementalist");
+        }
+
+        public override void ModifyTooltips(
+            List<TooltipLine> tooltips)
+        {
+            SubclassLockHelper.AddTooltip(
+                Mod,
+                tooltips,
+                "Elementalist");
         }
 
         public override bool Shoot(
@@ -65,45 +68,24 @@ namespace Eternia.Content.Items.Weapons.Magic
 
             switch (elementalist.CurrentElement)
             {
-                // 🔥 FIRE
                 case 0:
-
                     projectileType =
-                        ModContent.ProjectileType
-                        <FireBoltProjectile>();
-
-                    elementalist.FireAffinity++;
-
+                        ModContent.ProjectileType<FireBoltProjectile>();
+                    elementalist.GainAffinity(0);
                     break;
-
-                // ❄️ ICE
                 case 1:
-
                     projectileType =
-                        ModContent.ProjectileType
-                        <IceBoltProjectile>();
-
-                    elementalist.IceAffinity++;
-
+                        ModContent.ProjectileType<IceBoltProjectile>();
+                    elementalist.GainAffinity(1);
                     break;
-
-                // ⚡ LIGHTNING
                 case 2:
-
                     projectileType =
-                        ModContent.ProjectileType
-                        <LightningBoltProjectile>();
-
-                    elementalist.LightningAffinity++;
-
+                        ModContent.ProjectileType<LightningBoltProjectile>();
+                    elementalist.GainAffinity(2);
                     break;
-
                 default:
-
                     projectileType =
-                        ModContent.ProjectileType
-                        <FireBoltProjectile>();
-
+                        ModContent.ProjectileType<FireBoltProjectile>();
                     break;
             }
 

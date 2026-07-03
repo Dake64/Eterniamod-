@@ -46,20 +46,14 @@ namespace Eternia.Content.Projectiles.Necromancer
             }
 
 
-            var necro =
+            var necromancer =
                 player.GetModPlayer<NecromancerPlayer>();
 
-
-            // =================================
-            // REGISTRO DE INVOCACION
-            // =================================
-
-            necro.ActiveNecroSummons++;
-
-            necro.ManaDrainPerSecond +=
-                ManaDrain;
-
-
+            if (!necromancer.IsActiveNecromancer())
+            {
+                Projectile.Kill();
+                return;
+            }
 
             // =================================
             // SIN MANA

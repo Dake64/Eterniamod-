@@ -39,12 +39,7 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            var subclass =
-                player.GetModPlayer<
-                    Eternia.Content.Players.SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Stunner")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return true;
             }
@@ -53,6 +48,11 @@ namespace Eternia.Content.UI
                 player.GetModPlayer<
                     Eternia.Content.Players.StunnerPlayer>();
 
+            if (!stunner.IsActiveStunner())
+            {
+                return true;
+            }
+
             if (stunner.Charge <= 0)
             {
                 return true;
@@ -60,9 +60,6 @@ namespace Eternia.Content.UI
 
             SpriteBatch spriteBatch =
                 Main.spriteBatch;
-
-            Texture2D texture =
-                TextureAssets.MagicPixel.Value;
 
             // =============================================
             // POSITION
@@ -73,10 +70,6 @@ namespace Eternia.Content.UI
                 - Main.screenPosition
                 + new Vector2(-40, -40);
 
-            // =============================================
-            // BACKGROUND
-            // =============================================
-
             Rectangle backRect =
                 new Rectangle(
                     (int)drawPos.X,
@@ -85,48 +78,20 @@ namespace Eternia.Content.UI
                     10
                 );
 
-            spriteBatch.Draw(
-                texture,
-                backRect,
-                Color.Black * 0.7f
-            );
-
-            // =============================================
-            // FILL
-            // =============================================
-
             float percent =
                 (float)stunner.Charge
                 / stunner.MaxCharge;
 
-            Rectangle fillRect =
-                new Rectangle(
-                    (int)drawPos.X,
-                    (int)drawPos.Y,
-                    (int)(80 * percent),
-                    10
-                );
-
-            spriteBatch.Draw(
-                texture,
-                fillRect,
-                stunner.FullyCharged
-                ? Color.Red
-                : Color.Gold
-            );
-
-            // =============================================
-            // TEXT
-            // =============================================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawProgressBar(
                 spriteBatch,
-                "STUN",
-                drawPos + new Vector2(18, -18),
+                backRect,
+                percent,
                 stunner.FullyCharged
                 ? Color.Red
-                : Color.White,
-                0.7f
+                : Color.Gold,
+                stunner.FullyCharged
+                    ? "STUN READY"
+                    : "STUN"
             );
 
             return true;

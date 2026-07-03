@@ -39,16 +39,7 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            var subclass =
-                player.GetModPlayer<
-                    Eternia.Content.Players.SubclassPlayer>();
-
-            // =============================================
-            // ONLY ENERGY GUNNER
-            // =============================================
-
-            if (subclass.CurrentSubclass
-                != "Energy Gunner")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return true;
             }
@@ -56,6 +47,15 @@ namespace Eternia.Content.UI
             var energyPlayer =
                 player.GetModPlayer<
                     Eternia.Content.Players.EnergyShooterPlayer>();
+
+            // =============================================
+            // ONLY ENERGY GUNNER
+            // =============================================
+
+            if (!energyPlayer.IsActiveEnergyGunner())
+            {
+                return true;
+            }
 
             SpriteBatch spriteBatch =
                 Main.spriteBatch;
@@ -159,13 +159,18 @@ namespace Eternia.Content.UI
                     segment,
                     color
                 );
+
+                EterniaUI.DrawBorder(
+                    spriteBatch,
+                    segment,
+                    EterniaUI.Border * 0.45f);
             }
 
             // =============================================
             // TEXT
             // =============================================
 
-            Utils.DrawBorderString(
+            EterniaUI.DrawText(
                 spriteBatch,
                 energyPlayer.Overheated
                 ? "OVERHEAT"
@@ -183,12 +188,12 @@ namespace Eternia.Content.UI
 
             if (energyPlayer.Overdrive)
             {
-                Utils.DrawBorderString(
+                EterniaUI.DrawPill(
                     spriteBatch,
+                    new Rectangle((int)drawPos.X - 8, (int)drawPos.Y - 42, 92, 20),
                     "OVERDRIVE",
-                    drawPos + new Vector2(-5, -40),
                     Color.Cyan,
-                    0.7f
+                    0.48f
                 );
             }
 
@@ -200,12 +205,12 @@ namespace Eternia.Content.UI
                 && !energyPlayer.Overheated
                 && energyPlayer.Heat >= 50f)
             {
-                Utils.DrawBorderString(
+                EterniaUI.DrawPill(
                     spriteBatch,
+                    new Rectangle((int)drawPos.X - 2, (int)drawPos.Y - 42, 72, 20),
                     "PRESS Q",
-                    drawPos + new Vector2(2, -40),
                     Color.Lime,
-                    0.7f
+                    0.48f
                 );
             }
 

@@ -1,14 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+using Eternia.Content.Players;
+using Eternia.Content.Progression;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
-
-using Eternia.Content.Players;
 
 namespace Eternia.Content.UI
 {
@@ -21,7 +20,18 @@ namespace Eternia.Content.UI
             if (EterniaKeybinds.ToggleStatsUI.JustPressed)
             {
                 Visible = !Visible;
+
+                if (Visible)
+                {
+                    EterniaUI.CloseMajorPanelsExcept(
+                        EterniaUI.MajorPanel.Stats);
+                }
             }
+        }
+
+        public override void Unload()
+        {
+            Visible = false;
         }
 
         public override void ModifyInterfaceLayers(
@@ -54,257 +64,338 @@ namespace Eternia.Content.UI
 
             Player player = Main.LocalPlayer;
 
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
+            {
+                return true;
+            }
+
             var stats =
                 player.GetModPlayer<EterniaStatsPlayer>();
 
             var level =
                 player.GetModPlayer<EterniaLevelPlayer>();
 
-            SpriteBatch spriteBatch = Main.spriteBatch;
+            SpriteBatch spriteBatch =
+                Main.spriteBatch;
 
-            // =================================================
-            // PANEL
-            // =================================================
+            Rectangle panel =
+                EterniaUI.GetCenteredPanel(486, 520, 32);
 
-            Rectangle panel = new Rectangle(
-                500,
-                180,
-                360,
-                430
-            );
+            if (panel.Contains(Main.MouseScreen.ToPoint()))
+            {
+                Main.LocalPlayer.mouseInterface = true;
+            }
 
-            Texture2D texture =
+            Color accent =
+                Color.Gold;
+
+            EterniaUI.DrawPanel(spriteBatch, panel, accent);
+            EterniaUI.DrawHeader(
+                spriteBatch,
+                panel,
+                "Character Stats",
+                "Spend class stat points on permanent growth.",
+                accent);
+
+            if (EterniaUI.DrawCloseButton(spriteBatch, panel, accent))
+            {
+                Visible = false;
+                return true;
+            }
+
+            Rectangle pointBar =
+                new Rectangle(panel.X + 18, panel.Y + 78, panel.Width - 36, 36);
+
+            Texture2D pixel =
                 TextureAssets.MagicPixel.Value;
 
             spriteBatch.Draw(
-                texture,
-                panel,
-                Color.Black * 0.75f
-            );
+                pixel,
+                pointBar,
+                EterniaUI.PanelSurface * 0.78f);
 
-            // =================================================
-            // TITLE
-            // =================================================
-
-            Utils.DrawBorderString(
+            EterniaUI.DrawBorder(
                 spriteBatch,
-                "ETERNIA STATS",
-                new Vector2(panel.X + 80, panel.Y + 15),
-                Color.Gold,
-                1.1f
-            );
+                pointBar,
+                EterniaUI.Border * 0.45f);
 
-            // =================================================
-            // LEVEL
-            // =================================================
-
-            Utils.DrawBorderString(
+            DrawSummaryPills(
                 spriteBatch,
-                $"Level: {level.level}",
-                new Vector2(panel.X + 20, panel.Y + 55),
-                Color.White
-            );
+                pointBar,
+                level,
+                stats);
 
-            // =================================================
-            // AVAILABLE POINTS
-            // =================================================
+            int rowsTop =
+                panel.Y + 132;
 
-            Utils.DrawBorderString(
-                spriteBatch,
-                $"Available Points: {stats.StatPoints}",
-                new Vector2(panel.X + 20, panel.Y + 85),
-                Color.LightGreen
-            );
-            Utils.DrawBorderString(
-                spriteBatch,
-                $"Passive Points: {level.passivePoints}",
-                new Vector2(panel.X + 20, panel.Y + 110),
-                Color.MediumPurple
-            );
+            int rowGap =
+                panel.Height < 460 ? 6 : 10;
 
-            // =================================================
-            // STATS
-            // =================================================
+            int rowWidth = panel.Width - 36;
+            int x = panel.X + 18;
 
-            int startY = panel.Y + 150;
+            StatRow[] rows =
+            {
+                new StatRow("Vitality", stats.Vitality, "+3 Max HP, +0.1% damage reduction", Color.IndianRed),
+                new StatRow("Power", stats.Power, "+0.3% all damage", Color.Orange),
+                new StatRow("Precision", stats.Precision, "+0.15% critical chance", Color.Yellow),
+                new StatRow("Agility", stats.Agility, "+Movement speed and run speed", Color.LimeGreen),
+                new StatRow("Focus", stats.Focus, "+3 Mana and mana regeneration", Color.Cyan)
+            };
 
-            // ❤️ VITALITY
+            int availableRowsHeight =
+                System.Math.Max(
+                    0,
+                    panel.Bottom - rowsTop - 18);
 
-            DrawStat(
-                spriteBatch,
-                "Vitality",
-                stats.Vitality,
-                "+3 Max HP\n+0.1% Damage Reduction",
-                panel.X + 20,
-                startY,
-                Color.Red
-            );
+            int fittedRowHeight =
+                (availableRowsHeight - rowGap * (rows.Length - 1)) /
+                rows.Length;
 
-            // ⚔ POWER
+            int rowHeight =
+                System.Math.Clamp(fittedRowHeight, 28, 66);
 
-            DrawStat(
-                spriteBatch,
-                "Power",
-                stats.Power,
-                "+0.3% All Damage",
-                panel.X + 20,
-                startY + 55,
-                Color.Orange
-            );
+            for (int i = 0; i < rows.Length; i++)
+            {
+                int y =
+                    rowsTop + i * (rowHeight + rowGap);
 
-            // 🎯 PRECISION
+                int fittedHeight =
+                    System.Math.Min(
+                        rowHeight,
+                        panel.Bottom - 12 - y);
 
-            DrawStat(
-                spriteBatch,
-                "Precision",
-                stats.Precision,
-                "+0.15% Critical Chance",
-                panel.X + 20,
-                startY + 110,
-                Color.Yellow
-            );
+                if (fittedHeight < 24)
+                {
+                    break;
+                }
 
-            // 💨 AGILITY
+                StatRow row =
+                    rows[i];
 
-            DrawStat(
-                spriteBatch,
-                "Agility",
-                stats.Agility,
-                "+Movement Speed\n+Run Speed",
-                panel.X + 20,
-                startY + 165,
-                Color.LimeGreen
-            );
-
-            // 🔵 FOCUS
-
-            DrawStat(
-                spriteBatch,
-                "Focus",
-                stats.Focus,
-                "+3 Mana\n+Mana Regen",
-                panel.X + 20,
-                startY + 220,
-                Color.Cyan
-            );
+                DrawStatCard(
+                    spriteBatch,
+                    player,
+                    new Rectangle(x, y, rowWidth, fittedHeight),
+                    row.Name,
+                    row.Value,
+                    row.Description,
+                    row.Color);
+            }
 
             return true;
         }
 
-        private void DrawStat(
+        private static void DrawSummaryPills(
             SpriteBatch spriteBatch,
+            Rectangle pointBar,
+            EterniaLevelPlayer level,
+            EterniaStatsPlayer stats)
+        {
+            string[] labels =
+            {
+                $"Level {level.level}",
+                $"Stats {stats.StatPoints}",
+                $"Passives {level.passivePoints}"
+            };
+
+            Color[] colors =
+            {
+                Color.DeepSkyBlue,
+                Color.LightGreen,
+                Color.MediumPurple
+            };
+
+            int gap = 8;
+            int x = pointBar.X + 10;
+            int width =
+                System.Math.Max(
+                    70,
+                    (pointBar.Width - 20 - gap * (labels.Length - 1)) /
+                    labels.Length);
+
+            for (int i = 0; i < labels.Length; i++)
+            {
+                int pillRight =
+                    i == labels.Length - 1
+                        ? pointBar.Right - 10
+                        : x + width;
+
+                Rectangle pill =
+                    new Rectangle(
+                        x,
+                        pointBar.Y + 6,
+                        System.Math.Max(48, pillRight - x),
+                        24);
+
+                EterniaUI.DrawPill(
+                    spriteBatch,
+                    pill,
+                    labels[i],
+                    colors[i],
+                    0.54f);
+
+                x += width + gap;
+            }
+        }
+
+        private static void DrawStatCard(
+            SpriteBatch spriteBatch,
+            Player player,
+            Rectangle rect,
             string name,
             int value,
             string description,
-            int x,
-            int y,
-            Color color)
+            Color accent)
         {
-            Player player = Main.LocalPlayer;
+            Texture2D pixel =
+                TextureAssets.MagicPixel.Value;
 
             var stats =
                 player.GetModPlayer<EterniaStatsPlayer>();
 
-            // =================================================
-            // STAT NAME
-            // =================================================
+            bool canSpend =
+                stats.StatPoints > 0;
 
-            Utils.DrawBorderString(
-                spriteBatch,
-                $"{name}: {value}",
-                new Vector2(x, y),
-                color
-            );
+            bool compact =
+                rect.Height < 52;
 
-            // =================================================
-            // DESCRIPTION
-            // =================================================
+            bool hover =
+                rect.Contains(Main.MouseScreen.ToPoint());
 
-            Utils.DrawBorderString(
-                spriteBatch,
-                description,
-                new Vector2(x + 20, y + 20),
-                Color.LightGray,
-                0.7f
-            );
-
-            // =================================================
-            // PLUS BUTTON
-            // =================================================
-
-            Rectangle plusButton = new Rectangle(
-                x + 220,
-                y,
-                24,
-                24
-            );
-
-            Texture2D texture =
-                TextureAssets.MagicPixel.Value;
-
-            Color buttonColor =
-                plusButton.Contains(Main.MouseScreen.ToPoint())
-                ? Color.LightGreen
-                : Color.DarkGreen;
-
-            spriteBatch.Draw(
-                texture,
-                plusButton,
-                buttonColor
-            );
-
-            Utils.DrawBorderString(
-                spriteBatch,
-                "+",
-                new Vector2(
-                    plusButton.X + 5,
-                    plusButton.Y - 2
-                ),
-                Color.White
-            );
-
-            // =================================================
-            // CLICK
-            // =================================================
-
-            if (plusButton.Contains(Main.MouseScreen.ToPoint()))
+            if (hover)
             {
                 Main.LocalPlayer.mouseInterface = true;
-
-                if (Main.mouseLeft &&
-                    Main.mouseLeftRelease &&
-                    stats.StatPoints > 0)
-                {
-                    stats.StatPoints--;
-
-                    switch (name)
-                    {
-                        case "Vitality":
-                            stats.Vitality++;
-                            break;
-
-                        case "Power":
-                            stats.Power++;
-                            break;
-
-                        case "Precision":
-                            stats.Precision++;
-                            break;
-
-                        case "Agility":
-                            stats.Agility++;
-                            break;
-
-                        case "Focus":
-                            stats.Focus++;
-                            break;
-                    }
-
-                    SoundEngine.PlaySound(
-                        SoundID.MenuTick
-                    );
-                }
             }
+
+            spriteBatch.Draw(
+                pixel,
+                rect,
+                hover
+                    ? EterniaUI.PanelSurfaceAlt * 0.94f
+                    : EterniaUI.PanelSurface * 0.82f);
+
+            EterniaUI.DrawBorder(
+                spriteBatch,
+                rect,
+                accent * 0.4f);
+
+            int actionWidth =
+                System.Math.Clamp(rect.Width / 3, 88, 126);
+
+            int buttonSize =
+                compact ? 22 : 24;
+
+            int actionY =
+                rect.Y + System.Math.Max(4, (rect.Height - buttonSize) / 2);
+
+            Rectangle button =
+                new Rectangle(
+                    rect.Right - 14 - buttonSize,
+                    actionY,
+                    buttonSize + 10,
+                    buttonSize);
+
+            Rectangle valuePill =
+                new Rectangle(
+                    rect.Right - actionWidth,
+                    actionY,
+                    System.Math.Max(34, actionWidth - button.Width - 8),
+                    buttonSize);
+
+            float titleScale =
+                compact ? 0.58f : 0.68f;
+
+            EterniaUI.DrawTrimmedText(
+                spriteBatch,
+                name,
+                new Vector2(
+                    rect.X + 14,
+                    rect.Y + (compact ? 7 : 10)),
+                rect.Width - actionWidth - 24,
+                Color.White,
+                titleScale);
+
+            if (!compact)
+            {
+                EterniaUI.DrawTrimmedText(
+                    spriteBatch,
+                    description,
+                    new Vector2(rect.X + 14, rect.Y + 34),
+                    rect.Width - actionWidth - 26,
+                    EterniaUI.MutedText,
+                    0.52f);
+            }
+
+            EterniaUI.DrawPill(
+                spriteBatch,
+                valuePill,
+                value.ToString(),
+                accent,
+                compact ? 0.56f : 0.66f);
+
+            if (EterniaUI.DrawButton(
+                spriteBatch,
+                button,
+                "+",
+                accent,
+                canSpend) &&
+                ProgressionService.TrySpendStatPoint(
+                    player,
+                    GetStatId(name)))
+            {
+                SoundEngine.PlaySound(SoundID.MenuTick);
+            }
+
+            if (hover)
+            {
+                EterniaUI.DrawTooltip(
+                    spriteBatch,
+                    name,
+                    new[]
+                    {
+                        description,
+                        canSpend
+                            ? "Click + to spend one stat point."
+                            : "No stat points available."
+                    },
+                    accent);
+            }
+        }
+
+        private static StatId GetStatId(string name)
+        {
+            return name switch
+            {
+                "Vitality" => StatId.Vitality,
+                "Power" => StatId.Power,
+                "Precision" => StatId.Precision,
+                "Agility" => StatId.Agility,
+                _ => StatId.Focus
+            };
+        }
+
+        private readonly struct StatRow
+        {
+            public StatRow(
+                string name,
+                int value,
+                string description,
+                Color color)
+            {
+                Name = name;
+                Value = value;
+                Description = description;
+                Color = color;
+            }
+
+            public string Name { get; }
+
+            public int Value { get; }
+
+            public string Description { get; }
+
+            public Color Color { get; }
         }
     }
 }

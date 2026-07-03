@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 
 using Eternia.Content.NPCs;
 
@@ -16,15 +17,11 @@ namespace Eternia.Content.Players
             NPC target,
             ref NPC.HitModifiers modifiers)
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
             // =============================================
             // ONLY SWORDSMAN
             // =============================================
 
-            if (subclassPlayer.CurrentSubclass
-                != "Swordsman")
+            if (!IsActiveSubclass(SoulId.Warrior, "Swordsman"))
             {
                 return;
             }
@@ -46,6 +43,12 @@ namespace Eternia.Content.Players
             BleedGlobalNPC bleedNPC =
                 target.GetGlobalNPC<BleedGlobalNPC>();
 
+            var stats =
+                Player.GetModPlayer<EterniaStatsPlayer>();
+
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
             // =============================================
             // EXECUTION BONUS
             // =============================================
@@ -58,6 +61,13 @@ namespace Eternia.Content.Players
             {
                 float bonus =
                     bleedNPC.BleedStacks * 0.015f;
+
+                if (stats.HasActivePassive(
+                    soul.ActiveSoul,
+                    "Execution"))
+                {
+                    bonus += 0.15f;
+                }
 
                 modifiers.SourceDamage += bonus;
             }
@@ -114,12 +124,6 @@ namespace Eternia.Content.Players
 
         public override void PostUpdateEquips()
         {
-            var subclassPlayer =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            string subclass =
-                subclassPlayer.CurrentSubclass;
-
             // =================================================
             // WARRIOR SUBCLASSES
             // =================================================
@@ -128,7 +132,7 @@ namespace Eternia.Content.Players
             // SWORDSMAN
             // =============================================
 
-            if (subclass == "Swordsman")
+            if (IsActiveSubclass(SoulId.Warrior, "Swordsman"))
             {
                 Player.GetDamage(DamageClass.Melee)
                     += 0.10f;
@@ -141,7 +145,7 @@ namespace Eternia.Content.Players
             // FIGHTER
             // =============================================
 
-            else if (subclass == "Fighter")
+            else if (IsActiveSubclass(SoulId.Warrior, "Fighter"))
             {
                 Player.GetAttackSpeed(DamageClass.Melee)
                     += 0.12f;
@@ -153,7 +157,7 @@ namespace Eternia.Content.Players
             // GUARDIAN
             // =============================================
 
-            else if (subclass == "Guardian")
+            else if (IsActiveSubclass(SoulId.Warrior, "Guardian"))
             {
                 Player.statDefense += 8;
 
@@ -164,7 +168,7 @@ namespace Eternia.Content.Players
             // YOYO MASTER
             // =============================================
 
-            else if (subclass == "Yoyo Master")
+            else if (IsActiveSubclass(SoulId.Warrior, "Yoyo Master"))
             {
                 Player.yoyoString = true;
 
@@ -176,7 +180,7 @@ namespace Eternia.Content.Players
             // BERSERKER
             // =============================================
 
-            else if (subclass == "Berserker")
+            else if (IsActiveSubclass(SoulId.Warrior, "Berserker"))
             {
                 float hpRatio =
                     (float)Player.statLife /
@@ -201,7 +205,7 @@ namespace Eternia.Content.Players
             // STUNNER
             // =============================================
 
-            else if (subclass == "Stunner")
+            else if (IsActiveSubclass(SoulId.Warrior, "Stunner"))
             {
                 Player.GetKnockback(DamageClass.Melee)
                     += 2f;
@@ -218,7 +222,7 @@ namespace Eternia.Content.Players
             // ENERGY GUNNER
             // =============================================
 
-            else if (subclass == "Energy Gunner")
+            else if (IsActiveSubclass(SoulId.Ranger, "Energy Gunner"))
             {
                 Player.GetDamage(DamageClass.Ranged)
                     += 0.12f;
@@ -231,7 +235,7 @@ namespace Eternia.Content.Players
             // ARCHER
             // =============================================
 
-            else if (subclass == "Archer")
+            else if (IsActiveSubclass(SoulId.Ranger, "Archer"))
             {
                 Player.arrowDamage += 0.15f;
 
@@ -243,7 +247,7 @@ namespace Eternia.Content.Players
             // GUNNER
             // =============================================
 
-            else if (subclass == "Gunner")
+            else if (IsActiveSubclass(SoulId.Ranger, "Gunner"))
             {
                 Player.GetAttackSpeed(DamageClass.Ranged)
                     += 0.12f;
@@ -256,7 +260,7 @@ namespace Eternia.Content.Players
             // VIRTUOSO
             // =============================================
 
-            else if (subclass == "Virtuoso")
+            else if (IsActiveSubclass(SoulId.Ranger, "Virtuoso"))
             {
                 Player.statManaMax2 += 20;
 
@@ -271,7 +275,7 @@ namespace Eternia.Content.Players
             // ELEMENTALIST
             // =============================================
 
-            else if (subclass == "Elementalist")
+            else if (IsActiveSubclass(SoulId.Mage, "Elementalist"))
             {
                 Player.GetDamage(DamageClass.Magic)
                     += 0.15f;
@@ -280,22 +284,10 @@ namespace Eternia.Content.Players
             }
 
             // =============================================
-            // CARD MASTER
-            // =============================================
-
-            else if (subclass == "Card Master")
-            {
-                Player.GetCritChance(DamageClass.Magic)
-                    += 10;
-
-                Player.manaCost -= 0.08f;
-            }
-
-            // =============================================
             // CURSED MAGE
             // =============================================
 
-            else if (subclass == "Cursed Mage")
+            else if (IsActiveSubclass(SoulId.Mage, "Cursed Mage"))
             {
                 Player.GetDamage(DamageClass.Magic)
                     += 0.20f;
@@ -307,7 +299,7 @@ namespace Eternia.Content.Players
             // NECROMANCER
             // =============================================
 
-            else if (subclass == "Necromancer")
+            else if (IsActiveSubclass(SoulId.Summoner, "Necromancer"))
             {
                 Player.maxMinions += 2;
 
@@ -319,7 +311,7 @@ namespace Eternia.Content.Players
             // INFINITY MAGE
             // =============================================
 
-            else if (subclass == "Infinity Mage")
+            else if (IsActiveSubclass(SoulId.Mage, "Infinity Mage"))
             {
                 Player.manaCost -= 0.15f;
 
@@ -330,7 +322,7 @@ namespace Eternia.Content.Players
             // ARCANE BARD
             // =============================================
 
-            else if (subclass == "Arcane Bard")
+            else if (IsActiveSubclass(SoulId.Mage, "Arcane Bard"))
             {
                 Player.moveSpeed += 0.08f;
 
@@ -345,7 +337,7 @@ namespace Eternia.Content.Players
             // BEAST TAMER
             // =============================================
 
-            else if (subclass == "Beast Tamer")
+            else if (IsActiveSubclass(SoulId.Summoner, "Beast Tamer"))
             {
                 Player.GetDamage(DamageClass.Summon)
                     += 0.15f;
@@ -357,7 +349,7 @@ namespace Eternia.Content.Players
             // ADVANCED SUMMONER
             // =============================================
 
-            else if (subclass == "Advanced Summoner")
+            else if (IsActiveSubclass(SoulId.Summoner, "Advanced Summoner"))
             {
                 Player.maxMinions += 2;
 
@@ -369,7 +361,7 @@ namespace Eternia.Content.Players
             // TECH SUMMONER
             // =============================================
 
-            else if (subclass == "Tech Summoner")
+            else if (IsActiveSubclass(SoulId.Summoner, "Tech Summoner"))
             {
                 Player.GetDamage(DamageClass.Summon)
                     += 0.12f;
@@ -377,19 +369,17 @@ namespace Eternia.Content.Players
                 Player.statDefense += 5;
             }
 
-            // =============================================
-            // SHADOW MONARCH
-            // =============================================
+        }
 
-            else if (subclass == "Shadow Monarch")
-            {
-                Player.GetDamage(DamageClass.Summon)
-                    += 0.20f;
+        private bool IsActiveSubclass(SoulId expectedSoul, string expectedSubclass)
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
 
-                Player.maxMinions += 1;
-
-                Player.moveSpeed += 0.08f;
-            }
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == expectedSoul &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                    expectedSubclass;
         }
     }
 }

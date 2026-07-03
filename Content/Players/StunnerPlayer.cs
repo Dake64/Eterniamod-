@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Eternia.Content.Souls;
 using Terraria.ModLoader;
 
 namespace Eternia.Content.Players
@@ -22,11 +23,7 @@ namespace Eternia.Content.Players
 
         public override void ResetEffects()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Stunner")
+            if (!IsActiveStunner())
             {
                 Charge = 0;
 
@@ -40,11 +37,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Stunner")
+            if (!IsActiveStunner())
             {
                 return;
             }
@@ -55,7 +48,7 @@ namespace Eternia.Content.Players
 
             if (Player.HeldItem.damage > 0
                 && Player.HeldItem.DamageType
-                    == DamageClass.Melee)
+                    .CountsAsClass(DamageClass.Melee))
             {
                 if (Charge < MaxCharge)
                 {
@@ -100,11 +93,7 @@ namespace Eternia.Content.Players
             NPC target,
             ref NPC.HitModifiers modifiers)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Stunner")
+            if (!IsActiveStunner())
             {
                 return;
             }
@@ -118,6 +107,12 @@ namespace Eternia.Content.Players
 
             modifiers.SourceDamage +=
                 chargePercent * 1.2f;
+
+            if (FullyCharged &&
+                HasActivePassive("Tyrant Smash"))
+            {
+                modifiers.SourceDamage += 0.20f;
+            }
 
             // =============================================
             // ARMOR BREAK
@@ -137,11 +132,7 @@ namespace Eternia.Content.Players
             NPC.HitInfo hit,
             int damageDone)
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Stunner")
+            if (!IsActiveStunner())
             {
                 return;
             }
@@ -152,13 +143,18 @@ namespace Eternia.Content.Players
 
             if (FullyCharged)
             {
+                int stunDuration =
+                    HasActivePassive("Concussion")
+                        ? 180
+                        : 120;
+
                 // =========================================
                 // SLOW EFFECT
                 // =========================================
 
                 target.GetGlobalNPC<
                         Eternia.Content.NPCs.StunnedNPC>()
-                    .stunTimer = 120;
+                    .stunTimer = stunDuration;
 
                 // =========================================
                 // VISUAL FX
@@ -182,6 +178,28 @@ namespace Eternia.Content.Players
             Charge = 0;
 
             FullyCharged = false;
+        }
+
+        private bool HasActivePassive(string passiveName)
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .HasActivePassive(
+                    soul.ActiveSoul,
+                    passiveName);
+        }
+
+        public bool IsActiveStunner()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Warrior &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                    "Stunner";
         }
     }
 }

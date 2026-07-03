@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
@@ -39,11 +40,7 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Virtuoso")
+            if (!IsActiveVirtuoso())
             {
                 Notes.Clear();
 
@@ -131,11 +128,7 @@ namespace Eternia.Content.Players
 
         private void AddCurrentNote()
         {
-            var subclass =
-                Player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Virtuoso")
+            if (!IsActiveVirtuoso())
             {
                 return;
             }
@@ -287,6 +280,11 @@ namespace Eternia.Content.Players
             Item item,
             ref StatModifier damage)
         {
+            if (!IsActiveVirtuoso())
+            {
+                return;
+            }
+
             if (DamageBuffTimer > 0)
             {
                 damage += 0.10f;
@@ -299,10 +297,26 @@ namespace Eternia.Content.Players
 
         public override void PostUpdateRunSpeeds()
         {
+            if (!IsActiveVirtuoso())
+            {
+                return;
+            }
+
             if (SpeedBuffTimer > 0)
             {
                 Player.moveSpeed += 0.20f;
             }
+        }
+
+        public bool IsActiveVirtuoso()
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Ranger &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
+                "Virtuoso";
         }
 
         // =================================================

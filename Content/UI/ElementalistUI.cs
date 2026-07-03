@@ -1,11 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-using Terraria;
-using Terraria.UI;
-using Terraria.ModLoader;
-
 using Eternia.Content.Players;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Terraria;
+using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace Eternia.Content.UI
 {
@@ -15,18 +13,10 @@ namespace Eternia.Content.UI
         {
             base.Draw(spriteBatch);
 
-            if (Main.gameMenu)
-            {
-                return;
-            }
+            Player player =
+                Main.LocalPlayer;
 
-            Player player = Main.LocalPlayer;
-
-            var subclass =
-                player.GetModPlayer<SubclassPlayer>();
-
-            if (subclass.CurrentSubclass
-                != "Elementalist")
+            if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
                 return;
             }
@@ -34,150 +24,105 @@ namespace Eternia.Content.UI
             var elementalist =
                 player.GetModPlayer<ElementalistPlayer>();
 
-            Vector2 pos =
-                new Vector2(20, 300);
+            if (!elementalist.IsActiveElementalist())
+            {
+                return;
+            }
 
-            // =====================================
-            // TITLE
-            // =====================================
+            Color accent =
+                GetElementColor(elementalist.CurrentElement);
 
-            Utils.DrawBorderString(
+            Rectangle panel =
+                EterniaUI.GetBottomLeftPanel(306, 178, 20, 156);
+
+            EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.84f);
+
+            EterniaUI.DrawText(
                 spriteBatch,
-                "ELEMENTALIST",
-                pos,
+                "Elementalist",
+                new Vector2(panel.X + 14, panel.Y + 12),
                 Color.White,
-                1.1f);
+                0.68f);
 
-            pos.Y += 35;
+            int y = panel.Y + 42;
 
-            // =====================================
-            // FIRE
-            // =====================================
-
-            Color fireColor =
-                elementalist.CurrentElement == 0
-                ? Color.OrangeRed
-                : Color.Gray;
-
-            string fireText =
-                $"{(elementalist.CurrentElement == 0 ? "► " : "  ")}🔥 Fire Lv.{elementalist.FireLevel} ({elementalist.FireAffinity})";
-
-            Utils.DrawBorderString(
+            DrawElementPill(
                 spriteBatch,
-                fireText,
-                pos,
-                fireColor);
+                new Rectangle(panel.X + 14, y, panel.Width - 28, 24),
+                "Fire",
+                elementalist.FireLevel,
+                elementalist.FireAffinity,
+                elementalist.CurrentElement == 0,
+                Color.OrangeRed);
 
-            pos.Y += 25;
+            y += 30;
 
-            // =====================================
-            // ICE
-            // =====================================
-
-            Color iceColor =
-                elementalist.CurrentElement == 1
-                ? Color.Cyan
-                : Color.Gray;
-
-            string iceText =
-                $"{(elementalist.CurrentElement == 1 ? "► " : "  ")}❄ Ice Lv.{elementalist.IceLevel} ({elementalist.IceAffinity})";
-
-            Utils.DrawBorderString(
+            DrawElementPill(
                 spriteBatch,
-                iceText,
-                pos,
-                iceColor);
+                new Rectangle(panel.X + 14, y, panel.Width - 28, 24),
+                "Ice",
+                elementalist.IceLevel,
+                elementalist.IceAffinity,
+                elementalist.CurrentElement == 1,
+                Color.Cyan);
 
-            pos.Y += 25;
+            y += 30;
 
-            // =====================================
-            // LIGHTNING
-            // =====================================
-
-            Color lightningColor =
-                elementalist.CurrentElement == 2
-                ? Color.Yellow
-                : Color.Gray;
-
-            string lightningText =
-                $"{(elementalist.CurrentElement == 2 ? "► " : "  ")}⚡ Lightning Lv.{elementalist.LightningLevel} ({elementalist.LightningAffinity})";
-
-            Utils.DrawBorderString(
+            DrawElementPill(
                 spriteBatch,
-                lightningText,
-                pos,
-                lightningColor);
+                new Rectangle(panel.X + 14, y, panel.Width - 28, 24),
+                "Lightning",
+                elementalist.LightningLevel,
+                elementalist.LightningAffinity,
+                elementalist.CurrentElement == 2,
+                Color.Yellow);
 
-            pos.Y += 40;
-
-            // =====================================
-            // CHARGE TEXT
-            // =====================================
-
-            Utils.DrawBorderString(
-                spriteBatch,
-                $"Charge: {elementalist.ElementCharge}/{ElementalistPlayer.MaxElementCharge}",
-                pos,
-                Color.White);
-
-            pos.Y += 25;
-
-            // =====================================
-            // CHARGE BAR
-            // =====================================
-
-            Texture2D pixel =
-                Terraria.GameContent.TextureAssets.MagicPixel.Value;
-
-            int barWidth = 220;
-            int barHeight = 18;
+            y += 36;
 
             float progress =
                 (float)elementalist.ElementCharge /
                 ElementalistPlayer.MaxElementCharge;
 
-            // Fondo
-            spriteBatch.Draw(
-                pixel,
-                new Rectangle(
-                    (int)pos.X,
-                    (int)pos.Y,
-                    barWidth,
-                    barHeight),
-                Color.Black * 0.7f);
-
-            // Barra
-            Color barColor =
+            bool ready =
                 elementalist.ElementCharge >=
-                ElementalistPlayer.MaxElementCharge
-                ? Color.Gold
-                : Color.LimeGreen;
+                ElementalistPlayer.MaxElementCharge;
 
-            spriteBatch.Draw(
-                pixel,
-                new Rectangle(
-                    (int)pos.X,
-                    (int)pos.Y,
-                    (int)(barWidth * progress),
-                    barHeight),
-                barColor);
+            EterniaUI.DrawProgressBar(
+                spriteBatch,
+                new Rectangle(panel.X + 14, y, panel.Width - 28, 22),
+                progress,
+                ready ? Color.Gold : accent,
+                ready
+                    ? "Ultimate ready"
+                    : $"Charge {elementalist.ElementCharge}/{ElementalistPlayer.MaxElementCharge}");
+        }
 
-            pos.Y += 30;
+        private static void DrawElementPill(
+            SpriteBatch spriteBatch,
+            Rectangle rect,
+            string name,
+            int level,
+            int affinity,
+            bool selected,
+            Color color)
+        {
+            EterniaUI.DrawPill(
+                spriteBatch,
+                rect,
+                $"{(selected ? "> " : "")}{name} Lv.{level}  Affinity {affinity}",
+                selected ? color : Color.Gray,
+                0.52f);
+        }
 
-            // =====================================
-            // READY
-            // =====================================
-
-            if (elementalist.ElementCharge >=
-                ElementalistPlayer.MaxElementCharge)
+        private static Color GetElementColor(int element)
+        {
+            return element switch
             {
-                Utils.DrawBorderString(
-                    spriteBatch,
-                    "ULTIMATE READY!",
-                    pos,
-                    Color.Gold,
-                    1.1f);
-            }
+                0 => Color.OrangeRed,
+                1 => Color.Cyan,
+                2 => Color.Yellow,
+                _ => Color.White
+            };
         }
     }
 }

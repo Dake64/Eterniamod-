@@ -36,14 +36,29 @@ Mods: {
 				Tooltip: ""
 			}
 
+			TrainingBlade: {
+				DisplayName: Training Blade
+				Tooltip: Starter Warrior weapon. Builds Momentum on melee hits.
+			}
+
+			ApprenticeWand: {
+				DisplayName: Apprentice Wand
+				Tooltip: Starter Mage weapon. Builds Charge on magic hits.
+			}
+
+			TrainingBow: {
+				DisplayName: Training Bow
+				Tooltip: Starter Ranger weapon. Builds Focus on ranged hits.
+			}
+
+			TrainingWhip: {
+				DisplayName: Training Whip
+				Tooltip: Starter Summoner weapon. Builds Bond on summon hits.
+			}
+
 			ElementalApprenticeStaff: {
 				Tooltip: ""
 				DisplayName: Elemental Apprentice Staff
-			}
-
-			ApprenticeDeck: {
-				Tooltip: ""
-				DisplayName: Apprentice Deck
 			}
 
 			CursedApprenticeTome: {
@@ -52,13 +67,83 @@ Mods: {
 			}
 
 			WeakCurse: {
-				Tooltip: ""
+				Tooltip: Adds 10 base corruption. A safer curse for learning Cursed Mage.
 				DisplayName: Weak Curse
+			}
+
+			BloodCurse: {
+				Tooltip: Adds 35 base corruption but reduces max life by 20.
+				DisplayName: Blood Curse
 			}
 
 			BeginnerNecromancyBook: {
 				Tooltip: ""
 				DisplayName: Beginner Necromancy Book
+			}
+
+			BloodletterBlade: {
+				Tooltip: ""
+				DisplayName: Bloodletter Blade
+			}
+
+			PracticeYoyo: {
+				Tooltip: ""
+				DisplayName: Practice Yoyo
+			}
+
+			RageCleaver: {
+				Tooltip: ""
+				DisplayName: Rage Cleaver
+			}
+
+			ImpactMace: {
+				Tooltip: ""
+				DisplayName: Impact Mace
+			}
+
+			EnergySidearm: {
+				Tooltip: ""
+				DisplayName: Energy Sidearm
+			}
+
+			Longbow: {
+				Tooltip: ""
+				DisplayName: Longbow
+			}
+
+			TrainingPistol: {
+				Tooltip: ""
+				DisplayName: Training Pistol
+			}
+
+			ResonantCrossbow: {
+				Tooltip: ""
+				DisplayName: Resonant Crossbow
+			}
+
+			InfinityTome: {
+				Tooltip: ""
+				DisplayName: Infinity Tome
+			}
+
+			ArcaneFocus: {
+				Tooltip: ""
+				DisplayName: Arcane Focus
+			}
+
+			BeastWhip: {
+				Tooltip: ""
+				DisplayName: Beast Whip
+			}
+
+			FusionWhip: {
+				Tooltip: ""
+				DisplayName: Fusion Whip
+			}
+
+			TechWhip: {
+				Tooltip: ""
+				DisplayName: Tech Whip
 			}
 		}
 
@@ -72,18 +157,13 @@ Mods: {
 		NPCs.EternalNPC.DisplayName: Eternal
 
 		Keybinds: {
-			"Open Soul UI.DisplayName": Open  Soul  U I
-			"Toggle Soul UI.DisplayName": Toggle  Soul  U I
-			"Toggle Stats UI.DisplayName": Toggle  Stats  U I
-			"Toggle Passive UI.DisplayName": Toggle  Passive  U I
-			"Class Skill.DisplayName": Class  Skill
-			"Change Note.DisplayName": Change  Note
-			"Elemental Ultimate.DisplayName": Elemental  Ultimate
-			"Card Slot 3.DisplayName": Card  Slot 3
-			"Card Slot 2.DisplayName": Card  Slot 2
-			"Card Slot 1.DisplayName": Card  Slot 1
-			"Draw Cards.DisplayName": Draw  Cards
-			"Cursed Burst.DisplayName": Cursed  Burst
+			"Toggle Soul UI.DisplayName": Toggle Soul UI
+			"Toggle Stats UI.DisplayName": Toggle Stats UI
+			"Toggle Passive UI.DisplayName": Toggle Passive UI
+			"Class Skill.DisplayName": Class Skill
+			"Change Note.DisplayName": Change Note
+			"Elemental Ultimate.DisplayName": Elemental Ultimate
+			"Cursed Burst.DisplayName": Cursed Burst
 		}
 
 		Projectiles: {
@@ -93,10 +173,13 @@ Mods: {
 			FireBoltProjectile.DisplayName: Fire Bolt Projectile
 			IceBoltProjectile.DisplayName: Ice Bolt Projectile
 			LightningBoltProjectile.DisplayName: Lightning Bolt Projectile
-			StrikeCardProjectile.DisplayName: Strike Card Projectile
-			BasicCardProjectile.DisplayName: Basic Card Projectile
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			SkeletonMinion.DisplayName: Skeleton Minion
+			PracticeYoyoProjectile.DisplayName: Practice Yoyo
+			TrainingWhipProjectile.DisplayName: Training Whip
+			BeastWhipProjectile.DisplayName: Beast Whip
+			FusionWhipProjectile.DisplayName: Fusion Whip
+			TechWhipProjectile.DisplayName: Tech Whip
 		}
 	}
 }
