@@ -3,20 +3,59 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $soulRulesPath = Join-Path $repoRoot "Content\Souls\SoulRules.cs"
 $soulIdPath = Join-Path $repoRoot "Content\Souls\SoulId.cs"
-$tModLoaderPath = "C:\Program Files (x86)\Steam\steamapps\common\tModLoader\tModLoader.dll"
-$fnaPath = "C:\Program Files (x86)\Steam\steamapps\common\tModLoader\Libraries\FNA\1.0.0\FNA.dll"
-$reLogicPath = "C:\Program Files (x86)\Steam\steamapps\common\tModLoader\Libraries\ReLogic\1.0.0\ReLogic.dll"
+# Resolve the tModLoader install directory portably instead of hardcoding a
+# Steam path. Order: explicit override -> the repo's tModLoader.targets import
+# (the same install used to build the mod) -> common Steam library locations.
+$tmlDir = $null
 
-if (!(Test-Path $tModLoaderPath)) {
-    throw "Missing tModLoader assembly: $tModLoaderPath"
+if ($env:TML_INSTALL_DIR -and (Test-Path (Join-Path $env:TML_INSTALL_DIR "tModLoader.dll"))) {
+    $tmlDir = $env:TML_INSTALL_DIR
 }
 
-if (!(Test-Path $fnaPath)) {
-    throw "Missing FNA assembly: $fnaPath"
+if (-not $tmlDir) {
+    $targetsPath = Join-Path (Split-Path -Parent $repoRoot) "tModLoader.targets"
+    if (Test-Path $targetsPath) {
+        $targetsText = Get-Content -Raw $targetsPath
+        $importMatch = [regex]::Match($targetsText, 'Project="([^"]*tMLMod\.targets)"')
+        if ($importMatch.Success) {
+            $candidate = Split-Path -Parent $importMatch.Groups[1].Value
+            if (Test-Path (Join-Path $candidate "tModLoader.dll")) {
+                $tmlDir = $candidate
+            }
+        }
+    }
 }
 
-if (!(Test-Path $reLogicPath)) {
-    throw "Missing ReLogic assembly: $reLogicPath"
+if (-not $tmlDir) {
+    foreach ($candidate in @(
+        "C:\Program Files (x86)\Steam\steamapps\common\tModLoader",
+        "D:\steam\steamapps\common\tModLoader",
+        "D:\Steam\steamapps\common\tModLoader",
+        "E:\Steam\steamapps\common\tModLoader")) {
+        if (Test-Path (Join-Path $candidate "tModLoader.dll")) {
+            $tmlDir = $candidate
+            break
+        }
+    }
+}
+
+if (-not $tmlDir) {
+    Write-Host "SKIP: tModLoader install not found (set TML_INSTALL_DIR to override). Skipping SoulRules behavior smoke test."
+    exit 0
+}
+
+if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+    Write-Host "SKIP: dotnet SDK not found. Skipping SoulRules behavior smoke test."
+    exit 0
+}
+
+$tModLoaderPath = Join-Path $tmlDir "tModLoader.dll"
+$fnaPath = (Get-ChildItem -Path (Join-Path $tmlDir "Libraries\FNA") -Filter "FNA.dll" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+$reLogicPath = (Get-ChildItem -Path (Join-Path $tmlDir "Libraries\ReLogic") -Filter "ReLogic.dll" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+
+if (-not $fnaPath -or -not $reLogicPath) {
+    Write-Host "SKIP: FNA/ReLogic assemblies not found under $tmlDir. Skipping SoulRules behavior smoke test."
+    exit 0
 }
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("eternia-soulrules-test-" + [System.Guid]::NewGuid().ToString("N"))

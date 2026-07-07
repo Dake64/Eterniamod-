@@ -19,8 +19,9 @@ El objetivo de producto acordado hasta ahora:
   - La Class Soul debe equiparse como accesorio para activar clase.
 - Penalizaciones no negociables:
   - Usar arma incorrecta con Class Soul activa mata al jugador.
-  - Tener una Class Soul en inventario/equipo pero no tener una Class Soul activa
-    aplica una penalizacion fuerte.
+  - No tener ninguna Soul equipada (`ActiveSoul == None`) aplica una penalizacion
+    fuerte + `SoulLessDebuff` ("Alma Perdida"), incluido el jugador recien creado
+    (cambio 2026-07-06). Equipar cualquier Soul, incluida Empty, la quita.
 - `Cartomancer` esta descartado y sus residuos deben seguir eliminados.
 - `Summoner` debe tener una promocion nueva orientada a `Necromancer`; el codigo
   ya contiene `Necromancer`, pero aun conserva otras promociones Summoner.

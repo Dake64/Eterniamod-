@@ -97,15 +97,15 @@ namespace Eternia.Content.Souls
             return soul switch
             {
                 SoulId.Warrior =>
-                    "Tu Soul exige combate cuerpo a cuerpo.",
+                    "Your Soul demands melee combat.",
                 SoulId.Ranger =>
-                    "Tu Soul rechaza las armas que no siguen su distancia.",
+                    "Your Soul rejects weapons that abandon its range.",
                 SoulId.Mage =>
-                    "Tu Soul castiga la traicion a la magia.",
+                    "Your Soul punishes betrayal of magic.",
                 SoulId.Summoner =>
-                    "Tu Soul rompe el pacto al abandonar las invocaciones.",
+                    "Your Soul breaks the pact when you abandon summons.",
                 _ =>
-                    "Has traicionado el camino de tu Soul."
+                    "You have betrayed the path of your Soul."
             };
         }
     }

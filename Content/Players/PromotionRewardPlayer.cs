@@ -95,7 +95,7 @@ namespace Eternia.Content.Players
             }
 
             Main.NewText(
-                $"Promocion desbloqueada: {subclass}. Has recibido una herramienta inicial.",
+                $"Promotion unlocked: {subclass}. You received a starter tool.",
                 180,
                 120,
                 255

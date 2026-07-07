@@ -43,15 +43,18 @@ Reglas actuales:
 
 - En `PreUpdate`, `ActiveSoul` se resetea a `None`. Las Souls equipadas vuelven
   a activarla por `UpdateAccessory`.
-- Si el jugador tiene una Class Soul disponible en inventario/equipo, pero no
-  tiene Class Soul activa, `ApplyNoSoulPenalty` reduce dano, critico, velocidad,
-  defensa y aplica `NoSoulDebuff`.
+- Si el jugador NO tiene ninguna Soul equipada (`ActiveSoul == None`),
+  `ApplyNoSoulPenalty` reduce dano, critico, velocidad, defensa y aplica
+  `SoulLessDebuff` ("Alma Perdida"). Un cuerpo siempre ocupa una Soul.
+- Equipar cualquier Soul (Empty o Class) como accesorio quita la penalizacion.
+  La Empty Soul no activa clase, pero si cuenta como "cuerpo con alma".
 - Si el jugador usa o intenta usar un arma de otra clase con Class Soul activa,
   `ApplyDeathPenalty` mata al jugador y aplica `SoulViolationDebuff`.
-- Si no tiene ninguna Soul de clase todavia, no recibe penalizacion.
 
-Esto conserva el flujo inicial solicitado: empezar sin Soul no castiga al
-jugador; el castigo empieza cuando ya posee una Class Soul y no la usa.
+Cambio de diseno (2026-07-06): antes solo se penalizaba al poseer una Class Soul
+sin equipar; ahora se penaliza a cualquier jugador sin Soul equipada, incluido el
+recien creado. El debuff `NoSoulDebuff` (redundante) fue eliminado. Ver
+`decision-log.md`.
 
 ## Starter weapons
 

@@ -10,11 +10,9 @@ if ($joinedSource -cmatch '"Eternia/') {
     throw "Texture paths should use the canonical mod name prefix ETERNIA/, not Eternia/."
 }
 
-$noSoul = Get-Content -Raw (Join-Path $contentRoot "Buffs\NoSoulDebuff.cs")
 $violation = Get-Content -Raw (Join-Path $contentRoot "Buffs\SoulViolationDebuff.cs")
 
 foreach ($pair in @(
-    @{Name="NoSoulDebuff"; Content=$noSoul},
     @{Name="SoulViolationDebuff"; Content=$violation})) {
     if ($pair.Content -notmatch 'override string Texture =>' -or
         $pair.Content -notmatch '"ETERNIA/Content/Buffs/SoulLessDebuff"') {

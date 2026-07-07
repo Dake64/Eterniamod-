@@ -1,8 +1,14 @@
 # Roadmap y puntos debiles
 
-## P0 - Decidir y limpiar Summoner
+## P0 (RESUELTO 2026-07-06) - Summoner conserva 4 rutas (Opcion B)
 
-Problema:
+RESUELTO: se eligio la Opcion B (ver `decision-log.md`). Summoner mantiene Beast
+Tamer, Advanced Summoner, Tech Summoner y Necromancer. No era un bloqueo: las 4
+rutas ya funcionaban y estaban gateadas. No se poda nada; no hace falta migracion
+de save por promociones eliminadas. El texto de abajo queda como contexto
+historico.
+
+Problema (historico):
 
 El usuario pidio descartar Cartomancer y crear una promocion nueva para
 Summoner. `Necromancer` ya existe, pero el codigo actual conserva:
@@ -97,6 +103,14 @@ Correccion recomendada:
 - Tests que prohiban margenes hardcodeados nuevos.
 
 ## P2 - Localizacion
+
+Duplicacion/namespaces RESUELTO (2026-07-06): la fuente viva y UNICA es la RAIZ
+`en-US.hjson` (`Mods.Eternia.*`, gestionada por tModLoader). El
+`Localization/en-US_Mods.ETERNIA.hjson` (`Mods.ETERNIA.*`) era el muerto y se
+vacio. Los 7 tests de localizacion apuntan al archivo vivo; guardado por
+`LocalizationIntegritySourceSmokeTest.ps1`. (Correccion: una consolidacion previa
+tomo los archivos al reves; ver decision-log.) Falta reload in-game para confirmar
+los tooltips y nombres de keybind.
 
 Hay mucho texto en UI y tooltips. Parte ya esta en hjson, parte sigue hardcoded.
 

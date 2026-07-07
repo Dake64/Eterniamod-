@@ -1,13 +1,40 @@
 Mods: {
 	Eternia: {
-		Items: {
-			EmptySoul: {
-				DisplayName: Empty Soul
-				Tooltip: ""
+		Keybinds: {
+			"Toggle Soul UI.DisplayName": Toggle Soul UI
+			"Toggle Stats UI.DisplayName": Toggle Stats UI
+			"Toggle Passive UI.DisplayName": Toggle Passive UI
+			"Class Skill.DisplayName": Class Skill
+			"Change Note.DisplayName": Change Note
+			"Elemental Ultimate.DisplayName": Elemental Ultimate
+			"Cursed Burst.DisplayName": Cursed Burst
+		}
+
+		Buffs: {
+			SoulLessDebuff: {
+				DisplayName: Lost Soul
+				Description: A body without a soul is worthless...
 			}
 
-			WarriorSoul: {
-				DisplayName: Warrior Soul
+			SoulViolationDebuff: {
+				DisplayName: Soul Violation
+				Description: Your soul rejects the weapon you tried to use.
+			}
+		}
+
+		Items: {
+			BloodCurse: {
+				DisplayName: Blood Curse
+				Tooltip: Adds 35 base corruption but reduces max life by 20.
+			}
+
+			WeakCurse: {
+				DisplayName: Weak Curse
+				Tooltip: Adds 10 base corruption. A safer curse for learning Cursed Mage.
+			}
+
+			EmptySoul: {
+				DisplayName: Empty Soul
 				Tooltip: ""
 			}
 
@@ -26,6 +53,11 @@ Mods: {
 				Tooltip: ""
 			}
 
+			WarriorSoul: {
+				DisplayName: Warrior Soul
+				Tooltip: ""
+			}
+
 			TrainingGauntlet: {
 				DisplayName: Training Gauntlet
 				Tooltip: ""
@@ -36,14 +68,84 @@ Mods: {
 				Tooltip: ""
 			}
 
-			TrainingBlade: {
-				DisplayName: Training Blade
-				Tooltip: Starter Warrior weapon. Builds Momentum on melee hits.
-			}
-
 			ApprenticeWand: {
 				DisplayName: Apprentice Wand
 				Tooltip: Starter Mage weapon. Builds Charge on magic hits.
+			}
+
+			CursedApprenticeTome: {
+				DisplayName: Cursed Apprentice Tome
+				Tooltip: ""
+			}
+
+			ElementalApprenticeStaff: {
+				DisplayName: Elemental Apprentice Staff
+				Tooltip: ""
+			}
+
+			ArcaneFocus: {
+				DisplayName: Arcane Focus
+				Tooltip: ""
+			}
+
+			BeastWhip: {
+				DisplayName: Beast Whip
+				Tooltip: ""
+			}
+
+			BloodletterBlade: {
+				DisplayName: Bloodletter Blade
+				Tooltip: ""
+			}
+
+			EnergySidearm: {
+				DisplayName: Energy Sidearm
+				Tooltip: ""
+			}
+
+			FusionWhip: {
+				DisplayName: Fusion Whip
+				Tooltip: ""
+			}
+
+			ImpactMace: {
+				DisplayName: Impact Mace
+				Tooltip: ""
+			}
+
+			InfinityTome: {
+				DisplayName: Infinity Tome
+				Tooltip: ""
+			}
+
+			Longbow: {
+				DisplayName: Longbow
+				Tooltip: ""
+			}
+
+			PracticeYoyo: {
+				DisplayName: Practice Yoyo
+				Tooltip: ""
+			}
+
+			RageCleaver: {
+				DisplayName: Rage Cleaver
+				Tooltip: ""
+			}
+
+			ResonantCrossbow: {
+				DisplayName: Resonant Crossbow
+				Tooltip: ""
+			}
+
+			TechWhip: {
+				DisplayName: Tech Whip
+				Tooltip: ""
+			}
+
+			TrainingPistol: {
+				DisplayName: Training Pistol
+				Tooltip: ""
 			}
 
 			TrainingBow: {
@@ -51,135 +153,51 @@ Mods: {
 				Tooltip: Starter Ranger weapon. Builds Focus on ranged hits.
 			}
 
+			BeginnerNecromancyBook: {
+				DisplayName: Beginner Necromancy Book
+				Tooltip: ""
+			}
+
 			TrainingWhip: {
 				DisplayName: Training Whip
 				Tooltip: Starter Summoner weapon. Builds Bond on summon hits.
 			}
 
-			ElementalApprenticeStaff: {
-				Tooltip: ""
-				DisplayName: Elemental Apprentice Staff
-			}
-
-			CursedApprenticeTome: {
-				Tooltip: ""
-				DisplayName: Cursed Apprentice Tome
-			}
-
-			WeakCurse: {
-				Tooltip: Adds 10 base corruption. A safer curse for learning Cursed Mage.
-				DisplayName: Weak Curse
-			}
-
-			BloodCurse: {
-				Tooltip: Adds 35 base corruption but reduces max life by 20.
-				DisplayName: Blood Curse
-			}
-
-			BeginnerNecromancyBook: {
-				Tooltip: ""
-				DisplayName: Beginner Necromancy Book
-			}
-
-			BloodletterBlade: {
-				Tooltip: ""
-				DisplayName: Bloodletter Blade
-			}
-
-			PracticeYoyo: {
-				Tooltip: ""
-				DisplayName: Practice Yoyo
-			}
-
-			RageCleaver: {
-				Tooltip: ""
-				DisplayName: Rage Cleaver
-			}
-
-			ImpactMace: {
-				Tooltip: ""
-				DisplayName: Impact Mace
-			}
-
-			EnergySidearm: {
-				Tooltip: ""
-				DisplayName: Energy Sidearm
-			}
-
-			Longbow: {
-				Tooltip: ""
-				DisplayName: Longbow
-			}
-
-			TrainingPistol: {
-				Tooltip: ""
-				DisplayName: Training Pistol
-			}
-
-			ResonantCrossbow: {
-				Tooltip: ""
-				DisplayName: Resonant Crossbow
-			}
-
-			InfinityTome: {
-				Tooltip: ""
-				DisplayName: Infinity Tome
-			}
-
-			ArcaneFocus: {
-				Tooltip: ""
-				DisplayName: Arcane Focus
-			}
-
-			BeastWhip: {
-				Tooltip: ""
-				DisplayName: Beast Whip
-			}
-
-			FusionWhip: {
-				Tooltip: ""
-				DisplayName: Fusion Whip
-			}
-
-			TechWhip: {
-				Tooltip: ""
-				DisplayName: Tech Whip
+			TrainingBlade: {
+				DisplayName: Training Blade
+				Tooltip: Starter Warrior weapon. Builds Momentum on melee hits.
 			}
 		}
 
-		Buffs: {
-			SoulLessDebuff: {
-				DisplayName: Alma Perdida
-				Description: Un cuerpo sin alma no sirve...
+		NPCs: {
+			EternalNPC: {
+				DisplayName: Eternal
+
+				TownNPCMood: {
+					Content: I am at peace among the awakened souls.
+					NoHome: A keeper of souls should not be left without a home.
+					FarFromHome: I have drifted too far from my home.
+					LoveSpace: So much space... the souls can breathe here.
+					DislikeCrowded: There is little room for the souls to settle.
+					HateCrowded: These cramped walls smother every soul.
+					LikeNPC_Princess: I am fond of {NPCName}.
+					Princess_LovesNPC: I am fond of {NPCName}.
+				}
 			}
-		}
-
-		NPCs.EternalNPC.DisplayName: Eternal
-
-		Keybinds: {
-			"Toggle Soul UI.DisplayName": Toggle Soul UI
-			"Toggle Stats UI.DisplayName": Toggle Stats UI
-			"Toggle Passive UI.DisplayName": Toggle Passive UI
-			"Class Skill.DisplayName": Class Skill
-			"Change Note.DisplayName": Change Note
-			"Elemental Ultimate.DisplayName": Elemental Ultimate
-			"Cursed Burst.DisplayName": Cursed Burst
 		}
 
 		Projectiles: {
-			YoyoWeakpointProjectile.DisplayName: Yoyo Weakpoint Projectile
+			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile
-			GuardianShieldProjectile.DisplayName: Guardian Shield Projectile
 			FireBoltProjectile.DisplayName: Fire Bolt Projectile
 			IceBoltProjectile.DisplayName: Ice Bolt Projectile
 			LightningBoltProjectile.DisplayName: Lightning Bolt Projectile
-			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			SkeletonMinion.DisplayName: Skeleton Minion
-			PracticeYoyoProjectile.DisplayName: Practice Yoyo
-			TrainingWhipProjectile.DisplayName: Training Whip
-			BeastWhipProjectile.DisplayName: Beast Whip
-			FusionWhipProjectile.DisplayName: Fusion Whip
-			TechWhipProjectile.DisplayName: Tech Whip
+			PracticeYoyoProjectile.DisplayName: Practice Yoyo Projectile
+			BeastWhipProjectile.DisplayName: Beast Whip Projectile
+			FusionWhipProjectile.DisplayName: Fusion Whip Projectile
+			TechWhipProjectile.DisplayName: Tech Whip Projectile
+			TrainingWhipProjectile.DisplayName: Training Whip Projectile
 		}
 	}
 }

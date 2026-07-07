@@ -39,10 +39,6 @@ if ($system -notmatch "SoulInventory\.HasAnySoulItem\((player|candidate)\)") {
     throw "EternalNPCSystem should use SoulInventory.HasAnySoulItem(...) for player onboarding guards."
 }
 
-if ($player -notmatch "SoulInventory\.HasAnyClassSoulItem\(Player\)") {
-    throw "EterniaPlayer should use SoulInventory.HasAnyClassSoulItem(Player) for no-Soul penalty checks."
-}
-
 if ($npc -match "private static bool HasAnySoulItem" -or
     $system -match "private static bool HasAnySoulItem" -or
     $npc -match "private static bool HasSoulItem" -or

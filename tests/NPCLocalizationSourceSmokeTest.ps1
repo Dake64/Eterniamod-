@@ -2,7 +2,6 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $localizationPaths = @(
-    (Join-Path $repoRoot "Localization\en-US_Mods.ETERNIA.hjson"),
     (Join-Path $repoRoot "en-US.hjson")
 )
 
@@ -13,7 +12,7 @@ foreach ($path in $localizationPaths) {
         throw "$path should not display the guide NPC as 'Eternal N P C'."
     }
 
-    if ($content -notmatch "NPCs\.EternalNPC\.DisplayName:\s*Eternal") {
+    if ($content -notmatch "(?ms)EternalNPC:\s*\{[^}]*DisplayName:\s*Eternal") {
         throw "$path should localize EternalNPC as Eternal."
     }
 }

@@ -144,7 +144,7 @@ namespace Eternia.Content.Players
                     Player.Hurt(
                         PlayerDeathReason.ByCustomReason(
                             NetworkText.FromLiteral(
-                                $"{Player.name} fue consumido por la corrupción."
+                                $"{Player.name} was consumed by corruption."
                             )
                         ),
                         5,
@@ -160,7 +160,7 @@ namespace Eternia.Content.Players
                     Player.Hurt(
                         PlayerDeathReason.ByCustomReason(
                             NetworkText.FromLiteral(
-                                $"{Player.name} fue consumido por la corrupción."
+                                $"{Player.name} was consumed by corruption."
                             )
                         ),
                         10,
@@ -174,7 +174,7 @@ namespace Eternia.Content.Players
                 Player.KillMe(
                     PlayerDeathReason.ByCustomReason(
                         NetworkText.FromLiteral(
-                            $"{Player.name} colapso por exceso de corrupcion."
+                            $"{Player.name} collapsed from an overload of corruption."
                         )
                     ),
                     9999,

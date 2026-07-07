@@ -15,6 +15,168 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Consolidacion de localizacion COMPLETADA (fuente: en-US.hjson)
+
+- Objetivo: cerrar la localizacion con UNA fuente viva (`en-US.hjson`), portar
+  contenido que estaba atrapado en el archivo muerto y re-apuntar los tests.
+- Archivos principales:
+  - `en-US.hjson` (fuente viva)
+  - `Localization/en-US_Mods.ETERNIA.hjson` (vaciado / retirado)
+  - `tests/{LocalizationContent,NPCLocalization,KeybindDefaults,SummonerWhip,PromotionLocalization,RemovedCartomancerResidue,LocalizationIntegrity}SourceSmokeTest.ps1`
+- Cambios:
+  - Limpiados los nombres de keybinds ("Toggle  Soul  U I" -> "Toggle Soul UI",
+    etc.) en el archivo vivo.
+  - Portados al archivo vivo los tooltips reales que solo vivian en el muerto:
+    WeakCurse, BloodCurse, TrainingBlade (Momentum), ApprenticeWand (Charge),
+    TrainingBow (Focus), TrainingWhip (Bond).
+  - Eliminada la clave huerfana `NoSoulDebuff` del archivo vivo (clase ya borrada).
+  - Re-apuntados los 7 tests de localizacion a `en-US.hjson` (antes validaban el
+    archivo muerto = confianza falsa). `LocalizationIntegrity` reescrito para el
+    archivo vivo (self-ref, labels con doble espacio, nombre del debuff).
+  - Vaciado el `Localization/en-US_Mods.ETERNIA.hjson` (comentario + objeto vacio).
+- Verificacion:
+  - Suite: 51/51 PASSED. `git diff --check`: exit 0.
+- Pendientes/riesgos:
+  - Falta reload in-game para ver los tooltips y nombres de keybind ya bien.
+  - El archivo muerto sigue en disco (vaciado) por OneDrive/tModLoader; para
+    borrarlo de verdad, mover el repo fuera de OneDrive y `git rm`.
+
+## 2026-07-06 - Eternal NPC convertido a Town NPC permanente
+
+- Objetivo: que el Eternal NPC persista y este siempre disponible (desaparecia al
+  recargar el mundo porque no era townNPC).
+- Archivos principales:
+  - `Content/NPCs/EternalNPC.cs`
+  - `Content/NPCs/EternalNPC_Head.png` (nuevo, placeholder)
+- Cambios:
+  - `EternalNPC` -> `townNPC=true`, defaults de town NPC, `CanTownNPCSpawn=true`,
+    `SetNPCNameList` ["Eternal"]. Ahora se guarda con el mundo y se muda a casas.
+  - Se creo una textura `_Head` placeholder (copia del sprite del cuerpo).
+  - Dialogo/boton sin cambios (ya en ingles); `EternalNPCSystem` intacto (fallback).
+- Verificacion:
+  - `dotnet build -t:Compile`: 0 warnings, 0 errores.
+  - Suite: 51/51 PASSED.
+  - Falta reload in-game: darle una casa vacante y confirmar que se muda y persiste.
+- Pendientes/riesgos:
+  - Reemplazar `EternalNPC_Head.png` por un head propio (hoy es el sprite del cuerpo,
+    se vera grande en el icono del mapa/casa).
+
+## 2026-07-06 - Todo el texto visible pasa a ingles
+
+- Objetivo: el usuario quiere el mod parejo en ingles. Traducir todo el texto
+  hardcodeado en espanol que ve el jugador.
+- Archivos principales:
+  - `Content/NPCs/EternalNPC.cs` (dialogos + boton + mensajes NewText)
+  - `Content/Souls/SoulRules.cs` (GetWrongWeaponMessage, 5 mensajes por clase)
+  - `Content/Players/CursedMagePlayer.cs` (mensajes de muerte por corrupcion)
+  - `Content/Players/PromotionRewardPlayer.cs` (mensaje de promocion)
+  - `en-US.hjson` (Buffs SoulLessDebuff + SoulViolationDebuff a ingles)
+- Cambios:
+  - Todo el dialogo del Eternal NPC, los mensajes de arma incorrecta, muerte por
+    corrupcion y promocion desbloqueada ahora en ingles.
+  - Debuffs: `Lost Soul` / "A body without a soul is worthless..." y
+    `Soul Violation` / "Your soul rejects the weapon you tried to use.".
+  - Unico espanol restante: 2 comentarios internos en `EterniaGlobalItem.cs`
+    (no visibles para el jugador; se dejaron como notas de dev).
+- Verificacion:
+  - `dotnet build -t:Compile`: 0 warnings, 0 errores.
+  - Suite: 51/51 PASSED. `git diff --check`: exit 0.
+  - Falta reload in-game para confirmar los textos del NPC.
+
+## 2026-07-06 - CORRECCION localizacion: el archivo vivo es en-US.hjson raiz
+
+- Objetivo: corregir la direccion de la consolidacion previa (estaba invertida) y
+  arreglar el debuff que in-game mostraba la clave cruda.
+- Contexto: la imagen in-game mostro `Mods.Eternia.Buffs.SoulLessDebuff.Description`,
+  probando que el mod resuelve `Mods.Eternia.*` -> `en-US.hjson` RAIZ (gestionado
+  por tModLoader), NO el `Localization/...ETERNIA.hjson` (`Mods.ETERNIA.*`, muerto).
+- Cambios:
+  - `en-US.hjson`: `Buffs.SoulLessDebuff` -> DisplayName "Alma Perdida",
+    Description "Un cuerpo sin alma no sirve...". Arregla el debuff visible.
+- Verificacion:
+  - Suite: 51/51 (sin cambios; OJO: los tests de localizacion aun validan el
+    archivo MUERTO, pendiente re-apuntarlos a en-US.hjson).
+  - Falta reload in-game para confirmar el texto del debuff.
+- Pendientes/riesgos:
+  - Re-consolidar de verdad sobre `en-US.hjson`: portar los tooltips reales
+    (curses, starter weapons) que hoy solo viven en el archivo muerto, re-apuntar
+    los ~6 tests de localizacion a `en-US.hjson`, y retirar el `Localization/`
+    muerto. La entrada previa "Consolidacion de localizacion" quedo invertida.
+
+## 2026-07-06 - Penalizacion por no tener Soul equipada + limpieza de debuffs
+
+- Objetivo: implementar la regla "un cuerpo siempre ocupa una soul" y consolidar
+  los debuffs de Soul.
+- Archivos principales:
+  - `Content/Players/EterniaPlayer.cs`
+  - `Content/Buffs/NoSoulDebuff.cs` (ELIMINADO)
+  - `Localization/en-US_Mods.ETERNIA.hjson`
+  - `tests/NoSoulPenaltySourceSmokeTest.ps1` (nuevo)
+  - `tests/SoulInventorySourceSmokeTest.ps1`, `tests/ResourceTexturePathsSourceSmokeTest.ps1`
+- Contexto: el usuario probo con Empty Soul en inventario y no habia castigo. Se
+  decidio penalizar SIEMPRE que no haya Soul equipada (invierte el invariante
+  "fresh player sin penalizacion"). Ver `decision-log.md`.
+- Cambios:
+  - `PostUpdateEquips` ahora aplica `ApplyNoSoulPenalty` cuando `!HasAnySoul`
+    (ninguna Soul equipada), incluido el jugador recien creado. Se quito el gate
+    `HasClassSoulAvailable` (ya no escanea inventario -> cierra la fuga de banco).
+  - `ApplyNoSoulPenalty` ahora aplica `SoulLessDebuff` ("Alma Perdida"), no
+    `NoSoulDebuff`. Se elimino `NoSoulDebuff` (huerfano/redundante).
+  - TDD: `NoSoulPenaltySourceSmokeTest.ps1` escrito fallando primero.
+  - Docs actualizados: `ai-handoff.md`, `current-state.md`, `gameplay-systems.md`.
+- Verificacion:
+  - Suite completa: 51/51 PASSED.
+  - `dotnet build -t:Compile`: 0 warnings, 0 errores.
+  - Falta reload in-game para confirmar visualmente el debuff "Alma Perdida" y que
+    equipar la Empty Soul quita la penalizacion.
+- Pendientes/riesgos:
+  - Penaliza desde el spawn: confirmar en juego que se siente bien (es lo pedido).
+
+## 2026-07-06 - Consolidacion de localizacion + suite portable
+
+- Objetivo: dejar UNA sola fuente de verdad de localizacion que resuelva in-game,
+  arreglar los textos rotos de Souls, y hacer la suite de tests portable.
+- Archivos principales:
+  - `Localization/en-US_Mods.ETERNIA.hjson` (canonico)
+  - `en-US.hjson` (vaciado; OneDrive impide su borrado real)
+  - `tests/LocalizationIntegritySourceSmokeTest.ps1` (nuevo)
+  - `tests/SoulRulesBehaviorSmokeTest.ps1`
+  - `tests/{LocalizationContent,NPCLocalization,KeybindDefaults,SummonerWhip,RemovedCartomancerResidue}SourceSmokeTest.ps1`
+- Contexto: el `en-US.hjson` raiz estaba 100% muerto (envuelto en `Mods.Eternia.*`;
+  el nombre interno del mod es `ETERNIA`, asi que sus ~150 claves nunca resolvian).
+  El archivo `Localization/` es el que si resuelve (auto-prefijo `Mods.ETERNIA.*`),
+  pero tenia un bloque `Mods: {...}` anidado muerto y bugs en las claves vivas.
+- Cambios:
+  - Bug in-game corregido: `Buffs.SoulLessDebuff.Description` era auto-referencial
+    (mostraba la clave cruda). Ahora DisplayName `Alma Perdida` / Description real.
+  - `Items.EmptySoul.Tooltip` estaba vacio; se restauro el texto autor `Esta SOUL
+    esta vacia...`. Ambos textos estaban atrapados en el bloque muerto anidado.
+  - Eliminado el bloque `Mods: {...}` anidado muerto del archivo canonico.
+  - `en-US.hjson` era un duplicado 100% muerto. Migrados los 5 tests que lo leian
+    para apuntar solo al archivo canonico. NOTA: OneDrive restaura los borrados de
+    archivos, asi que en vez de borrarlo se vacio (objeto hjson vacio + comentario).
+    Para eliminarlo de verdad: mover el repo fuera de OneDrive y `git rm en-US.hjson`.
+  - `SoulRulesBehaviorSmokeTest.ps1` ahora resuelve el install de tModLoader por
+    `TML_INSTALL_DIR` -> el import de `..\tModLoader.targets` -> ubicaciones Steam
+    comunes, y hace SKIP elegante si no encuentra tModLoader/dotnet. Ya no clava
+    `C:\Program Files (x86)\Steam\...`.
+  - TDD: `LocalizationIntegritySourceSmokeTest.ps1` codifica los invariantes (sin
+    self-ref, sin bloque `Mods:` muerto, sin placeholders, tooltip presente). Se
+    escribio primero fallando, luego se implemento el fix.
+- Verificacion:
+  - Suite completa: 50/50 PASSED (49 previos + el nuevo; ya sin el fallo de path).
+  - `git diff --check`: exit 0.
+  - `dotnet build`: compila a DLL con 0 warnings; el empaquetado `.tmod` sigue
+    fallando con TML003 solo porque tModLoader esta abierto (lock), no por codigo.
+    Falta un reload real in-game para confirmar visualmente los textos.
+- Pendientes/riesgos:
+  - Verificar in-game (reload) que las descripciones de debuff y el tooltip de
+    EmptySoul se muestran bien.
+  - Deuda menor abierta (del assessment): fuga de penalizacion de Soul si la Class
+    Soul se guarda en Void Vault/Piggy Bank (SoulInventory solo escanea
+    inventario+armadura); 8 overlays de UI sin clamp de pantalla; null-guard en
+    `PromotionRewardPlayer.LoadData`.
+
 ## 2026-07-03 - Handoff docs para Claude Code
 
 - Objetivo: crear documentacion para que Claude Code pueda continuar el mod con

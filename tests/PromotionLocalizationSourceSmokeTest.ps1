@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $rewardPath = Join-Path $repoRoot "Content\Players\PromotionRewardPlayer.cs"
-$localizationPath = Join-Path $repoRoot "Localization\en-US_Mods.ETERNIA.hjson"
+$localizationPath = Join-Path $repoRoot "en-US.hjson"
 
 $reward = Get-Content -Raw $rewardPath
 $localization = Get-Content -Raw $localizationPath

@@ -88,16 +88,12 @@ namespace Eternia.Content.Players
 
         public override void PostUpdateEquips()
         {
-            if (!HasClassSoul &&
-                HasClassSoulAvailable())
-            {
-                ApplyNoSoulPenalty();
-                penaltyApplied = false;
-                return;
-            }
-
+            // A body always needs a Soul: penalize whenever none is equipped,
+            // regardless of what is sitting in the inventory. Equipping any Soul
+            // (Empty or Class) sets ActiveSoul and clears this penalty.
             if (!HasAnySoul)
             {
+                ApplyNoSoulPenalty();
                 penaltyApplied = false;
                 return;
             }
@@ -119,11 +115,6 @@ namespace Eternia.Content.Players
             }
 
             penaltyApplied = false;
-        }
-
-        private bool HasClassSoulAvailable()
-        {
-            return SoulInventory.HasAnyClassSoulItem(Player);
         }
 
         private void SyncLegacySoulFlags()
@@ -223,7 +214,7 @@ namespace Eternia.Content.Players
             Player.lifeRegen -= 10;
 
             Player.AddBuff(
-                ModContent.BuffType<NoSoulDebuff>(),
+                ModContent.BuffType<SoulLessDebuff>(),
                 2
             );
         }

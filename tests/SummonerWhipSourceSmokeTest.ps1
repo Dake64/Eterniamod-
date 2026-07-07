@@ -90,7 +90,6 @@ foreach ($projectileName in @(
 }
 
 $localizationFiles = @(
-    (Join-Path $repoRoot "Localization\en-US_Mods.ETERNIA.hjson"),
     (Join-Path $repoRoot "en-US.hjson")
 )
 

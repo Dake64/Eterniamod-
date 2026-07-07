@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Eternia.Content.Items.Souls;
 using Eternia.Content.Players;
 using Eternia.Content.Souls;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,21 +13,40 @@ namespace Eternia.Content.NPCs
         public override void SetStaticDefaults()
         {
             Main.npcFrameCount[NPC.type] = Main.npcFrameCount[NPCID.Guide];
+
+            NPCID.Sets.ExtraFramesCount[NPC.type] =
+                NPCID.Sets.ExtraFramesCount[NPCID.Guide];
+            NPCID.Sets.AttackFrameCount[NPC.type] =
+                NPCID.Sets.AttackFrameCount[NPCID.Guide];
+            NPCID.Sets.DangerDetectRange[NPC.type] = 500;
+            NPCID.Sets.AttackType[NPC.type] = 0;
+            NPCID.Sets.AttackTime[NPC.type] = 90;
+            NPCID.Sets.AttackAverageChance[NPC.type] = 30;
+            NPCID.Sets.HatOffsetY[NPC.type] = 4;
         }
 
         public override void SetDefaults()
         {
+            NPC.townNPC = true;
+            NPC.friendly = true;
             NPC.width = 18;
             NPC.height = 40;
-            NPC.friendly = true;
             NPC.aiStyle = NPCAIStyleID.Passive;
-            NPC.damage = 0;
-            NPC.defense = 999;
-            NPC.lifeMax = 9999;
-            NPC.knockBackResist = 0f;
+            NPC.damage = 10;
+            NPC.defense = 30;
+            NPC.lifeMax = 250;
+            NPC.HitSound = SoundID.NPCHit1;
+            NPC.DeathSound = SoundID.NPCDeath1;
+            NPC.knockBackResist = 0.5f;
 
             AnimationType = NPCID.Guide;
         }
+
+        // Allow the Eternal to move into any vacant house so it stays available.
+        public override bool CanTownNPCSpawn(int numTownNPCs) => true;
+
+        public override List<string> SetNPCNameList() =>
+            new List<string> { "Eternal" };
 
         public override bool CanChat() => true;
 
@@ -43,20 +62,20 @@ namespace Eternia.Content.NPCs
 
             if (!ownsSoulItem)
             {
-                return "Siento el vacio dentro de ti... tu alma aun no ha despertado.";
+                return "I sense the emptiness within you... your soul has not yet awakened.";
             }
 
             if (modPlayer.ActiveSoul == SoulId.Empty)
             {
-                return "Tu Soul vacia te sostiene, pero aun no has elegido una clase base.";
+                return "Your Empty Soul sustains you, but you have not yet chosen a base class.";
             }
 
             if (!modPlayer.HasAnySoul)
             {
-                return "Ya llevas una Soul contigo. Equipala o crafteala antes de pedirme otra.";
+                return "You already carry a Soul. Equip it or craft it before asking me for another.";
             }
 
-            return $"Tu clase base es {SoulRules.GetDisplayName(modPlayer.ActiveSoul)}. La promocion despierta despues del Muro de Carne.";
+            return $"Your base class is {SoulRules.GetDisplayName(modPlayer.ActiveSoul)}. Its promotion awakens after the Wall of Flesh.";
         }
 
         public override void SetChatButtons(
@@ -70,7 +89,7 @@ namespace Eternia.Content.NPCs
                 return;
             }
 
-            button = "Soul vacia";
+            button = "Empty Soul";
             button2 = "";
         }
 
@@ -92,7 +111,7 @@ namespace Eternia.Content.NPCs
         {
             if (SoulInventory.HasAnySoulItem(player))
             {
-                Main.NewText("Ya posees una Soul.", 255, 80, 80);
+                Main.NewText("You already possess a Soul.", 255, 80, 80);
                 return;
             }
 
@@ -102,7 +121,7 @@ namespace Eternia.Content.NPCs
             );
 
             Main.NewText(
-                "Has recibido una Empty Soul. Crafteala en Warrior, Mage, Ranger o Summoner desde tu inventario.",
+                "You received an Empty Soul. Craft it into Warrior, Mage, Ranger or Summoner from your inventory.",
                 150,
                 100,
                 255

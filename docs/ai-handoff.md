@@ -41,10 +41,12 @@ dotnet build .\ETERNIA.csproj
 
 ## Invariantes de producto
 
-- Fresh player sin Soul no debe recibir dano ni debuff por falta de Soul.
-- `EmptySoul` no cuenta como clase activa.
+- No tener NINGUNA Soul equipada aplica penalizacion fuerte + `SoulLessDebuff`
+  ("Alma Perdida"), incluido el jugador recien creado. Un cuerpo siempre ocupa
+  una Soul (cambio 2026-07-06; antes el fresh player no se castigaba).
+- `EmptySoul` no cuenta como clase activa, pero equipada SI quita la penalizacion
+  de "sin Soul" (cuenta como cuerpo con alma).
 - Class Souls activan clase al equiparse como accesorios.
-- Tener una Class Soul disponible pero no activa aplica penalizacion fuerte.
 - Usar arma de otra clase con Class Soul activa mata al jugador.
 - Las subclases y recompensas deben estar respaldadas por la Soul activa
   correcta.

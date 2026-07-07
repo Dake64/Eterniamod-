@@ -31,7 +31,6 @@ if ($content -notmatch '"Elemental Ultimate",\s*"Z"') {
 }
 
 foreach ($localizationPath in @(
-    (Join-Path $repoRoot "Localization\en-US_Mods.ETERNIA.hjson"),
     (Join-Path $repoRoot "en-US.hjson"))) {
     $localization = Get-Content -Raw $localizationPath
 

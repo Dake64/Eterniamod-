@@ -2,7 +2,6 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $localizationPaths = @(
-    (Join-Path $repoRoot "Localization\en-US_Mods.ETERNIA.hjson"),
     (Join-Path $repoRoot "en-US.hjson")
 )
 
