@@ -15,15 +15,19 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
-## 2026-07-06 - Barra de EXP movida a arriba-centro (fuera del chat)
+## 2026-07-06 - HUD movido a arriba-centro (fuera del chat)
 
-- Objetivo: la barra de EXP en abajo-izquierda la tapaba el chat.
-- Archivos: `Content/UI/ExpBarUI.cs`, `Content/UI/EterniaUI.cs`,
-  `tests/ExpBarPlacementSourceSmokeTest.ps1` (nuevo).
-- Cambios: nuevo helper `GetTopCenterPanel` en `EterniaUI`; `ExpBarUI` ahora se
-  dibuja arriba-centro (despejado del chat abajo-izq, minimapa arriba-der, y la
-  barra de vida de boss abajo-centro).
-- Verificacion: `dotnet build -t:Compile` 0/0; suite 59/59. Falta reload in-game.
+- Objetivo: los paneles en abajo-izquierda los tapaba el chat.
+- Archivos: `Content/UI/EterniaUI.cs` (helper `GetTopCenterPanel`), `ExpBarUI.cs`,
+  `ClassProgressionUI.cs`, `CursedMageUI.cs`, `ElementalistUI.cs`,
+  `NecromancerUI.cs`, `tests/ExpBarPlacementSourceSmokeTest.ps1` (nuevo).
+- Cambios: nuevo helper `GetTopCenterPanel`. Se movieron TODOS los paneles de
+  abajo-izquierda a un stack arriba-centro (despejado del chat abajo-izq, minimapa
+  arriba-der, y barra de vida de boss abajo-centro): barra de EXP (arriba),
+  progresion de clase (debajo), y los medidores de subclase Cursed/Elementalist/
+  Necromancer (que son mutuamente exclusivos) debajo de esos.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 59/59. Falta reload in-game
+  para confirmar el stack (y ajustar posiciones si algo se encima).
 
 ## 2026-07-06 - Badge de nivel en todos los enemigos + flair por tier
 

@@ -103,10 +103,9 @@ namespace Eternia.Content.UI
                 Main.spriteBatch;
 
             Rectangle panel =
-                EterniaUI.GetBottomLeftPanel(
+                EterniaUI.GetTopCenterPanel(
                     368,
                     72,
-                    20,
                     76);
 
             EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.82f);

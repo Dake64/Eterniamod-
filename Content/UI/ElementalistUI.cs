@@ -33,7 +33,7 @@ namespace Eternia.Content.UI
                 GetElementColor(elementalist.CurrentElement);
 
             Rectangle panel =
-                EterniaUI.GetBottomLeftPanel(306, 178, 20, 156);
+                EterniaUI.GetTopCenterPanel(306, 178, 154);
 
             EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.84f);
 

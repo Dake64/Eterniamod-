@@ -5,19 +5,36 @@ $ErrorActionPreference = "Stop"
 # (bottom-left), minimap (top-right) and boss health bar (bottom-center).
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$exp = Get-Content -Raw (Join-Path $repoRoot "Content\UI\ExpBarUI.cs")
-$shared = Get-Content -Raw (Join-Path $repoRoot "Content\UI\EterniaUI.cs")
+$uiRoot = Join-Path $repoRoot "Content\UI"
+$shared = Get-Content -Raw (Join-Path $uiRoot "EterniaUI.cs")
 
 if ($shared -notmatch "public static Rectangle GetTopCenterPanel\(") {
     throw "EterniaUI should expose a GetTopCenterPanel helper."
 }
 
-if ($exp -match "GetBottomLeftPanel") {
-    throw "The EXP bar should not sit at the bottom-left where the chat covers it."
+# None of the HUD panels should live at the bottom-left where the chat covers them.
+$hudPanels = @(
+    "ExpBarUI",
+    "ClassProgressionUI",
+    "CursedMageUI",
+    "ElementalistUI",
+    "NecromancerUI")
+
+foreach ($ui in $hudPanels) {
+    $content = Get-Content -Raw (Join-Path $uiRoot "$ui.cs")
+
+    if ($content -match "GetBottomLeftPanel") {
+        throw "$ui should not sit at the bottom-left where the chat covers it."
+    }
 }
 
-if ($exp -notmatch "GetTopCenterPanel") {
-    throw "The EXP bar should use the top-center placement so it stays visible."
+# The always-on progression HUD (EXP + class) uses the top-center stack.
+foreach ($ui in @("ExpBarUI", "ClassProgressionUI")) {
+    $content = Get-Content -Raw (Join-Path $uiRoot "$ui.cs")
+
+    if ($content -notmatch "GetTopCenterPanel") {
+        throw "$ui should use the top-center placement so it stays visible."
+    }
 }
 
 Write-Host "EXP bar placement source smoke test passed."
