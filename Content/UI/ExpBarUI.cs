@@ -21,16 +21,23 @@ namespace Eternia.Content.UI
             var levelPlayer =
                 player.GetModPlayer<EterniaLevelPlayer>();
 
-            Rectangle panel =
-                EterniaUI.GetTopRowPanel(
-                    368,
-                    56,
-                    14,
-                    750,
-                    0);
+            var stats =
+                player.GetModPlayer<EterniaStatsPlayer>();
+
+            int statPoints = stats.StatPoints;
+            int passivePoints = levelPlayer.passivePoints;
+            bool hasPoints = statPoints > 0 || passivePoints > 0;
 
             Color accent =
                 Color.DeepSkyBlue;
+
+            Rectangle panel =
+                EterniaUI.GetTopRowPanel(
+                    368,
+                    hasPoints ? 82 : 56,
+                    14,
+                    750,
+                    0);
 
             EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.82f);
 
@@ -47,6 +54,38 @@ namespace Eternia.Content.UI
                 progress,
                 accent,
                 label);
+
+            if (hasPoints)
+            {
+                string hint;
+
+                if (statPoints > 0 && passivePoints > 0)
+                {
+                    hint = $"{statPoints} Stat & {passivePoints} Passive points to spend";
+                }
+                else if (statPoints > 0)
+                {
+                    hint = $"{statPoints} Stat point{(statPoints == 1 ? "" : "s")} to spend";
+                }
+                else
+                {
+                    hint = $"{passivePoints} Passive point{(passivePoints == 1 ? "" : "s")} to spend";
+                }
+
+                float pulse =
+                    0.6f + 0.4f * (float)System.Math.Sin(
+                        Main.GlobalTimeWrappedHourly * 5f);
+
+                Color hintColor =
+                    Color.Lerp(Color.Gold, Color.White, pulse);
+
+                EterniaUI.DrawCenteredText(
+                    spriteBatch,
+                    hint,
+                    new Rectangle(panel.X, panel.Y + 48, panel.Width, 24),
+                    hintColor,
+                    0.56f);
+            }
         }
     }
 }

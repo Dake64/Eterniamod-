@@ -15,6 +15,15 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Aviso de puntos sin gastar en la barra de EXP
+
+- Objetivo: recordar al jugador que tiene Stat/Passive points por gastar.
+- Archivos: `Content/UI/ExpBarUI.cs`,
+  `tests/UnspentPointsHintSourceSmokeTest.ps1` (nuevo).
+- Cambios: cuando hay puntos sin gastar, la barra de EXP crece y muestra una linea
+  PULSANTE ("N Stat & M Passive points to spend"); sin puntos, queda compacta.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 61/61. Falta reload in-game.
+
 ## 2026-07-06 - Banner de level-up (fuera del chat) + sonido
 
 - Objetivo: quitar el spam de 3 mensajes de chat al subir de nivel.
