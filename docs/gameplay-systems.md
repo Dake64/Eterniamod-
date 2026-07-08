@@ -62,11 +62,11 @@ Activar una Class Soul YA NO regala un arma inicial. Se elimino todo el sistema
 (`GiveStarterWeaponIfNeeded`, los flags `*StarterGiven` y su save/load). La Soul
 solo define la clase; el jugador consigue su propia arma. Ver `decision-log.md`.
 
-Nota: las armas `TrainingBlade`/`ApprenticeWand`/`TrainingBow`/`TrainingWhip`
-existen aun como items pero quedan sin fuente (ni regaladas ni crafteables);
-decidir si craftearlas o quitarlas. Riesgo: un Mage/Ranger/Summoner nuevo no tiene
-arma de su clase y su arma vanilla inicial (Copper Shortsword = melee) lo mataria
-por clase incorrecta.
+Las armas de clase `TrainingBlade`/`ApprenticeWand`/`TrainingBow`/`TrainingWhip`
+son CRAFTEABLES (10 madera en la mesa de trabajo, disponibles desde el minuto 1),
+asi que cualquier clase puede armarse desde el inicio y evitar el death-trap de la
+Copper Shortsword vanilla (que mataria a un Mage/Ranger/Summoner por clase
+incorrecta).
 
 ## Subclases y promociones
 

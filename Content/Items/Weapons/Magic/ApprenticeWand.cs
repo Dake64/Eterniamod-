@@ -38,8 +38,7 @@ namespace Eternia.Content.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Wood, 8)
-                .AddIngredient(ItemID.FallenStar)
+                .AddIngredient(ItemID.Wood, 10)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }

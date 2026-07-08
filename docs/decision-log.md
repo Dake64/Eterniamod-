@@ -30,11 +30,10 @@ Formato sugerido:
 - Decision: eliminar el sistema de arma inicial (`GiveStarterWeaponIfNeeded` y los
   flags `*StarterGiven`). La Soul solo define la clase.
 - Consecuencias:
-  - Las armas `TrainingBlade`/`ApprenticeWand`/`TrainingBow`/`TrainingWhip` quedan
-    sin fuente; decidir si craftearlas o quitarlas.
-  - Riesgo de arranque: Mage/Ranger/Summoner nuevos no tienen arma de su clase y su
-    arma vanilla (Copper Shortsword = melee) los mata por clase incorrecta.
-    Pendiente decidir mitigacion.
+  - Las armas de clase (TrainingBlade/ApprenticeWand/TrainingBow/TrainingWhip) YA
+    eran crafteables; se simplificaron a 10 madera en la mesa de trabajo para que
+    cualquier clase se arme desde el minuto 1 (evita el death-trap de la Copper
+    Shortsword). Mitigacion resuelta.
 - Archivos relacionados:
   - `Content/Players/EterniaPlayer.cs`
   - `tests/StarterLoadoutSourceSmokeTest.ps1`

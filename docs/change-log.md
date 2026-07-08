@@ -15,6 +15,18 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Armas de clase crafteables desde el minuto 1
+
+- Objetivo: tras quitar el arma inicial, asegurar que ninguna clase arranque rota.
+- Contexto: las 4 armas de clase YA tenian receta (mi nota previa de "sin fuente"
+  estaba equivocada). Se simplificaron las 2 con gate temprano (ApprenticeWand
+  pedia Fallen Star = noche; TrainingWhip pedia Rope) a solo 10 madera, como las
+  otras dos, para que cualquier clase se arme desde el minuto 1.
+- Archivos: `Content/Items/Weapons/Magic/ApprenticeWand.cs`,
+  `Content/Items/Weapons/Summoner/TrainingWhip.cs`,
+  `tests/StarterWeaponRecipeSourceSmokeTest.ps1` (nuevo).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 62/62.
+
 ## 2026-07-06 - Sin arma inicial al activar Class Soul
 
 - Objetivo: activar una Class Soul ya NO regala un arma inicial (pedido del usuario).

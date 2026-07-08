@@ -33,8 +33,7 @@ namespace Eternia.Content.Items.Weapons.Summoner
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Wood, 8)
-                .AddIngredient(ItemID.Rope, 12)
+                .AddIngredient(ItemID.Wood, 10)
                 .AddTile(TileID.WorkBenches)
                 .Register();
         }
