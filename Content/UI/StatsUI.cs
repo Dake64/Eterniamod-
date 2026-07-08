@@ -183,6 +183,8 @@ namespace Eternia.Content.UI
                     row.Color);
             }
 
+            EterniaUI.DrawQueuedTooltip(spriteBatch);
+
             return true;
         }
 
@@ -349,8 +351,7 @@ namespace Eternia.Content.UI
 
             if (hover)
             {
-                EterniaUI.DrawTooltip(
-                    spriteBatch,
+                EterniaUI.QueueTooltip(
                     name,
                     new[]
                     {

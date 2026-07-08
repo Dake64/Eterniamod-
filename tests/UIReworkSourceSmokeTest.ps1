@@ -43,8 +43,8 @@ if ($passive -match "new Rectangle\(\s*700\s*,\s*120" -or
 if ($passive -notmatch "GroupPassivesByAffinity" -or
     $passive -notmatch "DrawPassiveNode" -or
     $passive -notmatch "GetPassiveState" -or
-    $passive -notmatch "EterniaUI\.DrawTooltip") {
-    throw "PassiveUI should group passives by affinity and draw stateful nodes with wrapped tooltips."
+    $passive -notmatch "EterniaUI\.QueueTooltip") {
+    throw "PassiveUI should group passives by affinity and draw stateful nodes with deferred wrapped tooltips."
 }
 
 foreach ($pair in @(

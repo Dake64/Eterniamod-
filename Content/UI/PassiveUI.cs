@@ -164,6 +164,8 @@ namespace Eternia.Content.UI
                 stats,
                 level);
 
+            EterniaUI.DrawQueuedTooltip(spriteBatch);
+
             return true;
         }
 
@@ -759,8 +761,7 @@ namespace Eternia.Content.UI
                 if (rect.Contains(Main.MouseScreen.ToPoint()))
                 {
                     Main.LocalPlayer.mouseInterface = true;
-                    EterniaUI.DrawTooltip(
-                        spriteBatch,
+                    EterniaUI.QueueTooltip(
                         passive.Name,
                         GetTooltipLines(passive, state),
                         accent);
@@ -834,8 +835,7 @@ namespace Eternia.Content.UI
             if (rect.Contains(Main.MouseScreen.ToPoint()))
             {
                 Main.LocalPlayer.mouseInterface = true;
-                EterniaUI.DrawTooltip(
-                    spriteBatch,
+                EterniaUI.QueueTooltip(
                     passive.Name,
                     GetTooltipLines(passive, state),
                     accent);

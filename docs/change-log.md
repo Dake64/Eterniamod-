@@ -15,6 +15,24 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Fix z-order de tooltips (Stats + Passive)
+
+- Objetivo: los tooltips de hover salian DETRAS de las filas/paneles siguientes
+  porque se dibujaban inline a mitad del loop (reportado por el usuario).
+- Archivos principales:
+  - `Content/UI/EterniaUI.cs` (`QueueTooltip` + `DrawQueuedTooltip`)
+  - `Content/UI/StatsUI.cs`, `Content/UI/PassiveUI.cs`
+  - `tests/TooltipZOrderSourceSmokeTest.ps1` (nuevo)
+- Cambios:
+  - Tooltip diferido en `EterniaUI`: `QueueTooltip` guarda el tooltip durante el
+    pase y `DrawQueuedTooltip` lo pinta al FINAL (encima de todo).
+  - `StatsUI` y `PassiveUI` encolan el tooltip de hover y lo pintan al final del
+    panel -> ya no queda detras. Ninguna otra UI dibuja tooltips inline.
+  - TDD: `TooltipZOrderSourceSmokeTest` (fallando primero). Ajustado
+    `UIReworkSourceSmokeTest` al nuevo patron.
+- Verificacion:
+  - `dotnet build -t:Compile`: 0/0. Suite: 56/56. Falta reload in-game.
+
 ## 2026-07-06 - Multijugador: rareza, penalizacion y XP MP-safe
 
 - Objetivo: hacer el mod jugable en multijugador real (pedido del usuario).

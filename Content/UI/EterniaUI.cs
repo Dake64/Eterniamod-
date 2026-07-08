@@ -537,6 +537,40 @@ namespace Eternia.Content.UI
             }
         }
 
+        private static string pendingTooltipTitle;
+        private static IEnumerable<string> pendingTooltipLines;
+        private static Color pendingTooltipAccent;
+
+        // Queue a tooltip to be drawn at the very end of the UI pass (on top of
+        // everything), so later-drawn rows/panels don't cover it. Pair with
+        // DrawQueuedTooltip called last in the panel's draw.
+        public static void QueueTooltip(
+            string title,
+            IEnumerable<string> lines,
+            Color accent)
+        {
+            pendingTooltipTitle = title;
+            pendingTooltipLines = lines;
+            pendingTooltipAccent = accent;
+        }
+
+        public static void DrawQueuedTooltip(SpriteBatch spriteBatch)
+        {
+            if (pendingTooltipTitle == null)
+            {
+                return;
+            }
+
+            DrawTooltip(
+                spriteBatch,
+                pendingTooltipTitle,
+                pendingTooltipLines,
+                pendingTooltipAccent);
+
+            pendingTooltipTitle = null;
+            pendingTooltipLines = null;
+        }
+
         public static void DrawDivider(
             SpriteBatch spriteBatch,
             int x,
