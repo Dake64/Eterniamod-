@@ -15,6 +15,21 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Badge de nivel en todos los enemigos + flair por tier
+
+- Objetivo: el usuario reporto que los mobs (mayormente Common) no mostraban
+  nivel/rareza, y pidio algo mas caracteristico por rareza.
+- Archivos: `Content/Globals/EterniaGlobalNPC.cs`,
+  `tests/BossRarityBadgeSourceSmokeTest.ps1`.
+- Cambios:
+  - `PostDraw` ahora muestra badge en TODO enemigo real (gate por `ShouldIgnore`,
+    que excluye critters / town / friendly). Common no-boss recibe una etiqueta
+    minima "Lv.X" (gris, pequena, sin placa) para no saturar; no-Common y bosses
+    reciben el badge completo con placa/glow.
+  - Flair por tier: Mythic/Ancient/Nightmare tienen un segundo anillo exterior
+    contra-rotatorio; el aura de Nightmare TIEMBLA (se siente inestable/aterrador).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 58/58. Falta reload in-game.
+
 ## 2026-07-06 - Escalera de rareza ampliada (Mythic/Ancient/Nightmare)
 
 - Objetivo: mas emocion cuando cae un enemigo muy raro.

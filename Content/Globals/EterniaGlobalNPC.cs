@@ -159,6 +159,16 @@ namespace Eternia.Content.Globals
             float radius =
                 (2.5f + intensity * 6f) * (0.7f + 0.3f * pulse);
 
+            // Nightmare aura shakes for an unstable, dreadful feel.
+            if (rarity == EnemyRarity.Nightmare)
+            {
+                float shake = Main.GlobalTimeWrappedHourly * 40f;
+                drawPos +=
+                    new Vector2(
+                        (float)System.Math.Sin(shake * 1.3f),
+                        (float)System.Math.Cos(shake)) * 1.8f;
+            }
+
             for (int i = 0; i < copies; i++)
             {
                 float angle =
@@ -177,6 +187,37 @@ namespace Eternia.Content.Globals
                     npc.scale,
                     effects,
                     0f);
+            }
+
+            // Top tiers get a second, slower, counter-rotating outer ring.
+            if (rarity >= EnemyRarity.Mythic)
+            {
+                Color outerGlow =
+                    GetRarityColor(rarity) *
+                    (0.09f + intensity * 0.08f) *
+                    (0.5f + 0.5f * pulse);
+
+                float outerRadius = radius * 1.8f;
+
+                for (int i = 0; i < 6; i++)
+                {
+                    float angle =
+                        MathHelper.TwoPi * i / 6f -
+                        Main.GlobalTimeWrappedHourly * intensity * 0.6f;
+
+                    Vector2 offset = angle.ToRotationVector2() * outerRadius;
+
+                    spriteBatch.Draw(
+                        texture,
+                        drawPos + offset,
+                        frame,
+                        outerGlow,
+                        npc.rotation,
+                        origin,
+                        npc.scale,
+                        effects,
+                        0f);
+                }
             }
 
             return true;
@@ -236,7 +277,7 @@ namespace Eternia.Content.Globals
         {
             if (!npc.active ||
                 npc.life <= 0 ||
-                (rarity == EnemyRarity.Common && !npc.boss))
+                ShouldIgnore(npc))
             {
                 return;
             }
@@ -377,6 +418,30 @@ namespace Eternia.Content.Globals
             SpriteBatch spriteBatch,
             Vector2 screenPos)
         {
+            // Common non-boss enemies get only a tiny level tag to avoid clutter.
+            if (rarity == EnemyRarity.Common && !npc.boss)
+            {
+                string levelText = $"Lv.{enemyLevel}";
+                float levelScale = 0.5f;
+
+                Vector2 size =
+                    FontAssets.MouseText.Value.MeasureString(levelText) * levelScale;
+
+                Vector2 tagPos =
+                    new Vector2(
+                        npc.Center.X - screenPos.X - size.X / 2f,
+                        npc.position.Y - screenPos.Y - 24f);
+
+                Utils.DrawBorderString(
+                    spriteBatch,
+                    levelText,
+                    tagPos,
+                    Color.LightGray * 0.9f,
+                    levelScale);
+
+                return;
+            }
+
             float intensity = GetRarityIntensity(rarity);
             Color color = GetRarityColor(rarity);
 

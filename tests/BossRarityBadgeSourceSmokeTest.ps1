@@ -8,8 +8,8 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $content = Get-Content -Raw (Join-Path $repoRoot "Content\Globals\EterniaGlobalNPC.cs")
 
-if ($content -notmatch "(?ms)public override void PostDraw\([^)]*\)\s*\{[^}]*npc\.boss") {
-    throw "EterniaGlobalNPC.PostDraw should keep drawing the badge for bosses (exempt npc.boss from the Common skip)."
+if ($content -notmatch "EnemyRarity\.Common\s*&&\s*!npc\.boss") {
+    throw "Bosses must not fall into the minimal Common level tag; they always show the full rarity badge."
 }
 
 Write-Host "Boss rarity badge source smoke test passed."
