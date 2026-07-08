@@ -15,6 +15,23 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Escalera de rareza ampliada (Mythic/Ancient/Nightmare)
+
+- Objetivo: mas emocion cuando cae un enemigo muy raro.
+- Archivos: `Content/Globals/EterniaGlobalNPC.cs`, `tests/RarityVisualsSourceSmokeTest.ps1`.
+- Cambios:
+  - 3 tiers nuevos sobre Legendary: **Mythic** (~0.8%), **Ancient** (~0.3%),
+    **Nightmare** (~0.1%) en enemigos normales; los bosses sesgan mucho mas raro.
+    Ladder normal: Common 68 / Uncommon 17 / Rare 8 / SuperRare 4 / Legendary 1.8 /
+    Mythic 0.8 / Ancient 0.3 / Nightmare 0.1 (%).
+  - Cada tier con color propio (Mythic violeta, Ancient teal, Nightmare rojo
+    sangre), particula (PurpleTorch / IceTorch / Shadowflame), intensidad de aura
+    y stats. Tanques con daño moderado: se respeto el guard de no-8x vida / 4x
+    daño-defensa en enemigos NORMALES; los bosses escalan un poco mas.
+  - XP escala fuerte con la rareza (Mythic x9, Ancient x15, Nightmare x25).
+  - Aura limitada a 18 copias por perf.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 58/58. Falta reload in-game.
+
 ## 2026-07-06 - Juice visual de rareza (aura + badge dramatico)
 
 - Objetivo: que las rarezas altas (SuperRare/Legendary) se sientan amenazantes.

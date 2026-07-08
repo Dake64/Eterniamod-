@@ -15,18 +15,24 @@ namespace Eternia.Content.Globals
     {
         private static readonly EnemyRarityProfile[] NormalProfiles =
         {
-            new EnemyRarityProfile(0.01f, EnemyRarity.Legendary, 3f, 2f, 2f, 5f, 1.22f, 18, 31),
-            new EnemyRarityProfile(0.04f, EnemyRarity.SuperRare, 2f, 1.55f, 1.5f, 3f, 1.15f, 12, 21),
-            new EnemyRarityProfile(0.12f, EnemyRarity.Rare, 1.55f, 1.25f, 1.25f, 2f, 1.08f, 6, 14),
-            new EnemyRarityProfile(0.28f, EnemyRarity.Uncommon, 1.22f, 1.1f, 1.1f, 1.35f, 1.04f, 3, 8),
+            new EnemyRarityProfile(0.001f, EnemyRarity.Nightmare, 5f, 2.6f, 2.6f, 25f, 1.5f, 40, 61),
+            new EnemyRarityProfile(0.004f, EnemyRarity.Ancient, 4.2f, 2.4f, 2.4f, 15f, 1.4f, 32, 51),
+            new EnemyRarityProfile(0.012f, EnemyRarity.Mythic, 3.6f, 2.2f, 2.2f, 9f, 1.3f, 24, 41),
+            new EnemyRarityProfile(0.03f, EnemyRarity.Legendary, 3f, 2f, 2f, 5f, 1.22f, 18, 31),
+            new EnemyRarityProfile(0.07f, EnemyRarity.SuperRare, 2f, 1.55f, 1.5f, 3f, 1.15f, 12, 21),
+            new EnemyRarityProfile(0.15f, EnemyRarity.Rare, 1.55f, 1.25f, 1.25f, 2f, 1.08f, 6, 14),
+            new EnemyRarityProfile(0.32f, EnemyRarity.Uncommon, 1.22f, 1.1f, 1.1f, 1.35f, 1.04f, 3, 8),
             new EnemyRarityProfile(1f, EnemyRarity.Common, 1f, 1f, 1f, 1f, 1f, 1, 5)
         };
 
         private static readonly EnemyRarityProfile[] BossProfiles =
         {
-            new EnemyRarityProfile(0.05f, EnemyRarity.Legendary, 2f, 1.5f, 1.5f, 5f, 1.28f, 50, 71),
-            new EnemyRarityProfile(0.15f, EnemyRarity.SuperRare, 1.5f, 1.3f, 1.3f, 3f, 1.18f, 40, 51),
-            new EnemyRarityProfile(0.35f, EnemyRarity.Rare, 1.2f, 1.1f, 1.1f, 2f, 1.1f, 30, 41),
+            new EnemyRarityProfile(0.02f, EnemyRarity.Nightmare, 3.2f, 2f, 2f, 25f, 1.6f, 80, 101),
+            new EnemyRarityProfile(0.06f, EnemyRarity.Ancient, 2.8f, 1.8f, 1.8f, 15f, 1.5f, 68, 86),
+            new EnemyRarityProfile(0.13f, EnemyRarity.Mythic, 2.4f, 1.6f, 1.6f, 9f, 1.4f, 58, 71),
+            new EnemyRarityProfile(0.25f, EnemyRarity.Legendary, 2f, 1.5f, 1.5f, 5f, 1.28f, 50, 71),
+            new EnemyRarityProfile(0.45f, EnemyRarity.SuperRare, 1.5f, 1.3f, 1.3f, 3f, 1.18f, 40, 51),
+            new EnemyRarityProfile(0.68f, EnemyRarity.Rare, 1.2f, 1.1f, 1.1f, 2f, 1.1f, 30, 41),
             new EnemyRarityProfile(1f, EnemyRarity.Common, 1f, 1f, 1f, 1f, 1f, 20, 31)
         };
 
@@ -38,7 +44,10 @@ namespace Eternia.Content.Globals
             Uncommon,
             Rare,
             SuperRare,
-            Legendary
+            Legendary,
+            Mythic,
+            Ancient,
+            Nightmare
         }
 
         public EnemyRarity rarity = EnemyRarity.Common;
@@ -145,7 +154,7 @@ namespace Eternia.Content.Globals
                 (0.14f + intensity * 0.24f) *
                 (0.65f + 0.35f * pulse);
 
-            int copies = 4 + (int)(intensity * 6f);
+            int copies = System.Math.Min(18, 4 + (int)(intensity * 6f));
 
             float radius =
                 (2.5f + intensity * 6f) * (0.7f + 0.3f * pulse);
@@ -447,6 +456,9 @@ namespace Eternia.Content.Globals
                 EnemyRarity.Rare => "Rare",
                 EnemyRarity.SuperRare => "Super Rare",
                 EnemyRarity.Legendary => "Legendary",
+                EnemyRarity.Mythic => "Mythic",
+                EnemyRarity.Ancient => "Ancient",
+                EnemyRarity.Nightmare => "Nightmare",
                 _ => "Common"
             };
         }
@@ -459,6 +471,9 @@ namespace Eternia.Content.Globals
                 EnemyRarity.Rare => Color.LightGreen,
                 EnemyRarity.SuperRare => Color.Gold,
                 EnemyRarity.Legendary => Color.OrangeRed,
+                EnemyRarity.Mythic => new Color(200, 70, 255),
+                EnemyRarity.Ancient => new Color(60, 230, 210),
+                EnemyRarity.Nightmare => new Color(210, 24, 44),
                 _ => Color.LightGray
             };
         }
@@ -471,6 +486,9 @@ namespace Eternia.Content.Globals
                 EnemyRarity.Rare => 0.55f,
                 EnemyRarity.SuperRare => 0.8f,
                 EnemyRarity.Legendary => 1.15f,
+                EnemyRarity.Mythic => 1.45f,
+                EnemyRarity.Ancient => 1.8f,
+                EnemyRarity.Nightmare => 2.2f,
                 _ => 0f
             };
         }
@@ -479,6 +497,9 @@ namespace Eternia.Content.Globals
         {
             return enemyRarity switch
             {
+                EnemyRarity.Nightmare => DustID.Shadowflame,
+                EnemyRarity.Ancient => DustID.IceTorch,
+                EnemyRarity.Mythic => DustID.PurpleTorch,
                 EnemyRarity.Legendary => DustID.RedTorch,
                 EnemyRarity.SuperRare => DustID.GoldFlame,
                 _ => DustID.Enchanted_Gold

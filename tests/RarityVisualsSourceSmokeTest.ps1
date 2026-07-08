@@ -18,4 +18,10 @@ if ($content -notmatch "GlobalTimeWrappedHourly") {
     throw "Rarity visuals should pulse over time."
 }
 
+foreach ($tier in @("Mythic", "Ancient", "Nightmare")) {
+    if ($content -notmatch "EnemyRarity\.$tier") {
+        throw "Expanded rarity ladder should include the $tier tier for extra excitement."
+    }
+}
+
 Write-Host "Rarity visuals source smoke test passed."
