@@ -15,6 +15,18 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Banner de promocion (fuera del chat) + sonido
+
+- Objetivo: la promocion a subclase salia como mensaje de chat; darle fanfarria.
+- Archivos: `Content/UI/PromotionBannerUI.cs` (nuevo),
+  `Content/Players/PromotionRewardPlayer.cs`,
+  `tests/PromotionBannerSourceSmokeTest.ps1` (nuevo).
+- Cambios: nuevo `PromotionBannerUI` -> banner dramatico ("PROMOTION!" + nombre de
+  la subclase, con glow y borde pulsante, ~3.7s). Al promocionar dispara el banner
+  + sonido (`SoundID.Item37`) en vez de `Main.NewText`. Se limpio
+  `GivePromotionReward` (ya no manda chat).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 63/63. Falta reload in-game.
+
 ## 2026-07-06 - Armas de clase crafteables desde el minuto 1
 
 - Objetivo: tras quitar el arma inicial, asegurar que ninguna clase arranque rota.

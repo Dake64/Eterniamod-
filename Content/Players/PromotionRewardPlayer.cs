@@ -5,7 +5,9 @@ using Eternia.Content.Items.Weapons.Magic;
 using Eternia.Content.Items.Weapons.Promotion;
 using Eternia.Content.Items.Weapons.Summoner;
 using Eternia.Content.Progression;
+using Eternia.Content.UI;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -57,23 +59,20 @@ namespace Eternia.Content.Players
             }
 
             awardedPromotions.Add(subclass);
-            GivePromotionReward(reward, subclass);
+            GivePromotionReward(reward);
+
+            PromotionBannerUI.Show(subclass);
+            SoundEngine.PlaySound(SoundID.Item37);
         }
 
-        private void GivePromotionReward(
-            PromotionReward reward,
-            string subclass)
+        private void GivePromotionReward(PromotionReward reward)
         {
-            bool granted = false;
-
             if (!HasItem(Player.inventory, reward.ItemType))
             {
                 Player.QuickSpawnItem(
                     Player.GetSource_GiftOrReward(),
                     reward.ItemType
                 );
-
-                granted = true;
             }
 
             if (reward.AmmoType > 0 &&
@@ -85,21 +84,7 @@ namespace Eternia.Content.Players
                     reward.AmmoType,
                     reward.AmmoStack
                 );
-
-                granted = true;
             }
-
-            if (!granted)
-            {
-                return;
-            }
-
-            Main.NewText(
-                $"Promotion unlocked: {subclass}. You received a starter tool.",
-                180,
-                120,
-                255
-            );
         }
 
         private static PromotionReward GetReward(string subclass)
