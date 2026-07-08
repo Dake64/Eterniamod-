@@ -15,6 +15,20 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Banner de level-up (fuera del chat) + sonido
+
+- Objetivo: quitar el spam de 3 mensajes de chat al subir de nivel.
+- Archivos: `Content/UI/LevelUpBannerUI.cs` (nuevo),
+  `Content/Players/EterniaLevelPlayer.cs`,
+  `tests/LevelUpBannerSourceSmokeTest.ps1` (nuevo).
+- Cambios:
+  - Nuevo `LevelUpBannerUI`: banner centrado que aparece, sube un poco y se
+    desvanece (~2.5s) mostrando "LEVEL UP!", el nivel y las recompensas
+    (+Stats / +Passives, acumuladas si subes varios niveles de golpe).
+  - `LevelUp` ahora dispara el banner + un sonido (`SoundID.Item4`) en vez de 3
+    `Main.NewText`. Se conserva el CombatText "LEVEL X" sobre el jugador.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 60/60. Falta reload in-game.
+
 ## 2026-07-06 - HUD movido a arriba-centro (fuera del chat)
 
 - Objetivo: los paneles en abajo-izquierda los tapaba el chat.

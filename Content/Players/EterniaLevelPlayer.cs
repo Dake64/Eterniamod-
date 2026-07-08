@@ -1,5 +1,8 @@
+using Eternia.Content.UI;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -58,26 +61,12 @@ namespace Eternia.Content.Players
 
             statsPlayer.StatPoints += StatPointsPerLevel;
 
-            Main.NewText(
-                $"LEVEL UP! You are now level {level}",
-                255,
-                215,
-                0
-            );
+            LevelUpBannerUI.Show(
+                level,
+                StatPointsPerLevel,
+                PassivePointsPerLevel);
 
-            Main.NewText(
-                $"+{StatPointsPerLevel} Stat Points gained",
-                100,
-                255,
-                100
-            );
-
-            Main.NewText(
-                $"+{PassivePointsPerLevel} Passive Point gained",
-                180,
-                120,
-                255
-            );
+            SoundEngine.PlaySound(SoundID.Item4);
 
             Player.statLife = Player.statLifeMax2;
             Player.HealEffect(Player.statLifeMax2);
