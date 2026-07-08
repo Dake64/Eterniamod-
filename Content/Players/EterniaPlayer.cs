@@ -1,9 +1,4 @@
 using Eternia.Content.Buffs;
-using Eternia.Content.Items.Souls;
-using Eternia.Content.Items.Weapons.Magic;
-using Eternia.Content.Items.Weapons.Ranger;
-using Eternia.Content.Items.Weapons.Summoner;
-using Eternia.Content.Items.Weapons.Warrior;
 using Eternia.Content.Souls;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -33,10 +28,6 @@ namespace Eternia.Content.Players
         public bool summonerSoul;
 
         private bool penaltyApplied;
-        private bool warriorStarterGiven;
-        private bool mageStarterGiven;
-        private bool rangerStarterGiven;
-        private bool summonerStarterGiven;
 
         public override void PreUpdate()
         {
@@ -70,7 +61,6 @@ namespace Eternia.Content.Players
 
             ActiveSoul = soul;
             SyncLegacySoulFlags();
-            GiveStarterWeaponIfNeeded(soul);
         }
 
         public override bool CanUseItem(Item item)
@@ -135,80 +125,6 @@ namespace Eternia.Content.Players
             summonerSoul = ActiveSoul == SoulId.Summoner;
         }
 
-        private void GiveStarterWeaponIfNeeded(SoulId soul)
-        {
-            if (Player.whoAmI != Main.myPlayer)
-            {
-                return;
-            }
-
-            if (soul == SoulId.Warrior &&
-                !warriorStarterGiven)
-            {
-                warriorStarterGiven = true;
-                GiveStarterWeapon(ModContent.ItemType<TrainingBlade>());
-            }
-            else if (soul == SoulId.Mage &&
-                !mageStarterGiven)
-            {
-                mageStarterGiven = true;
-                GiveStarterWeapon(ModContent.ItemType<ApprenticeWand>());
-            }
-            else if (soul == SoulId.Ranger &&
-                !rangerStarterGiven)
-            {
-                rangerStarterGiven = true;
-                GiveStarterWeapon(ModContent.ItemType<TrainingBow>());
-                GiveStarterStack(ItemID.WoodenArrow, 250);
-            }
-            else if (soul == SoulId.Summoner &&
-                !summonerStarterGiven)
-            {
-                summonerStarterGiven = true;
-                GiveStarterWeapon(ModContent.ItemType<TrainingWhip>());
-            }
-        }
-
-        private void GiveStarterWeapon(int itemType)
-        {
-            if (HasItem(Player.inventory, itemType))
-            {
-                return;
-            }
-
-            Player.QuickSpawnItem(
-                Player.GetSource_GiftOrReward(),
-                itemType
-            );
-        }
-
-        private void GiveStarterStack(int itemType, int stack)
-        {
-            if (HasItem(Player.inventory, itemType))
-            {
-                return;
-            }
-
-            Player.QuickSpawnItem(
-                Player.GetSource_GiftOrReward(),
-                itemType,
-                stack
-            );
-        }
-
-        private static bool HasItem(Item[] items, int itemType)
-        {
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i].type == itemType)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private void ApplyNoSoulPenalty()
         {
             Player.GetDamage(DamageClass.Generic) -= 0.65f;
@@ -259,10 +175,6 @@ namespace Eternia.Content.Players
         {
             tag["SoulUIPosX"] = soulUIPosition.X;
             tag["SoulUIPosY"] = soulUIPosition.Y;
-            tag["WarriorStarterGiven"] = warriorStarterGiven;
-            tag["MageStarterGiven"] = mageStarterGiven;
-            tag["RangerStarterGiven"] = rangerStarterGiven;
-            tag["SummonerStarterGiven"] = summonerStarterGiven;
         }
 
         public override void LoadData(TagCompound tag)
@@ -276,22 +188,6 @@ namespace Eternia.Content.Players
                 tag.ContainsKey("SoulUIPosY")
                 ? tag.GetFloat("SoulUIPosY")
                 : 120f;
-
-            warriorStarterGiven =
-                tag.ContainsKey("WarriorStarterGiven") &&
-                tag.GetBool("WarriorStarterGiven");
-
-            mageStarterGiven =
-                tag.ContainsKey("MageStarterGiven") &&
-                tag.GetBool("MageStarterGiven");
-
-            rangerStarterGiven =
-                tag.ContainsKey("RangerStarterGiven") &&
-                tag.GetBool("RangerStarterGiven");
-
-            summonerStarterGiven =
-                tag.ContainsKey("SummonerStarterGiven") &&
-                tag.GetBool("SummonerStarterGiven");
         }
     }
 }

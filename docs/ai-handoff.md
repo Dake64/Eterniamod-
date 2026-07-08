@@ -119,7 +119,7 @@ En tModLoader:
 2. Nuevo personaje sin Soul: no debe recibir no-Soul penalty.
 3. Hablar con EternalNPC: debe recibir `EmptySoul`.
 4. Craftear `EmptySoul` a una de las 4 Class Souls.
-5. Equipar la Soul: debe activar UI/progresion y entregar starter weapon.
+5. Equipar la Soul: debe activar UI/progresion (ya NO entrega arma inicial).
 6. Usar arma correcta: permitido.
 7. Usar arma incorrecta: muerte inmediata.
 8. Tener Class Soul en inventario pero no equipada: penalizacion fuerte.

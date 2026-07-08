@@ -56,18 +56,17 @@ sin equipar; ahora se penaliza a cualquier jugador sin Soul equipada, incluido e
 recien creado. El debuff `NoSoulDebuff` (redundante) fue eliminado. Ver
 `decision-log.md`.
 
-## Starter weapons
+## Arma inicial (ELIMINADA 2026-07-06)
 
-`EterniaPlayer.GiveStarterWeaponIfNeeded` entrega un arma inicial cuando se
-activa por primera vez una Soul base:
+Activar una Class Soul YA NO regala un arma inicial. Se elimino todo el sistema
+(`GiveStarterWeaponIfNeeded`, los flags `*StarterGiven` y su save/load). La Soul
+solo define la clase; el jugador consigue su propia arma. Ver `decision-log.md`.
 
-- Warrior -> `TrainingBlade`.
-- Mage -> `ApprenticeWand`.
-- Ranger -> `TrainingBow` + Wooden Arrows.
-- Summoner -> `TrainingWhip`.
-
-Los flags `WarriorStarterGiven`, `MageStarterGiven`, `RangerStarterGiven` y
-`SummonerStarterGiven` se guardan en `SaveData`.
+Nota: las armas `TrainingBlade`/`ApprenticeWand`/`TrainingBow`/`TrainingWhip`
+existen aun como items pero quedan sin fuente (ni regaladas ni crafteables);
+decidir si craftearlas o quitarlas. Riesgo: un Mage/Ranger/Summoner nuevo no tiene
+arma de su clase y su arma vanilla inicial (Copper Shortsword = melee) lo mataria
+por clase incorrecta.
 
 ## Subclases y promociones
 

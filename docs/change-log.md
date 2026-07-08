@@ -15,6 +15,19 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Sin arma inicial al activar Class Soul
+
+- Objetivo: activar una Class Soul ya NO regala un arma inicial (pedido del usuario).
+- Archivos: `Content/Players/EterniaPlayer.cs`, `tests/StarterLoadoutSourceSmokeTest.ps1`,
+  docs (`gameplay-systems`, `ai-handoff`, `decision-log`).
+- Cambios: eliminado todo el sistema de arma inicial (`GiveStarterWeaponIfNeeded`,
+  `GiveStarterWeapon`, `GiveStarterStack`, `HasItem`, flags `*StarterGiven` y su
+  save/load). El test se repuso para verificar la ELIMINACION.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 61/61.
+- Pendientes/riesgos: las armas starter quedan sin fuente; un Mage/Ranger/Summoner
+  nuevo no tiene arma de clase y el Copper Shortsword vanilla (melee) lo mataria.
+  Decidir mitigacion (craftear armas de clase, o algo).
+
 ## 2026-07-06 - Aviso de puntos sin gastar en la barra de EXP
 
 - Objetivo: recordar al jugador que tiene Stat/Passive points por gastar.

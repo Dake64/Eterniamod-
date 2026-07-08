@@ -22,6 +22,23 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-06 - Activar una Class Soul ya no regala arma inicial
+
+- Estado: Aceptada.
+- Contexto: el usuario pidio que al activar una Class Soul ya no se entregue un
+  arma inicial automatica.
+- Decision: eliminar el sistema de arma inicial (`GiveStarterWeaponIfNeeded` y los
+  flags `*StarterGiven`). La Soul solo define la clase.
+- Consecuencias:
+  - Las armas `TrainingBlade`/`ApprenticeWand`/`TrainingBow`/`TrainingWhip` quedan
+    sin fuente; decidir si craftearlas o quitarlas.
+  - Riesgo de arranque: Mage/Ranger/Summoner nuevos no tienen arma de su clase y su
+    arma vanilla (Copper Shortsword = melee) los mata por clase incorrecta.
+    Pendiente decidir mitigacion.
+- Archivos relacionados:
+  - `Content/Players/EterniaPlayer.cs`
+  - `tests/StarterLoadoutSourceSmokeTest.ps1`
+
 ## 2026-07-06 - Penalizacion por no tener Soul equipada (invierte fresh-player)
 
 - Estado: Aceptada.
