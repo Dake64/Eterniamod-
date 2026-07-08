@@ -1,3 +1,5 @@
+using System.IO;
+using ETERNIA;
 using Eternia.Content.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -5,6 +7,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace Eternia.Content.Globals
 {
@@ -48,6 +51,8 @@ namespace Eternia.Content.Globals
         public float expMultiplier = 1f;
         public float scaleMultiplier = 1f;
 
+        private bool applied;
+
         public override void SetDefaults(NPC npc)
         {
             if (ShouldIgnore(npc))
@@ -55,9 +60,50 @@ namespace Eternia.Content.Globals
                 return;
             }
 
+            // Only the server (or singleplayer) rolls rarity. Multiplayer clients
+            // receive it via ReceiveExtraAI so every client sees the same enemy.
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                return;
+            }
+
             ApplyRarityProfile(
                 npc,
                 RollRarityProfile(npc));
+
+            applied = true;
+        }
+
+        public override void SendExtraAI(
+            NPC npc,
+            BitWriter bitWriter,
+            BinaryWriter binaryWriter)
+        {
+            binaryWriter.Write((byte)rarity);
+            binaryWriter.Write(enemyLevel);
+            binaryWriter.Write(lifeMultiplier);
+            binaryWriter.Write(scaleMultiplier);
+        }
+
+        public override void ReceiveExtraAI(
+            NPC npc,
+            BitReader bitReader,
+            BinaryReader binaryReader)
+        {
+            rarity = (EnemyRarity)binaryReader.ReadByte();
+            enemyLevel = binaryReader.ReadInt32();
+            lifeMultiplier = binaryReader.ReadSingle();
+            scaleMultiplier = binaryReader.ReadSingle();
+
+            // Re-apply the visual/health scaling once on the client so the enemy
+            // matches the server. Guarded so repeated syncs don't compound it.
+            if (!applied)
+            {
+                npc.lifeMax =
+                    (int)(npc.lifeMax * lifeMultiplier) + enemyLevel * 5;
+                npc.scale *= scaleMultiplier;
+                applied = true;
+            }
         }
 
         public override void DrawEffects(
@@ -123,18 +169,11 @@ namespace Eternia.Content.Globals
                 return;
             }
 
-            Player player =
-                Main.LocalPlayer;
-
-            if (npc.lastInteraction >= 0 &&
-                npc.lastInteraction < Main.maxPlayers &&
-                Main.player[npc.lastInteraction].active)
+            // NPC death is server-authoritative; multiplayer clients do nothing.
+            if (Main.netMode == NetmodeID.MultiplayerClient)
             {
-                player = Main.player[npc.lastInteraction];
+                return;
             }
-
-            var levelPlayer =
-                player.GetModPlayer<EterniaLevelPlayer>();
 
             int exp =
                 npc.boss
@@ -146,7 +185,36 @@ namespace Eternia.Content.Globals
                 exp = 5;
             }
 
-            if (!levelPlayer.AddExperience(exp))
+            int killer = npc.lastInteraction;
+
+            bool validKiller =
+                killer >= 0 &&
+                killer < Main.maxPlayers &&
+                Main.player[killer].active;
+
+            if (Main.netMode == NetmodeID.Server)
+            {
+                if (!validKiller)
+                {
+                    return;
+                }
+
+                // Send the earned XP to the client that killed the enemy; that
+                // client applies it and shows the level-up feedback locally.
+                ModPacket packet = Mod.GetPacket();
+                packet.Write((byte)EterniaMessageType.AddExperience);
+                packet.Write(exp);
+                packet.Send(killer);
+                return;
+            }
+
+            // Singleplayer: award directly to the local player.
+            Player player =
+                validKiller
+                    ? Main.player[killer]
+                    : Main.LocalPlayer;
+
+            if (!player.GetModPlayer<EterniaLevelPlayer>().AddExperience(exp))
             {
                 return;
             }

@@ -88,6 +88,14 @@ namespace Eternia.Content.Players
 
         public override void PostUpdateEquips()
         {
+            // The Soul penalty (stat debuffs + wrong-weapon KillMe) must only ever
+            // apply to the local player; in multiplayer this hook runs for every
+            // player on each client.
+            if (Player.whoAmI != Main.myPlayer)
+            {
+                return;
+            }
+
             // A body always needs a Soul: penalize whenever none is equipped,
             // regardless of what is sitting in the inventory. Equipping any Soul
             // (Empty or Class) sets ActiveSoul and clears this penalty.

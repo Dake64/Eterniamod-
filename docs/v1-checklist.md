@@ -39,13 +39,20 @@ override y poner el .png junto a su .cs (tModLoader lo auto-carga por co-ubicaci
   `EterniaGlobalItem`, `EterniaAmmoGlobalItem`, `SkillPlayer` base.
 - [ ] **Lint de assets** exhaustivo: garantizar que TODO item/proyectil/NPC tiene
   textura resoluble (evita `MissingResourceException` al recargar/publicar).
-- [ ] **Multijugador (NO MP-safe hoy)**: los checks de Soul son client-side; y el
-  XP/rareza tienen bugs MP concretos hallados en el hardening:
-  `EterniaGlobalNPC.OnKill` corre server-side (el level-up haria broadcast global
-  via `Main.NewText`), la rareza usa `Main.rand` por-cliente (desync entre
-  clientes), el XP/level del `ModPlayer` no se sincroniza al cliente, y
-  `EterniaAmmoGlobalItem` usa rand por-cliente. Decidir: MP real (pasada dedicada)
-  o marcar el mod como single-player. En SP todo esto funciona bien.
+- [~] **Multijugador (base MP-safe hecha; falta prueba real)**. Decidido: MP real.
+  Hecho:
+  - Rareza de enemigos: se rolea SOLO en el servidor y se sincroniza via
+    `SendExtraAI`/`ReceiveExtraAI` (`EterniaGlobalNPC`). Ya no desync.
+  - Penalizacion de Soul: `EterniaPlayer.PostUpdateEquips` solo actua sobre el
+    jugador local (`whoAmI == Main.myPlayer`).
+  - XP: `OnKill` (server) envia `ModPacket` `AddExperience` al cliente que mato;
+    `ETERNIA.HandlePacket` lo aplica en el cliente. Ya no hay broadcast global.
+  Pendiente:
+  - PRUEBA REAL con servidor + 2 clientes (los tests source solo aseguran que los
+    mecanismos existen).
+  - `EterniaAmmoGlobalItem` usa `Main.rand` por-cliente (ahorro de ammo) -> desync
+    menor. Verificar proyectiles/minions en MP. Bonos de stat en jugadores remotos
+    son cosmeticos e inofensivos.
 - [ ] **Migracion de save** (P1 histórico): `SubclassPlayer.LoadData` /
   `PromotionRewardPlayer.LoadData` cargan strings crudos. Degrada con gracia hoy,
   pero conviene versionar el save antes de v1 por si cambia contenido.

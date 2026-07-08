@@ -15,6 +15,30 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Multijugador: rareza, penalizacion y XP MP-safe
+
+- Objetivo: hacer el mod jugable en multijugador real (pedido del usuario).
+- Archivos principales:
+  - `Content/Globals/EterniaGlobalNPC.cs` (rareza server-side + sync; XP en red)
+  - `Content/Players/EterniaPlayer.cs` (guard de penalizacion al jugador local)
+  - `ETERNIA.cs` (HandlePacket + enum `EterniaMessageType`)
+  - `tests/{EnemyRarityMultiplayer,SoulPenaltyMultiplayer,ExperienceMultiplayer}SourceSmokeTest.ps1` (nuevos)
+- Cambios:
+  - Rareza: se rolea SOLO en el servidor (guard `MultiplayerClient`) y se
+    sincroniza via `SendExtraAI`/`ReceiveExtraAI`; el cliente reaplica scale/lifeMax
+    una vez (guard idempotente `applied`). Ya no desync entre clientes.
+  - Penalizacion de Soul: `PostUpdateEquips` solo actua sobre el jugador local
+    (`whoAmI == Main.myPlayer`); ya no intenta matar/penalizar remotos.
+  - XP: `OnKill` es server-authoritative; en servidor envia `ModPacket`
+    `AddExperience` al cliente que mato; ese cliente aplica el XP y muestra el
+    level-up. En SP se aplica directo. Se quito el broadcast global de `Main.NewText`.
+  - TDD: 3 tests MP nuevos, escritos fallando primero.
+- Verificacion:
+  - `dotnet build -t:Compile`: 0 warnings, 0 errores. Suite: 55/55.
+  - PENDIENTE: prueba real MP (servidor + 2 clientes).
+- Pendientes/riesgos (MP menor): `EterniaAmmoGlobalItem` rand por-cliente;
+  verificar proyectiles/minions en MP; bonos de stat en remotos son cosmeticos.
+
 ## 2026-07-06 - Hardening: pasada de bugs + ultimo espanol + plan v1
 
 - Objetivo: revisar sistemas sin cobertura de test buscando bugs, completar la

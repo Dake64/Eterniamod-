@@ -1,15 +1,48 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using Eternia.Content.Players;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ETERNIA
 {
-	// Please read https://github.com/tModLoader/tModLoader/wiki/Basic-tModLoader-Modding-Guide#mod-skeleton-contents for more information about the various files in a mod.
-	public class ETERNIA : Mod
-	{
+    // Network message identifiers for this mod's ModPackets.
+    public enum EterniaMessageType : byte
+    {
+        AddExperience
+    }
 
-	}
+    public class ETERNIA : Mod
+    {
+        public override void HandlePacket(BinaryReader reader, int whoAmI)
+        {
+            EterniaMessageType message =
+                (EterniaMessageType)reader.ReadByte();
+
+            switch (message)
+            {
+                case EterniaMessageType.AddExperience:
+                    int exp = reader.ReadInt32();
+
+                    // Only the owning client applies the XP it earned.
+                    if (Main.netMode == NetmodeID.MultiplayerClient)
+                    {
+                        var levelPlayer =
+                            Main.LocalPlayer
+                                .GetModPlayer<EterniaLevelPlayer>();
+
+                        if (levelPlayer.AddExperience(exp))
+                        {
+                            CombatText.NewText(
+                                Main.LocalPlayer.getRect(),
+                                Color.Gold,
+                                $"+{exp} EXP");
+                        }
+                    }
+
+                    break;
+            }
+        }
+    }
 }
