@@ -50,6 +50,9 @@ namespace Eternia.Content.UI
 
             drawPosition.Y -= 70f;
 
+            drawPosition =
+                EterniaUI.ClampWorldAnchored(drawPosition, -110, -18, 220, 58);
+
             // =================================================
             // COMBO TEXT
             // =================================================

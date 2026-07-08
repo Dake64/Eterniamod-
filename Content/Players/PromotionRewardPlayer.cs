@@ -179,9 +179,13 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            awardedPromotions.AddRange(
-                tag.Get<List<string>>("AwardedPromotions")
-            );
+            var saved =
+                tag.Get<List<string>>("AwardedPromotions");
+
+            if (saved != null)
+            {
+                awardedPromotions.AddRange(saved);
+            }
         }
 
         private readonly struct PromotionReward

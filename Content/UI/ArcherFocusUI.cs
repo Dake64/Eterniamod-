@@ -73,6 +73,9 @@ namespace Eternia.Content.UI
                 - Main.screenPosition
                 + new Vector2(-45, -40);
 
+            drawPos =
+                EterniaUI.ClampWorldAnchored(drawPos, -22, -64, 114, 78);
+
             // =============================================
             // SETTINGS
             // =============================================

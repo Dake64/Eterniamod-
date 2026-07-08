@@ -149,6 +149,33 @@ namespace Eternia.Content.UI
             return new Rectangle(x, y, width, height);
         }
 
+        // Shifts a player-anchored overlay so its full bounding box stays on
+        // screen. `anchor` is the overlay draw position (player.Top - screen +
+        // offset); offsetLeft/offsetTop/width/height describe the overlay content
+        // bounds relative to that anchor (pills above the bar use a negative top).
+        public static Vector2 ClampWorldAnchored(
+            Vector2 anchor,
+            int offsetLeft,
+            int offsetTop,
+            int width,
+            int height,
+            int margin = 6)
+        {
+            Rectangle bounds =
+                new Rectangle(
+                    (int)anchor.X + offsetLeft,
+                    (int)anchor.Y + offsetTop,
+                    Math.Max(1, width),
+                    Math.Max(1, height));
+
+            Rectangle clamped =
+                ClampToScreen(bounds, margin);
+
+            return new Vector2(
+                anchor.X + (clamped.X - bounds.X),
+                anchor.Y + (clamped.Y - bounds.Y));
+        }
+
         public static bool ShouldDrawPlayerUI(Player player)
         {
             return !Main.gameMenu &&

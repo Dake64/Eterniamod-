@@ -63,6 +63,9 @@ namespace Eternia.Content.UI
             Vector2 drawPos =
                 player.Top - Main.screenPosition;
 
+            drawPos =
+                EterniaUI.ClampWorldAnchored(drawPos, -70, -72, 184, 45);
+
             // =================================================
             // BAR POSITION
             // =================================================

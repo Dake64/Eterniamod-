@@ -70,6 +70,9 @@ namespace Eternia.Content.UI
                 - Main.screenPosition
                 + new Vector2(-40, -40);
 
+            drawPos =
+                EterniaUI.ClampWorldAnchored(drawPos, 0, 0, 80, 10);
+
             Rectangle backRect =
                 new Rectangle(
                     (int)drawPos.X,

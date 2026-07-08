@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Clamp de overlays UI + null-guard de save
+
+- Objetivo: que los overlays anclados al jugador no se salgan de pantalla en los
+  bordes (roadmap P1) y endurecer el LoadData de rewards.
+- Archivos principales:
+  - `Content/UI/EterniaUI.cs` (helper `ClampWorldAnchored`)
+  - `Content/UI/{BaseClassResource,ArcherFocus,Berserker,EnergyHeat,Gunner,StunnerCharge,Virtuoso,FighterCombo}UI.cs`
+  - `Content/Players/PromotionRewardPlayer.cs`
+  - `tests/OverlayClampSourceSmokeTest.ps1` (nuevo)
+- Cambios:
+  - Nuevo helper `EterniaUI.ClampWorldAnchored(anchor, offsetLeft, offsetTop,
+    width, height)` que corre el drawPos para mantener el bounding box del overlay
+    dentro de la pantalla (reusa `ClampToScreen`).
+  - Los 8 overlays anclados al jugador rutean su drawPos por el helper, con su
+    bounding box (incluye las pills que van por encima de la barra).
+  - null-guard en `PromotionRewardPlayer.LoadData` (evita NRE si el tag
+    `AwardedPromotions` deserializa a null en un save malformado).
+  - TDD: `OverlayClampSourceSmokeTest.ps1` escrito fallando primero.
+- Verificacion:
+  - `dotnet build -t:Compile`: 0 warnings, 0 errores. Suite: 52/52 PASSED.
+  - Falta reload in-game: pegarse a un borde de pantalla con una subclase activa y
+    confirmar que la barra ya no se corta.
+- Pendientes/riesgos:
+  - Los bounding boxes son aproximados (barra + pills). Si algun elemento aun
+    asoma en un borde, ajustar los offsets de ese overlay.
+
 ## 2026-07-06 - Consolidacion de localizacion COMPLETADA (fuente: en-US.hjson)
 
 - Objetivo: cerrar la localizacion con UNA fuente viva (`en-US.hjson`), portar

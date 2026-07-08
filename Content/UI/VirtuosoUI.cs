@@ -79,12 +79,18 @@ namespace Eternia.Content.UI
             int width =
                 System.Math.Max(72, (int)(text.Length * 8f));
 
+            int pillWidth =
+                System.Math.Min(width, 220);
+
+            drawPos =
+                EterniaUI.ClampWorldAnchored(drawPos, 0, 0, pillWidth, 24);
+
             EterniaUI.DrawPill(
                 Main.spriteBatch,
                 new Rectangle(
                     (int)drawPos.X,
                     (int)drawPos.Y,
-                    System.Math.Min(width, 220),
+                    pillWidth,
                     24),
                 text,
                 Color.Cyan,

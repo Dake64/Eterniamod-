@@ -78,9 +78,14 @@ Checklist:
 - Confirmar que no queda referencia a `CartomancerSoul`.
 - Confirmar que UI no explota con screen scale.
 
-## P1 - Overlay clamp/position helper
+## P1 (RESUELTO 2026-07-06) - Overlay clamp/position helper
 
-Problema:
+RESUELTO: se agrego `EterniaUI.ClampWorldAnchored` y los 8 overlays anclados al
+jugador (BaseClassResource, ArcherFocus, Berserker, EnergyHeat, Gunner,
+StunnerCharge, Virtuoso, FighterCombo) rutean su drawPos por ahi. Guardado por
+`tests/OverlayClampSourceSmokeTest.ps1`. Falta confirmar visualmente en juego.
+
+Problema (historico):
 
 Varios overlays anclados al jugador usan offsets fijos. Pueden quedar fuera de
 pantalla.
