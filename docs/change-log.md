@@ -15,6 +15,21 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Juice visual de rareza (aura + badge dramatico)
+
+- Objetivo: que las rarezas altas (SuperRare/Legendary) se sientan amenazantes.
+- Archivos: `Content/Globals/EterniaGlobalNPC.cs`,
+  `tests/RarityVisualsSourceSmokeTest.ps1` (nuevo).
+- Cambios (todo escala con `GetRarityIntensity`):
+  - `PreDraw`: aura de ecos tintados del color de rareza alrededor del enemigo,
+    pulsante y giratoria. Legendary = halo grande y ominoso; Uncommon = sutil.
+  - `DrawEffects`: luz que late + particulas mas densas/grandes segun rareza
+    (`RedTorch` para Legendary, `GoldFlame` para SuperRare, `Enchanted_Gold` resto).
+  - Badge (`DrawEnemyBadge`): placa de fondo semitransparente + subrayado de color
+    + glow-halo detras del texto, con tamano y pulso segun rareza.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 58/58. Falta reload in-game;
+  los numeros (intensidad, radios, alfas) son faciles de ajustar al gusto.
+
 ## 2026-07-06 - Los bosses siempre muestran su badge de rareza/nivel
 
 - Objetivo: los bosses casi nunca mostraban el badge "Rareza Lv.X" porque rolean

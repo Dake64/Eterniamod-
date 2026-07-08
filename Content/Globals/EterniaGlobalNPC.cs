@@ -106,6 +106,73 @@ namespace Eternia.Content.Globals
             }
         }
 
+        public override bool PreDraw(
+            NPC npc,
+            SpriteBatch spriteBatch,
+            Vector2 screenPos,
+            Color drawColor)
+        {
+            if (rarity == EnemyRarity.Common)
+            {
+                return true;
+            }
+
+            float intensity = GetRarityIntensity(rarity);
+
+            float pulse =
+                0.5f + 0.5f * (float)System.Math.Sin(
+                    Main.GlobalTimeWrappedHourly * (2f + intensity * 3f));
+
+            Texture2D texture =
+                TextureAssets.Npc[npc.type].Value;
+
+            Rectangle frame = npc.frame;
+
+            Vector2 origin =
+                new Vector2(frame.Width / 2f, frame.Height / 2f);
+
+            Vector2 drawPos =
+                npc.Center - screenPos + new Vector2(0f, npc.gfxOffY);
+
+            SpriteEffects effects =
+                npc.spriteDirection == 1
+                    ? SpriteEffects.FlipHorizontally
+                    : SpriteEffects.None;
+
+            // A pulsing ring of tinted echoes behind the sprite = glowing aura.
+            Color glow =
+                GetRarityColor(rarity) *
+                (0.14f + intensity * 0.24f) *
+                (0.65f + 0.35f * pulse);
+
+            int copies = 4 + (int)(intensity * 6f);
+
+            float radius =
+                (2.5f + intensity * 6f) * (0.7f + 0.3f * pulse);
+
+            for (int i = 0; i < copies; i++)
+            {
+                float angle =
+                    MathHelper.TwoPi * i / copies +
+                    Main.GlobalTimeWrappedHourly * intensity;
+
+                Vector2 offset = angle.ToRotationVector2() * radius;
+
+                spriteBatch.Draw(
+                    texture,
+                    drawPos + offset,
+                    frame,
+                    glow,
+                    npc.rotation,
+                    origin,
+                    npc.scale,
+                    effects,
+                    0f);
+            }
+
+            return true;
+        }
+
         public override void DrawEffects(
             NPC npc,
             ref Color drawColor)
@@ -115,29 +182,40 @@ namespace Eternia.Content.Globals
                 return;
             }
 
-            Color color =
-                GetRarityColor(rarity);
+            float intensity = GetRarityIntensity(rarity);
+            Color color = GetRarityColor(rarity);
+
+            float pulse =
+                0.6f + 0.4f * (float)System.Math.Sin(
+                    Main.GlobalTimeWrappedHourly * (2f + intensity * 3f));
+
+            float lightScale = (0.4f + intensity * 0.7f) * pulse;
 
             Lighting.AddLight(
                 npc.Center,
-                color.R / 255f * 0.65f,
-                color.G / 255f * 0.65f,
-                color.B / 255f * 0.65f);
+                color.R / 255f * lightScale,
+                color.G / 255f * lightScale,
+                color.B / 255f * lightScale);
 
-            if (Main.rand.NextBool(5))
+            if (Main.rand.NextFloat() < 0.10f + intensity * 0.32f)
             {
+                Vector2 spawn =
+                    npc.position +
+                    new Vector2(
+                        Main.rand.NextFloat(npc.width),
+                        Main.rand.NextFloat(npc.height));
+
                 Dust dust =
-                    Dust.NewDustDirect(
-                        npc.position,
-                        npc.width,
-                        npc.height,
-                        DustID.Enchanted_Gold);
+                    Dust.NewDustPerfect(spawn, RarityDust(rarity));
 
                 dust.noGravity = true;
-                dust.scale = rarity == EnemyRarity.Legendary ? 1.35f : 1.05f;
-                dust.velocity *= 0.25f;
+                dust.scale = 0.85f + intensity * 0.85f;
+                dust.velocity =
+                    new Vector2(
+                        Main.rand.NextFloat(-1f, 1f),
+                        -1.1f - intensity);
                 dust.color = color;
-                dust.fadeIn = 1.1f;
+                dust.fadeIn = 1f + intensity;
             }
         }
 
@@ -290,29 +368,75 @@ namespace Eternia.Content.Globals
             SpriteBatch spriteBatch,
             Vector2 screenPos)
         {
-            string text =
-                $"{GetRarityText(rarity)} Lv.{enemyLevel}";
+            float intensity = GetRarityIntensity(rarity);
+            Color color = GetRarityColor(rarity);
 
-            Color color =
-                GetRarityColor(rarity);
+            string text =
+                $"{GetRarityText(rarity)}  Lv.{enemyLevel}";
+
+            float pulse =
+                0.85f + 0.15f * (float)System.Math.Sin(
+                    Main.GlobalTimeWrappedHourly * (3f + intensity * 4f));
+
+            float scale =
+                (0.6f + intensity * 0.32f) *
+                (rarity >= EnemyRarity.SuperRare ? pulse : 1f);
 
             Vector2 textSize =
-                FontAssets.MouseText.Value.MeasureString(text);
+                FontAssets.MouseText.Value.MeasureString(text) * scale;
 
             Vector2 drawPosition =
                 new Vector2(
                     npc.Center.X - screenPos.X,
-                    npc.position.Y - screenPos.Y - 30f);
+                    npc.position.Y - screenPos.Y - 34f - intensity * 10f);
 
-            drawPosition.X -=
-                textSize.X * 0.34f;
+            drawPosition.X -= textSize.X / 2f;
+
+            Texture2D pixel = TextureAssets.MagicPixel.Value;
+
+            Rectangle plate =
+                new Rectangle(
+                    (int)drawPosition.X - 8,
+                    (int)drawPosition.Y - 3,
+                    (int)textSize.X + 16,
+                    (int)textSize.Y + 6);
+
+            spriteBatch.Draw(pixel, plate, Color.Black * (0.34f + intensity * 0.3f));
+
+            spriteBatch.Draw(
+                pixel,
+                new Rectangle(plate.X, plate.Bottom - 2, plate.Width, 2),
+                color * 0.9f);
+
+            // Glow halo behind the text for high rarities.
+            int glowSteps =
+                rarity >= EnemyRarity.Rare
+                    ? 3 + (int)(intensity * 3f)
+                    : 0;
+
+            for (int i = 0; i < glowSteps; i++)
+            {
+                float angle =
+                    MathHelper.TwoPi * i / System.Math.Max(1, glowSteps);
+
+                Vector2 offset =
+                    angle.ToRotationVector2() *
+                    (1.4f + intensity * 1.6f) * pulse;
+
+                Utils.DrawBorderString(
+                    spriteBatch,
+                    text,
+                    drawPosition + offset,
+                    color * 0.45f,
+                    scale);
+            }
 
             Utils.DrawBorderString(
                 spriteBatch,
                 text,
                 drawPosition,
                 color,
-                0.68f);
+                scale);
         }
 
         private static string GetRarityText(EnemyRarity enemyRarity)
@@ -336,6 +460,28 @@ namespace Eternia.Content.Globals
                 EnemyRarity.SuperRare => Color.Gold,
                 EnemyRarity.Legendary => Color.OrangeRed,
                 _ => Color.LightGray
+            };
+        }
+
+        private static float GetRarityIntensity(EnemyRarity enemyRarity)
+        {
+            return enemyRarity switch
+            {
+                EnemyRarity.Uncommon => 0.35f,
+                EnemyRarity.Rare => 0.55f,
+                EnemyRarity.SuperRare => 0.8f,
+                EnemyRarity.Legendary => 1.15f,
+                _ => 0f
+            };
+        }
+
+        private static int RarityDust(EnemyRarity enemyRarity)
+        {
+            return enemyRarity switch
+            {
+                EnemyRarity.Legendary => DustID.RedTorch,
+                EnemyRarity.SuperRare => DustID.GoldFlame,
+                _ => DustID.Enchanted_Gold
             };
         }
 
