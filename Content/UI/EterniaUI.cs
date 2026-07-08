@@ -104,6 +104,35 @@ namespace Eternia.Content.UI
                 panelHeight);
         }
 
+        public static Rectangle GetTopCenterPanel(
+            int width,
+            int height,
+            int marginTop)
+        {
+            int availableWidth =
+                Math.Max(1, Main.screenWidth - 24);
+
+            int minWidth =
+                Math.Min(200, availableWidth);
+
+            int panelWidth =
+                Math.Clamp(width, minWidth, availableWidth);
+
+            int panelHeight =
+                Math.Min(height, Math.Max(1, Main.screenHeight - 24));
+
+            int x =
+                (Main.screenWidth - panelWidth) / 2;
+
+            int y =
+                Math.Clamp(
+                    marginTop,
+                    8,
+                    Math.Max(8, Main.screenHeight - panelHeight - 8));
+
+            return new Rectangle(x, y, panelWidth, panelHeight);
+        }
+
         public static Rectangle ClampToScreen(
             Rectangle rect,
             int margin = 12)

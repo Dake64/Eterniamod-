@@ -15,6 +15,16 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Barra de EXP movida a arriba-centro (fuera del chat)
+
+- Objetivo: la barra de EXP en abajo-izquierda la tapaba el chat.
+- Archivos: `Content/UI/ExpBarUI.cs`, `Content/UI/EterniaUI.cs`,
+  `tests/ExpBarPlacementSourceSmokeTest.ps1` (nuevo).
+- Cambios: nuevo helper `GetTopCenterPanel` en `EterniaUI`; `ExpBarUI` ahora se
+  dibuja arriba-centro (despejado del chat abajo-izq, minimapa arriba-der, y la
+  barra de vida de boss abajo-centro).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 59/59. Falta reload in-game.
+
 ## 2026-07-06 - Badge de nivel en todos los enemigos + flair por tier
 
 - Objetivo: el usuario reporto que los mobs (mayormente Common) no mostraban
