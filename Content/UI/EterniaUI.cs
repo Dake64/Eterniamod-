@@ -133,6 +133,36 @@ namespace Eternia.Content.UI
             return new Rectangle(x, y, panelWidth, panelHeight);
         }
 
+        // Places a panel inside a horizontally-centered row of total width rowWidth,
+        // at offsetInRow from the row's left edge. Used to sit panels side by side.
+        public static Rectangle GetTopRowPanel(
+            int panelWidth,
+            int height,
+            int marginTop,
+            int rowWidth,
+            int offsetInRow)
+        {
+            int rowX =
+                (Main.screenWidth - rowWidth) / 2;
+
+            int panelHeight =
+                Math.Min(height, Math.Max(1, Main.screenHeight - 24));
+
+            int x =
+                Math.Clamp(
+                    rowX + offsetInRow,
+                    6,
+                    Math.Max(6, Main.screenWidth - panelWidth - 6));
+
+            int y =
+                Math.Clamp(
+                    marginTop,
+                    8,
+                    Math.Max(8, Main.screenHeight - panelHeight - 8));
+
+            return new Rectangle(x, y, panelWidth, panelHeight);
+        }
+
         public static Rectangle ClampToScreen(
             Rectangle rect,
             int margin = 12)

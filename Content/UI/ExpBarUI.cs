@@ -22,10 +22,12 @@ namespace Eternia.Content.UI
                 player.GetModPlayer<EterniaLevelPlayer>();
 
             Rectangle panel =
-                EterniaUI.GetTopCenterPanel(
+                EterniaUI.GetTopRowPanel(
                     368,
                     56,
-                    14);
+                    14,
+                    750,
+                    0);
 
             Color accent =
                 Color.DeepSkyBlue;

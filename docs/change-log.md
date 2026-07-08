@@ -21,11 +21,12 @@ Formato sugerido por entrada:
 - Archivos: `Content/UI/EterniaUI.cs` (helper `GetTopCenterPanel`), `ExpBarUI.cs`,
   `ClassProgressionUI.cs`, `CursedMageUI.cs`, `ElementalistUI.cs`,
   `NecromancerUI.cs`, `tests/ExpBarPlacementSourceSmokeTest.ps1` (nuevo).
-- Cambios: nuevo helper `GetTopCenterPanel`. Se movieron TODOS los paneles de
-  abajo-izquierda a un stack arriba-centro (despejado del chat abajo-izq, minimapa
-  arriba-der, y barra de vida de boss abajo-centro): barra de EXP (arriba),
-  progresion de clase (debajo), y los medidores de subclase Cursed/Elementalist/
-  Necromancer (que son mutuamente exclusivos) debajo de esos.
+- Cambios: nuevos helpers `GetTopCenterPanel` y `GetTopRowPanel`. Se movieron
+  TODOS los paneles de abajo-izquierda a un HUD arriba-centro (despejado del chat
+  abajo-izq, minimapa arriba-der, y barra de vida de boss abajo-centro): la barra
+  de EXP y la progresion de clase van LADO A LADO en una fila arriba (via
+  `GetTopRowPanel`), y los medidores de subclase Cursed/Elementalist/Necromancer
+  (mutuamente exclusivos) van centrados justo debajo de esa fila.
 - Verificacion: `dotnet build -t:Compile` 0/0; suite 59/59. Falta reload in-game
   para confirmar el stack (y ajustar posiciones si algo se encima).
 

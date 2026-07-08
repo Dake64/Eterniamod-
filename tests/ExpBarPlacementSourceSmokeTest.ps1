@@ -28,12 +28,12 @@ foreach ($ui in $hudPanels) {
     }
 }
 
-# The always-on progression HUD (EXP + class) uses the top-center stack.
+# The always-on progression HUD (EXP + class) sits at the top (row or center).
 foreach ($ui in @("ExpBarUI", "ClassProgressionUI")) {
     $content = Get-Content -Raw (Join-Path $uiRoot "$ui.cs")
 
-    if ($content -notmatch "GetTopCenterPanel") {
-        throw "$ui should use the top-center placement so it stays visible."
+    if ($content -notmatch "GetTop(Center|Row)Panel") {
+        throw "$ui should use a top placement so it stays visible."
     }
 }
 
