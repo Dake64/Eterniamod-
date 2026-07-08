@@ -59,21 +59,21 @@ namespace Eternia.Content.Players
             statsPlayer.StatPoints += StatPointsPerLevel;
 
             Main.NewText(
-                $"LEVEL UP! Ahora eres nivel {level}",
+                $"LEVEL UP! You are now level {level}",
                 255,
                 215,
                 0
             );
 
             Main.NewText(
-                $"+{StatPointsPerLevel} Stat Points obtenidos",
+                $"+{StatPointsPerLevel} Stat Points gained",
                 100,
                 255,
                 100
             );
 
             Main.NewText(
-                $"+{PassivePointsPerLevel} Passive Point obtenido",
+                $"+{PassivePointsPerLevel} Passive Point gained",
                 180,
                 120,
                 255

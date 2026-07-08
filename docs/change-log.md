@@ -15,6 +15,29 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Hardening: pasada de bugs + ultimo espanol + plan v1
+
+- Objetivo: revisar sistemas sin cobertura de test buscando bugs, completar la
+  traduccion a ingles, y aterrizar el plan de v1.
+- Archivos principales:
+  - `Content/Players/EterniaLevelPlayer.cs`
+  - `Content/Globals/EterniaGlobalItem.cs`
+  - `docs/v1-checklist.md` (nuevo)
+- Hallazgos y cambios:
+  - Single-player: SIN crashes. XP/rareza/ammo solidos en SP.
+  - Ultimo espanol user-facing: mensajes de level-up ("Ahora eres nivel...",
+    "Stat Points obtenidos", "Passive Point obtenido") -> ingles ("You are now
+    level...", "gained"). Tambien el comentario de `EterniaGlobalItem`. Barrido
+    final: `Content` ya no tiene NADA de espanol.
+  - MULTIJUGADOR (documentado, NO arreglado, seria enganoso medio-hacerlo): XP,
+    rareza y ammo no son MP-safe (`OnKill` server-side + `Main.NewText` broadcast,
+    `Main.rand` por-cliente en rareza/ammo, ModPlayer sin sync). Ver v1-checklist.
+  - Nuevo `docs/v1-checklist.md`: inventario de sprites compartidos (art TODO),
+    lista tecnica, y notas de metadata (la descripcion de Workshop esta
+    desactualizada re: la regla de penalizacion).
+- Verificacion:
+  - `dotnet build -t:Compile`: 0 warnings, 0 errores. Suite: 52/52.
+
 ## 2026-07-06 - Clamp de overlays UI + null-guard de save
 
 - Objetivo: que los overlays anclados al jugador no se salgan de pantalla en los

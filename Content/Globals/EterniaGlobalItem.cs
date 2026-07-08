@@ -7,10 +7,10 @@ namespace Eternia.Content.Globals
     {
         public override bool InstancePerEntity => true;
 
-        // 🔥 Por ahora vacío
-        // Aquí después puedes meter:
-        // - efectos especiales de armas
-        // - pasivas
-        // - scaling por nivel
+        // Empty for now.
+        // Later this can hold:
+        // - special weapon effects
+        // - passives
+        // - per-level scaling
     }
 }
