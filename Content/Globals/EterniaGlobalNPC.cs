@@ -149,7 +149,7 @@ namespace Eternia.Content.Globals
         {
             if (!npc.active ||
                 npc.life <= 0 ||
-                rarity == EnemyRarity.Common)
+                (rarity == EnemyRarity.Common && !npc.boss))
             {
                 return;
             }

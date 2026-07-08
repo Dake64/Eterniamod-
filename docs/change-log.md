@@ -15,6 +15,16 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-06 - Los bosses siempre muestran su badge de rareza/nivel
+
+- Objetivo: los bosses casi nunca mostraban el badge "Rareza Lv.X" porque rolean
+  Common ~65% (BossProfiles) y el badge se saltaba para Common (reportado).
+- Archivos: `Content/Globals/EterniaGlobalNPC.cs`,
+  `tests/BossRarityBadgeSourceSmokeTest.ps1` (nuevo).
+- Cambios: `PostDraw` ahora solo salta el badge para enemigos Common NO-boss; los
+  bosses siempre muestran su rareza + nivel (incluido Common). TDD.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 57/57. Falta reload in-game.
+
 ## 2026-07-06 - Fix z-order de tooltips (Stats + Passive)
 
 - Objetivo: los tooltips de hover salian DETRAS de las filas/paneles siguientes
