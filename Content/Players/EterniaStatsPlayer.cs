@@ -51,6 +51,46 @@ namespace Eternia.Content.Players
             return UnlockedPassives.Contains(passiveName);
         }
 
+        // Small themed bonus per affinity point (capped), so filling a branch with
+        // minor nodes is worthwhile. Notable nodes add their own effects on top.
+        private void ApplyAffinityMastery()
+        {
+            // Warrior
+            Player.GetDamage(DamageClass.Melee) += AffinityCap(BleedAffinity) * 0.0018f;
+            Player.GetAttackSpeed(DamageClass.Melee) += AffinityCap(ComboAffinity) * 0.0012f;
+            Player.statDefense += AffinityCap(DefenseAffinity) / 12;
+            Player.GetCritChance(DamageClass.Melee) += AffinityCap(PrecisionAffinity) * 0.12f;
+            Player.GetDamage(DamageClass.Melee) += AffinityCap(RageAffinity) * 0.0018f;
+            Player.GetKnockback(DamageClass.Melee) += AffinityCap(ControlAffinity) * 0.03f;
+
+            // Ranger
+            Player.GetDamage(DamageClass.Ranged) += AffinityCap(EnergyAffinity) * 0.0018f;
+            Player.GetCritChance(DamageClass.Ranged) += AffinityCap(BowAffinity) * 0.12f;
+            Player.GetAttackSpeed(DamageClass.Ranged) += AffinityCap(GunAffinity) * 0.0012f;
+            Player.moveSpeed += AffinityCap(MusicAffinity) * 0.0015f;
+
+            // Mage
+            Player.GetDamage(DamageClass.Magic) += AffinityCap(ElementalAffinity) * 0.0018f;
+            Player.GetDamage(DamageClass.Magic) += AffinityCap(CurseAffinity) * 0.0018f;
+            Player.statManaMax2 += AffinityCap(InfinityAffinity) / 2;
+            Player.manaRegenBonus += AffinityCap(ArcaneAffinity) / 8;
+
+            // Summoner
+            Player.GetDamage(DamageClass.Summon) += AffinityCap(BeastAffinity) * 0.0018f;
+            Player.GetAttackSpeed(DamageClass.Summon) += AffinityCap(FusionAffinity) * 0.0012f;
+            Player.GetCritChance(DamageClass.Summon) += AffinityCap(TechAffinity) * 0.12f;
+            Player.GetDamage(DamageClass.Summon) += AffinityCap(ShadowAffinity) * 0.0018f;
+        }
+
+        // Cap high enough that a fully-invested branch keeps contributing. A full
+        // branch now grants ~86 affinity (notables ~63 + ~10 minors x2 + keystone 3),
+        // so a cap of 100 means no invested point is ever wasted. (With the old caps
+        // of 40/75 the notables alone capped it out and the minor nodes gave nothing.)
+        private static int AffinityCap(int affinity)
+        {
+            return System.Math.Min(affinity, 100);
+        }
+
         public bool HasActivePassive(
             SoulId activeSoul,
             string passiveName)
@@ -137,6 +177,10 @@ namespace Eternia.Content.Players
                 return;
             }
 
+            // Generic affinity mastery: every point of affinity gives a small THEMED
+            // bonus, so minor "path" nodes (which just grant affinity) still matter.
+            ApplyAffinityMastery();
+
             // =====================================================
             // WARRIOR PASSIVES
             // =====================================================
@@ -218,6 +262,141 @@ namespace Eternia.Content.Players
                 Player.GetKnockback(DamageClass.Melee) += 1.5f;
             }
 
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Hemorrhage"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Crimson Reaper"))
+            {
+                Player.GetCritChance(DamageClass.Melee) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Flow State"))
+            {
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Perfect Rhythm"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Bulwark"))
+            {
+                Player.statDefense += 8;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Unbreakable"))
+            {
+                Player.endurance += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Keen Edge"))
+            {
+                Player.GetCritChance(DamageClass.Melee) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Lethal Precision"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.12f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Berserk Momentum"))
+            {
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Undying Wrath"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Crushing Blows"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Overwhelming Force"))
+            {
+                Player.GetKnockback(DamageClass.Melee) += 2f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Rapid Blows"))
+            {
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Unbroken Chain"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Thousand Cuts"))
+            {
+                Player.GetCritChance(DamageClass.Melee) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Aegis"))
+            {
+                Player.statDefense += 8;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Stonewall"))
+            {
+                Player.endurance += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Last Bastion"))
+            {
+                Player.statLifeMax2 += 20;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Pinpoint"))
+            {
+                Player.GetCritChance(DamageClass.Melee) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Exploit Weakness"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Perfect Aim"))
+            {
+                Player.GetArmorPenetration(DamageClass.Melee) += 5;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Bloodlust"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Frenzy"))
+            {
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Reckless Assault"))
+            {
+                Player.GetCritChance(DamageClass.Melee) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Stagger"))
+            {
+                Player.GetKnockback(DamageClass.Melee) += 2f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Brutal Force"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Shockwave"))
+            {
+                Player.GetArmorPenetration(DamageClass.Melee) += 4;
+            }
+
             // =====================================================
             // RANGER PASSIVES
             // =====================================================
@@ -280,6 +459,106 @@ namespace Eternia.Content.Players
             if (HasActivePassive(soulPlayer.ActiveSoul, "Symphony Master"))
             {
                 Player.GetDamage(DamageClass.Generic) += 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Ion Surge"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Fusion Cannon"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Piercing Shot"))
+            {
+                Player.GetArmorPenetration(DamageClass.Ranged) += 5;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Storm of Arrows"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Hair Trigger"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Bullet Storm"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.12f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Battle Hymn"))
+            {
+                Player.moveSpeed += 0.04f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Grand Finale"))
+            {
+                Player.GetDamage(DamageClass.Generic) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Overload"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Particle Beam"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Reactor Core"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Marksman"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "True Flight"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Volley"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Full Auto"))
+            {
+                Player.GetAttackSpeed(DamageClass.Ranged) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Armor Piercing"))
+            {
+                Player.GetArmorPenetration(DamageClass.Ranged) += 5;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Executioner"))
+            {
+                Player.GetCritChance(DamageClass.Ranged) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Encore"))
+            {
+                Player.moveSpeed += 0.04f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "War Anthem"))
+            {
+                Player.GetDamage(DamageClass.Generic) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Crescendo"))
+            {
+                Player.GetDamage(DamageClass.Ranged) += 0.08f;
             }
 
             // =====================================================
@@ -346,6 +625,106 @@ namespace Eternia.Content.Players
                 Player.GetDamage(DamageClass.Magic) += 0.10f;
             }
 
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Arcane Conductor"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Overload"))
+            {
+                Player.GetCritChance(DamageClass.Magic) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Withering Curse"))
+            {
+                Player.GetArmorPenetration(DamageClass.Magic) += 5;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Doom Bringer"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.12f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Boundless Mana"))
+            {
+                Player.statManaMax2 += 30;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Eternal Flow"))
+            {
+                Player.manaCost -= 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Harmonic Field"))
+            {
+                Player.manaRegenBonus += 4;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Celestial Symphony"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Pyroclasm"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Frost Nova"))
+            {
+                Player.GetCritChance(DamageClass.Magic) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Storm Caller"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.06f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Soul Rot"))
+            {
+                Player.GetArmorPenetration(DamageClass.Magic) += 5;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Blight"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Malediction"))
+            {
+                Player.GetCritChance(DamageClass.Magic) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Mana Font"))
+            {
+                Player.statManaMax2 += 30;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Overflow"))
+            {
+                Player.manaCost -= 0.05f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Infinite Well"))
+            {
+                Player.manaRegenBonus += 4;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Astral Resonance"))
+            {
+                Player.manaRegenBonus += 4;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Ley Line"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Cosmic Chord"))
+            {
+                Player.statManaMax2 += 25;
+            }
+
             // =====================================================
             // SUMMONER PASSIVES
             // =====================================================
@@ -408,6 +787,106 @@ namespace Eternia.Content.Players
             if (HasActivePassive(soulPlayer.ActiveSoul, "Grave Legion"))
             {
                 Player.GetDamage(DamageClass.Summon) += 0.15f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Pack Leader"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Savage Alpha"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Synchronized Assault"))
+            {
+                Player.GetAttackSpeed(DamageClass.Summon) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Transcendent Fusion"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.12f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Overclocked Core"))
+            {
+                Player.GetCritChance(DamageClass.Summon) += 10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Autonomous Legion"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Soul Harvest"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Legion of the Dead"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Feral Roar"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Bloodhound"))
+            {
+                Player.GetCritChance(DamageClass.Summon) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Apex Predator"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Hive Mind"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Overdrive"))
+            {
+                Player.GetAttackSpeed(DamageClass.Summon) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Singularity"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.10f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Targeting Array"))
+            {
+                Player.GetCritChance(DamageClass.Summon) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Nanoswarm"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Drone Fleet"))
+            {
+                Player.maxMinions += 1;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Dark Communion"))
+            {
+                Player.GetDamage(DamageClass.Summon) += 0.08f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Wraith Form"))
+            {
+                Player.GetCritChance(DamageClass.Summon) += 8f;
+            }
+
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Undying Horde"))
+            {
+                Player.maxMinions += 1;
             }
         }
 

@@ -53,8 +53,16 @@ if ($passive -notmatch "treeArea\.Width <= 0" -or
     throw "PassiveUI BuildLayouts should guard against empty or collapsed tree areas."
 }
 
-if ($passive -notmatch "maxFittingNodeHeight") {
-    throw "PassiveUI should cap node height to the maximum that fits inside each affinity group."
+if ($passive -notmatch "hubRadius") {
+    throw "PassiveUI should lay the tree out as a radial web (hubRadius) instead of a grid, so it scales without shrinking nodes."
+}
+
+if ($passive -notmatch "TierStep\(") {
+    throw "PassiveUI radial web should march nodes outward by tier (TierStep per node kind) along each affinity spoke."
+}
+
+if ($passive -notmatch "panX") {
+    throw "PassiveUI tree should be a pannable canvas (panX) so the player can drag around a large web."
 }
 
 if ($passive -match "System\.Math\.Max\(NodeMinHeight, nodeHeight\)") {

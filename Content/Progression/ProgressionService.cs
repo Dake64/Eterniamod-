@@ -64,15 +64,30 @@ namespace Eternia.Content.Progression
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(passive.RequiredPassive) &&
-                !stats.UnlockedPassives.Contains(passive.RequiredPassive))
+            foreach (string prerequisite in
+                PassiveRegistry.GetPrerequisites(soul.ActiveSoul, passive))
             {
-                return false;
+                if (!stats.UnlockedPassives.Contains(prerequisite))
+                {
+                    return false;
+                }
             }
 
             level.passivePoints -= passive.Cost;
             stats.UnlockedPassives.Add(passive.Name);
             AddAffinity(stats, passive.AffinityType, passive.AffinityAmount);
+
+            // Every 5 unlocked passives is a milestone: celebrate it.
+            if (player.whoAmI == Main.myPlayer &&
+                stats.UnlockedPassives.Count % MilestonePlayer.NodesPerMilestone == 0)
+            {
+                Eternia.Content.UI.MilestoneBannerUI.Show(
+                    stats.UnlockedPassives.Count / MilestonePlayer.NodesPerMilestone);
+
+                Terraria.Audio.SoundEngine.PlaySound(
+                    Terraria.ID.SoundID.Item37,
+                    player.position);
+            }
 
             return true;
         }
