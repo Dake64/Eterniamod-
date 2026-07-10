@@ -59,6 +59,10 @@ namespace Eternia.Content.Players
                 MaxNecroSlots += 1;
             }
 
+            // Milestones deepen the mechanic: an extra minion slot every 2.
+            MaxNecroSlots +=
+                Player.GetModPlayer<MilestonePlayer>().Milestones / 2;
+
             if (Main.GameUpdateCount % 60 == 0)
             {
                 DrainMana();

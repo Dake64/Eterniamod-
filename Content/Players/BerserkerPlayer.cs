@@ -21,7 +21,10 @@ namespace Eternia.Content.Players
         // CONSTANTS
         // =================================================
 
-        private const int MaxRage = 100;
+        // Milestones deepen the mechanic: a bigger rage pool (more Overrage uptime
+        // and more rage-scaled damage).
+        private int MaxRage =>
+            100 + Player.GetModPlayer<MilestonePlayer>().Milestones * 10;
 
         private const int RageDuration = 180;
 

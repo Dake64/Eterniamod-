@@ -123,6 +123,14 @@ namespace Eternia.Content.Players
                 regen = 1;
             }
 
+            // Milestones deepen the mechanic: faster cursed-energy regeneration
+            // (only when already regenerating, so it stays tied to corruption).
+            if (regen > 0)
+            {
+                regen +=
+                    Player.GetModPlayer<MilestonePlayer>().Milestones;
+            }
+
             GainEnergy(regen);
         }
 
