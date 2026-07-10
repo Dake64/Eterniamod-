@@ -22,6 +22,210 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-09 - Un recurso es una mecanica de SUBCLASE, no de clase base
+
+- Estado: Aceptada.
+- Contexto: la clase base (sin promover) tenia su propio recurso de combate
+  (Momentum / Charge / Focus / Bond): subia al pegar, decaia, y escalaba dano y
+  velocidad. Genero varias iteraciones fallidas (buff, nodo de desbloqueo, barra).
+  El usuario decidio quitarlo.
+- Decision:
+  - Las 4 clases base NO tienen recurso ni medidor. Su identidad pre-promocion son
+    los `+stat` fijos de `BaseClassPlayer.PostUpdateEquips`.
+  - Un "recurso" (barra/medidor + tecnica) es exclusivamente una mecanica de
+    SUBCLASE. Esto refuerza que la promocion es el momento en que la clase "cobra
+    vida" mecanicamente.
+  - `BaseClassPlayer` se conserva solo por los `+stat` y por `IsActiveBaseClass`
+    (que el test de gating exige como punto unico de chequeo).
+- Consecuencias:
+  - La pre-promocion es mas simple pero mas sosa; validar in-game si hace falta
+    compensar los `+stat` fijos.
+  - Se elimino `BaseClassResourceUI` y su test; `SoulUI` muestra "None - promote to
+    gain one" en la fila Resource de una clase base.
+- Archivos: `Content/Players/BaseClassPlayer.cs`, `Content/UI/SoulUI.cs`.
+
+## 2026-07-09 - [DESCARTADA] Recursos como buff (no barras flotantes) + nodo "Core" de desbloqueo
+
+- Estado: DESCARTADA (revertida el mismo dia). El usuario decidio que el buff+nodo
+  del recurso base fue mala idea y pidio volver a la barra flotante pero mejorada.
+  En su lugar: la barra flotante base ahora solo aparece cuando hay recurso (fade
+  in/out) y tiene un dibujo mas pulido. La idea de "recursos como buff" para las
+  subclases NO se aplico. Ver change-log 2026-07-09 (REVERT + mejora visual).
+- Contexto: las barras de recurso flotando sobre el personaje se ven mal. El usuario
+  pidio mostrarlas como buff y desbloquear el recurso de clase base con un nodo.
+- Decision:
+  - Los recursos se muestran como BUFF en la barra de buffs, no como barra flotante.
+    Se usa UN solo buff dinamico (`ClassResourceBuff`) cuyo nombre/tooltip se leen en
+    vivo del recurso activo -> 1 clase + 1 icono sirven para cualquier recurso (no 22
+    clases/iconos). El icono se genera por codigo (orbe) por falta de arte a mano.
+  - "Desbloquear con un nodo": se introduce un pseudo-branch de afinidad **"Core"**
+    con 1 nodo por clase. Encaja en el sistema existente porque los grupos del arbol
+    se arman dinamicamente por afinidad y `AddAffinity`/sidebar ignoran afinidades
+    desconocidas; solo hubo que excluir "Core" del padding. Es la via de menor riesgo
+    para meter un nodo "de clase" fuera de las ramas de afinidad.
+  - Las barras viejas NO se borran: se apagan tras un flag `readonly` (mantiene verdes
+    los tests source que verifican esas UIs y permite revertir). Se limpiaran cuando
+    la etapa 2 este validada in-game.
+  - Etapa por etapa (no todo de golpe) porque tocar las 18 barras implica 13 UIs
+    (algunas interactivas) + 6 tests y no hay validacion in-game.
+- Consecuencias:
+  - Un jugador nuevo debe gastar 1 punto en el nodo Core para activar su recurso base
+    (antes era automatico). Es intencional ("desbloqueo").
+  - Etapa 2: extender el mapeo del buff a las 18 subclases y apagar sus UIs.
+- Archivos: `Content/Buffs/ClassResourceBuff.cs(.png)`, `Content/Players/BaseClassPlayer.cs`,
+  `Content/Passives/PassiveRegistry.cs`, `Content/UI/PassiveUI.cs` (color "Core"),
+  `Content/UI/BaseClassResourceUI.cs`.
+
+## 2026-07-09 - Balance del arbol: las descripciones deben ser honestas y el cap de afinidad no debe matar la mitad profunda de la rama
+
+- Estado: Aceptada.
+- Contexto: auditoria pedida por el usuario ("cada nodo balanceado + se ve
+  crecimiento"). Dos hallazgos: (1) varias descripciones de nodo no coincidian con
+  el efecto real (p. ej. Music prometia "ally buffs" pero daba self-buffs porque
+  las auras multiplayer no estan implementadas); (2) `ApplyAffinityMastery` capeaba
+  la afinidad en 40, pero los nodos notables de una rama ya suman ~63 -> los ~11
+  nodos Minor de relleno no daban ningun stat directo (capeados).
+- Decision:
+  - La descripcion de cada nodo DEBE reflejar el efecto runtime real. Cuando el
+    efecto "ideal" (auras a aliados) no esta implementado, la descripcion se ajusta
+    al self-buff que si se aplica (no se promete lo que no se da).
+  - El cap de afinidad se sube a 75 para que llenar una rama completa (notables +
+    Minor) siga aportando crecimiento en vez de aplanarse a mitad de camino.
+  - Los efectos "por nombre" siguen en `EterniaStatsPlayer`/subclase; los Minor
+    (nombre interpolado) siguen aportando solo via afinidad -> por eso el cap
+    importa para que el relleno no sea inutil.
+- Consecuencias:
+  - Subir el cap sube ~+5% el bonus de mastery de una rama full-invertida; queda
+    por validar in-game (no trivializa por si solo, es inversion de ~20 puntos).
+  - Si a futuro se implementan auras reales de soporte (Music/Arcane), habra que
+    volver a alinear descripcion<->efecto.
+- Archivos: `Content/Passives/PassiveRegistry.cs` (descripciones),
+  `Content/Players/EterniaStatsPlayer.cs` (`AffinityCap`).
+
+## 2026-07-09 - Cada subclase debe tener una mecanica signature (no solo stats)
+
+- Estado: Aceptada.
+- Contexto: el usuario pidio mejorar la mecanica de cada subclase al estilo del
+  Espadachin. Al auditar, 5 subclases (Infinity Mage, Arcane Bard, Beast Tamer,
+  Advanced Summoner, Tech Summoner) eran solo `+stat` plano, sin identidad de
+  juego; las otras 13 ya tenian recurso/tecnica propios.
+- Decision:
+  - Cada subclase tiene su propio `ModPlayer` con una mecanica signature =
+    recurso construido en combate + payoff (pasivo continuo y/o tecnica activa).
+    Patron calcado del Espadachin: `IsActiveX()` para gating, `SkillKey` +
+    `SkillPlayer` para la tecnica con cooldown compartido, feedback CombatText/Dust.
+  - Cada una debe SENTIRSE distinta (verbo distinto): build-and-spend (Infinity),
+    momento-que-decae sin gasto (Bard), frenesi de manada (Beast), sinergia por
+    tropa llena + exceder tope (Advanced), bateria + escudo (Tech).
+  - Los `+stat` base preexistentes en `SubclassEffectsPlayer` se conservan como
+    baseline; la mecanica stackea encima (no se revierte nada existente).
+- Consecuencias:
+  - `SkillKey` (Q) queda multiplexado por subclase: no colisiona porque solo una
+    subclase esta activa a la vez y cada handler filtra con su `IsActiveX()`.
+  - El balance del baseline+mecanica queda por tunear con pruebas in-game.
+- Archivos relacionados: `Content/Players/{InfinityMage,ArcaneBard,BeastTamer,
+  AdvancedSummoner,TechSummoner}Player.cs`, `Content/Players/SubclassEffectsPlayer.cs`,
+  `Content/Players/SkillPlayer.cs`, `Content/Systems/EterniaKeybinds.cs`.
+
+## 2026-07-08 - Sangrado: solo espadas y chance visible (reversion de spec)
+
+- Estado: Aceptada (revierte dos puntos del spec original del Espadachin, a
+  peticion explicita del usuario).
+- Contexto: el spec original decia "armas de filo compatibles" con "probabilidad
+  completamente oculta". El usuario pidio cambiarlo: solo **espadas** y **mostrar
+  el porcentaje**.
+- Decision:
+  - El sangrado se ata al **tipo de arma** via `EterniaGlobalItem.IsSword`
+    (Swing/Rapier + melee, sin pick/axe/hammer). Cualquier espada, vanilla o del
+    mod, lo aplica para un Guerrero activo.
+  - `IBleedWeapon` deja de ser "el unico que sangra" y pasa a ser un **override de
+    chance** para espadas insignia; el resto usa `DefaultSwordBleedChance`.
+  - El chance es **visible** en el tooltip (solo para Guerreros activos), mostrando
+    el efectivo (base + afinidad Bleed).
+- Consecuencias:
+  - Mecanica mas tangible: funciona con la espada que el jugador tenga, y es
+    transparente. Si se quisiera limitar a espadas del mod, bastaria con exigir
+    `IBleedWeapon` en `IsSword`.
+- Archivos relacionados:
+  - `Content/Globals/EterniaGlobalItem.cs`, `Content/Players/WarriorBleedPlayer.cs`,
+    `Content/Players/SwordsmanPlayer.cs`, `Content/Items/IBleedWeapon.cs`
+
+## 2026-07-08 - Rastro Carmesi: recurso exclusivo del Espadachin (Fase 2)
+
+- Estado: Aceptada.
+- Contexto: Fase 2 del rediseno del Espadachin. El diseno pide un recurso propio,
+  ganado en combate, sin auto-regen, gastado solo por tecnicas, con barra propia y
+  logica separada del sangrado.
+- Decision:
+  - `CrimsonTrailPlayer` guarda el recurso; solo existe/acumula con
+    `IsActiveSwordsman` (reusa el helper Soul-gated); `ResetEffects` lo pone en 0
+    fuera de Espadachin. Sin `PostUpdate` (nada de regeneracion automatica). Gain
+    en `SwordsmanPlayer.OnHitNPCWithItem` (12 primera sangre / 6 sostener). Persiste.
+  - `SwordsmanSkillPlayer` = unico sumidero: tecla `SkillKey` (Q) + cooldown
+    compartido `SkillPlayer`; consume `TechniqueCost` (50) y ejecuta un burst AoE
+    sobre sangrantes cercanos (`SimpleStrikeNPC`), recuperando el "EXECUTE!".
+  - `CrimsonTrailUI` = barra world-anchored solo-Espadachin (clon de `BerserkerUI`).
+- Consecuencias:
+  - Se recupera el burst que la Fase 1 habia retirado, ahora como gasto de recurso
+    (decision del usuario), cerrando el bucle: golpear -> sangrar -> cargar -> Q.
+  - El recurso es local del jugador (no necesita packet MP); el burst usa el
+    netcode propio de `SimpleStrikeNPC`.
+- Archivos relacionados:
+  - `Content/Players/CrimsonTrailPlayer.cs`, `Content/Players/SwordsmanSkillPlayer.cs`,
+    `Content/UI/CrimsonTrailUI.cs`, `Content/Players/SwordsmanPlayer.cs`
+
+## 2026-07-08 - Sangrado = mecanica del Guerrero (no del Espadachin)
+
+- Estado: Aceptada.
+- Contexto: el usuario entrego un diseno del Espadachin. Pide que el Sangrado sea
+  un debuff propio del mod, de las armas de filo con probabilidad oculta, de un
+  solo nivel y dano fijo, controlado por el arbol del Guerrero y reutilizable por
+  futuras subclases; y que el Espadachin lo explote via un recurso aparte (Rastro
+  Carmesi). Se acordo hacerlo en fases: Fase 1 = el Sangrado del Guerrero.
+- Decision:
+  - `BleedDebuff : ModBuff` = debuff real y visible; DoT y atribucion de owner en
+    `BleedGlobalNPC` (un nivel, `BaseBleedDamage` fijo + afinidad Bleed).
+  - `IBleedWeapon` marca armas de filo con `BleedChance` **oculto**; la aplicacion
+    se centraliza en `WarriorBleedPlayer` (class-wide, cualquier Warrior Soul).
+  - El arbol Bleed modifica atributos via afinidad (chance/duracion/dano) + pasivas
+    con nombre (`Blood Flow` duracion, `Execution` dano vs sangrante).
+  - El Espadachin conserva su `OnHitNPCWithItem` gateado como **maestria**
+    (garantiza el sangrado); ahi enganchara el Rastro Carmesi en Fase 2.
+- Consecuencias:
+  - Se **reemplaza** el sistema previo de 5 stacks + "EXECUTE!" (decision explicita
+    del usuario: el EXECUTE pasa a ser una tecnica del Rastro Carmesi en Fase 2).
+    En la Fase 1 el Espadachin queda sin ese burst hasta que llegue la Fase 2.
+  - Se reescribio `tests/SwordsmanBleedSourceSmokeTest.ps1` al nuevo diseno.
+  - Los tests de gating exigen que `SwordsmanPlayer` mantenga `IsActiveSwordsman` +
+    `OnHitNPCWithItem`, y que `SubclassEffectsPlayer` mantenga los 18
+    `IsActiveSubclass`; ambos se respetaron.
+  - Sync MP del debuff es best-effort (cliente-driven), igual que el sistema previo.
+- Archivos relacionados:
+  - `Content/Buffs/BleedDebuff.cs`, `Content/Items/IBleedWeapon.cs`,
+    `Content/Players/WarriorBleedPlayer.cs`, `Content/NPCs/BleedGlobalNPC.cs`,
+    `Content/Players/SwordsmanPlayer.cs`, `Content/Players/SubclassEffectsPlayer.cs`
+
+## 2026-07-08 - Profundidad de los arboles de pasivas: 5 nodos por rama
+
+- Estado: Aceptada.
+- Contexto: cada rama de afinidad tenia 3 nodos; el usuario pidio "mejorar el
+  arbol de pasivas de cada clase porque ahorita solo hay 3 mejoras por subclase".
+- Decision: profundizar cada una de las 18 ramas a 5 nodos con escalado uniforme
+  (tier 4 = coste 2 / afinidad 6; tier 5 = coste 3 / afinidad 7) y un efecto real
+  codificado por nombre en `EterniaStatsPlayer`, siguiendo el patron existente.
+- Consecuencias:
+  - La afinidad maxima por rama sube de 12 a 25, pero la promocion sigue siendo
+    RELATIVA (gana la afinidad dominante en `ClassPromotionRules`, sin umbral
+    absoluto), asi que subir simetricamente todas las ramas no rompe la seleccion
+    de subclase; solo abarata llegar a la rama en la que mas inviertes.
+  - Los efectos nuevos son bonos planos siempre-activos (via el gran metodo de
+    `EterniaStatsPlayer`); los condicionales siguen en los ModPlayer de subclase
+    (Swordsman/YoyoMaster/Stunner/etc.).
+- Archivos relacionados:
+  - `Content/Passives/PassiveRegistry.cs`
+  - `Content/Players/EterniaStatsPlayer.cs`
+  - `tests/PassiveTreeDepthSourceSmokeTest.ps1`
+
 ## 2026-07-06 - Activar una Class Soul ya no regala arma inicial
 
 - Estado: Aceptada.

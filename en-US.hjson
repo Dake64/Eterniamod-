@@ -20,6 +20,11 @@ Mods: {
 				DisplayName: Soul Violation
 				Description: Your soul rejects the weapon you tried to use.
 			}
+
+			BleedDebuff: {
+				DisplayName: Bleed
+				Description: Losing blood over time.
+			}
 		}
 
 		Items: {
@@ -167,6 +172,81 @@ Mods: {
 				DisplayName: Training Blade
 				Tooltip: Starter Warrior weapon. Builds Momentum on melee hits.
 			}
+
+			SerratedIronBlade: {
+				DisplayName: Serrated Iron Blade
+				Tooltip: A fast, jagged blade. High chance to make foes bleed.
+			}
+
+			SilverlightRapier: {
+				DisplayName: Silverlight Rapier
+				Tooltip: A light, lightning-quick rapier. Bleeds fast, hits soft.
+			}
+
+			HuntersWarblade: {
+				DisplayName: Hunter's Warblade
+				Tooltip: A balanced sword that reliably draws blood.
+			}
+
+			DreadReaver: {
+				DisplayName: Dread Reaver
+				Tooltip: A slow, brutal reaver. Big hits, little bleed - bank it for a technique.
+			}
+
+			CorruptorsRipper: {
+				DisplayName: Corruptor's Ripper
+				Tooltip: A jagged evil blade. Quick swings and a deep, corrupting wound.
+			}
+
+			Thornrender: {
+				DisplayName: Thornrender
+				Tooltip: Bee-waxed and cruelly barbed. The deepest bleed of its tier.
+			}
+
+			BonewardenSabre: {
+				DisplayName: Bonewarden Sabre
+				Tooltip: A wicked bone sabre from the Dungeon depths. Fast and bloody.
+			}
+
+			MoltenGutripper: {
+				DisplayName: Molten Gutripper
+				Tooltip: A heavy hellforged sword. Big hits and lasting wounds.
+			}
+
+			QuicksilverFang: {
+				DisplayName: Quicksilver Fang
+				Tooltip: Blinding mythril swings. Soft hits, but it never stops bleeding a foe.
+			}
+
+			SanguineCleaver: {
+				DisplayName: Sanguine Cleaver
+				Tooltip: A massive adamantite cleaver. Huge, slow blows - bank the Crimson Trail.
+			}
+
+			HallowedBloodletter: {
+				DisplayName: Hallowed Bloodletter
+				Tooltip: Forged from Hallowed bars and the three souls. The do-anything bleed sword.
+			}
+
+			ChlorophyteHemoblade: {
+				DisplayName: Chlorophyte Hemoblade
+				Tooltip: A living, whirring blade. Fast swings keep the wound wide open.
+			}
+
+			TitansGutcleaver: {
+				DisplayName: Titan's Gutcleaver
+				Tooltip: A titanic beetle-forged cleaver. Crushing hits, peak Crimson Trail banking.
+			}
+
+			CrimsonRequiem: {
+				DisplayName: Crimson Requiem
+				Tooltip: A Broken Hero Sword reforged to thirst for blood. The Swordsman's Terra Blade.
+			}
+
+			Exsanguinator: {
+				DisplayName: Exsanguinator
+				Tooltip: The capstone bleeder. Luminite-fast - the wound never closes.
+			}
 		}
 
 		NPCs: {
@@ -187,6 +267,7 @@ Mods: {
 		}
 
 		Projectiles: {
+			CrimsonSlash.DisplayName: Crimson Slash
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile
 			FireBoltProjectile.DisplayName: Fire Bolt Projectile

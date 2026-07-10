@@ -15,6 +15,1004 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-09 - Tajo custom (CrimsonSlash) unico por espada
+
+- Objetivo (peticion del usuario): personalizar el proyectil (era el EnchantedBeam
+  AZUL de vanilla) y hacer cada espada unica.
+- Solucion (data-driven, 1 proyectil para las 17 espadas):
+  - `Content/Projectiles/Warrior/CrimsonSlash.cs(.png)` (nuevo): un tajo en media
+    luna (textura generada por codigo, gris para tintar limpio). En AI lee la espada
+    que lo disparo (`owner.HeldItem is IBleedWeapon`) y toma su `SlashColor`/
+    `SlashScale` cada frame (MP-safe) -> cada espada tiene su propio color y tamano.
+  - `IBleedWeapon` extendida con `SlashColor`/`SlashScale` (miembros por defecto);
+    las 17 espadas los sobreescriben con valores unicos (script de inyeccion):
+    rojos/rosas para rapidas chicas, rojo oscuro grande para pesadas, verde para
+    Chlorophyte/Requiem, cian luminita para Exsanguinator, etc.
+  - El BALANCE (alcance + pierce 2) se movio DENTRO de CrimsonSlash; se borro
+    `SwordBeamGlobalProjectile`. Dano del tajo sigue al 45%. Alcance: a peticion del
+    usuario se alargo de ~13 a ~29 tiles (timeLeft 20->42) -> ahora es una extension
+    a distancia de verdad, no solo un poke corto.
+  - `EterniaGlobalItem.SetDefaults` ahora pone `item.shoot = CrimsonSlash`.
+- Verificacion: build 0/0; suite PASS=77. +hjson (DisplayName del proyectil).
+- Pendientes: el tajo usa una textura generada (media luna gris tintada); si quieres
+  arte de tajo real, se cambia el .png. Confirmar in-game que cada espada muestra su
+  color/tamano.
+
+## 2026-07-09 - Las espadas del Espadachin lanzan un TAJO a distancia (que sangra)
+
+- Objetivo (peticion del usuario): que las espadas peguen desde lejos, como la
+  mayoria de armas melee de Terraria (Terra Blade, Enchanted Sword, etc.).
+- Decision: TODAS las 16 espadas del mod (IBleedWeapon) lanzan un tajo, de forma
+  uniforme (identidad del Espadachin), centralizado -> no se toco ningun archivo de
+  espada.
+- Archivos: `Content/Globals/EterniaGlobalItem.cs` (set beam + reduce dano),
+  `Content/Players/WarriorBleedPlayer.cs` (+OnHitNPCWithProj, +ModifyHitNPCWithProj),
+  `Content/Players/SwordsmanPlayer.cs` (+OnHitNPCWithProj);
+  `tests/SwordBeamSourceSmokeTest.ps1` (nuevo).
+- Cablo:
+  - `EterniaGlobalItem.SetDefaults`: si `ModItem is IBleedWeapon`, set
+    `item.shoot = ProjectileID.EnchantedBeam`, `shootSpeed = 11`. Central para las 16.
+  - `ModifyShootStats`: el tajo hace 55% del dano de la espada (`BeamDamageFactor`);
+    el golpe cuerpo a cuerpo sigue al 100%, asi que melee de cerca sigue siendo mejor.
+  - El SANGRADO ahora se aplica tambien en el impacto del tajo (proyectil), espejo del
+    golpe directo: `WarriorBleedPlayer.OnHitNPCWithProj` tira la probabilidad;
+    `SwordsmanPlayer.OnHitNPCWithProj` da sangrado GARANTIZADO + Rastro Carmesi.
+    Gated a proyectil melee + `CanInflictBleed(Player.HeldItem)`, asi que otros
+    proyectiles melee (yoyos, etc.) no sangran.
+  - `ModifyHitNPCWithProj`: el tajo tambien recibe Execution/Exsanguinate vs sangrantes.
+- BALANCE (peticion del usuario): (1) dano del tajo 55%->45%; (2) nuevo
+  `SwordBeamGlobalProjectile` acorta el tajo de NUESTRAS espadas a ~13 tiles de
+  alcance (timeLeft 20) y pierce 2, para que sea una EXTENSION melee de alcance
+  corto, no un arma a distancia con spam a pantalla completa. Solo afecta beams
+  disparados teniendo una espada de sangrado (la Enchanted Sword vanilla no se toca).
+  Efecto: a bocajarro melee(<=vanilla) + 45% queda cerca/por debajo de vanilla del
+  tier; a distancia media es un poke debil de alcance limitado.
+- Verificacion: build 0/0; suite PASS=77. SIN probar in-game.
+- Pendientes/riesgos: (a) el beam es EnchantedBeam (AZUL) -> off-theme; tajo rojo
+  custom cuando haya arte. (b) los % y el alcance son tuneables; el tuning fino pide
+  pruebas in-game (sobre todo las espadas rapidas). (c) confirmar in-game que el tajo
+  dispara/sangra/se acorta.
+
+## 2026-07-09 - [REVERTIDO] Arsenal pre-hardmode del Ranger
+
+- Se creo un arsenal Ranger (4 arcos/armas) pero el usuario decidio quitarlo: las
+  clases no-Warrior no necesitan armas del mod (usan vanilla), asi que era contenido
+  tematico de baja prioridad. Borrado (archivos, test, hjson). Se retomo el pulido
+  de subclases en su lugar.
+
+## 2026-07-09 - Espadas del Espadachin: 2da pasada de obtencion (drops/cofres/evento)
+
+- Objetivo (peticion del usuario): atar las espadas al jefe/zona en vez de soft-gate
+  por material.
+- Archivos (nuevos): `Content/Globals/SwordsmanDropsGlobalNPC.cs`,
+  `Content/Systems/SwordsmanChestLoot.cs`; tests
+  `SwordsmanObtentionSourceSmokeTest.ps1` (nuevo) + arsenal test ajustado.
+  Modificados: `DreadReaver.cs`, `BonewardenSabre.cs` (sin receta).
+- Cambios:
+  - Dread Reaver: DROP del Ojo de Cthulhu (1/2), sin receta. Era el soft-gate mas
+    flagrante (Oro+Lentes sin matar al jefe). Ahora gateado al jefe.
+  - Bonewarden Sabre: LOOT de cofres del Dungeon (`SwordsmanChestLoot.PostWorldGen`
+    inyecta en ~1/3 de cofres con pared de dungeon, hasta 3) + trickle de no-muertos
+    del Dungeon (Angry Bones/Dark Caster/Cursed Skull, 1/60) para mundos existentes.
+    Sin receta.
+  - Thornrender: + drop de Reina Abeja (1/3), MANTIENE receta (Bee Wax).
+  - Crimson Requiem: + drop de Mothron en el Eclipse (1/4), MANTIENE receta
+    (Broken Hero Sword). Ejemplo de "drop de evento".
+  - Las demas (Corruptor's via escama del mal, etc.) ya estaban gateadas por
+    material -> sin cambio.
+- Verificacion: build 0/0; suite PASS=76. SIN probar in-game.
+- Pendientes: (a) el chest loot solo afecta mundos NUEVOS (como todo chest loot
+  vanilla); mundos viejos usan el drop de no-muertos. (b) Arte real sigue pendiente.
+  (c) Lineas de las otras 3 clases.
+
+## 2026-07-09 - Linea de espadas del Espadachin: lote HARDMODE
+
+- Objetivo: continuar la linea del Espadachin por todo hardmode (una espada
+  crafteable por tier mayor). La Bloodletter Blade (premio de promo) cubre Cobalto.
+- Archivos (nuevos, `Weapons/Warrior/`): QuicksilverFang (Mythril), SanguineCleaver
+  (Adamantita), HallowedBloodletter (jefes mecanicos), ChlorophyteHemoblade
+  (Clorofita), TitansGutcleaver (Golem), CrimsonRequiem (Eclipse), Exsanguinator
+  (Endgame/Luminita). +2 recipe groups (Mythril/Oricalco, Adamantita/Titanio).
+  +hjson. `tests/SwordsmanHardmodeArsenalSourceSmokeTest.ps1` (nuevo).
+- Linea hardmode (dano/vel/sangrado): Cobalto Bloodletter (42/-/22% promo) - Mythril
+  Quicksilver Fang (44/14/24% rapida) - Adamantita Sanguine Cleaver (56/30/10%
+  pesada) - Mecanicos Hallowed Bloodletter (62/20/16% equilibrada) - Clorofita
+  Chlorophyte Hemoblade (64/15/22% rapida) - Golem Titan's Gutcleaver (84/32/12%
+  pesada) - Eclipse Crimson Requiem (92/22/18%, Broken Hero Sword) - Endgame
+  Exsanguinator (112/14/24% rapida, Luminita).
+- Balance: dano sube monotonicamente y CADA espada queda <= su referencia vanilla
+  del mismo tier (Excalibur 66, Terra Blade 95, Terrarian 190...); el test lo verifica
+  con un cap por tier.
+- Verificacion: build 0/0; suite PASS=75.
+- Pendientes: la linea del Espadachin esta COMPLETA (inicio -> endgame, 16 espadas +
+  Bloodletter). Falta: (a) arte real (todas usan placeholder), (b) 2da pasada de
+  obtencion (drops/cofres/eventos en vez de soft-gate por material), (c) las lineas
+  de las OTRAS clases (Ranger/Mage/Summoner) siguen con solo el arma inicial.
+
+## 2026-07-09 - Linea de espadas del Espadachin: lote PRE-HARDMODE completo
+
+- Objetivo (spec del usuario): una linea de espadas propia del Espadachin a lo largo
+  de toda la progresion, con identidad rapida/equilibrada/pesada (rapida = mas
+  sangrado/menos dano; pesada = al reves), sin superar a las vanilla del mismo tier.
+- Decisiones del usuario: tooltip del % de sangrado se MANTIENE visible (no se toco
+  `ModifyTooltips`); obtencion = armas + recetas primero (drops/cofres reales en una
+  2da pasada).
+- Arquitectura: las espadas son `IBleedWeapon` usables por CUALQUIER Guerrero (el
+  sangrado es mecanica de clase Warrior; la promocion a Espadachin es hardmode-only,
+  asi que no pueden ser subclass-locked). El Rastro Carmesi se alimenta solo cuando
+  ya eres Espadachin, via la mecanica de sangrado existente (sin codigo extra).
+- Archivos (nuevos): `Content/Systems/EterniaRecipeGroups.cs` (grupos Silver/Gold/
+  EvilBar/EvilScale para ambos tipos de mundo); espadas
+  `Weapons/Warrior/{SilverlightRapier,DreadReaver,CorruptorsRipper,BonewardenSabre}.cs`.
+  Retuneadas: `HuntersWarblade` (Oro), `Thornrender` (Reina Abeja). +hjson.
+- Linea pre-hardmode (9 tiers): Inicio Training Blade (11/10%) - Hierro Serrated
+  (13/16%, rapida) - Plata Silverlight Rapier (16/24%, rapida) - Oro Hunter's
+  Warblade (20/14%, equilibrada) - Ojo Cthulhu Dread Reaver (22/8%, pesada) -
+  EoW/BoC Corruptor's Ripper (22/22%, rapida) - Reina Abeja Thornrender (24/20%,
+  especialista) - Dungeon Bonewarden Sabre (24/20%, rapida) - Inframundo Molten
+  Gutripper (27/16%, pesada). Todas <= vanilla del mismo tier.
+- Verificacion: build 0/0; suite PASS=74 (arsenal test extendido a las 8 espadas).
+- Pendientes: (a) HARDMODE: faltan ~8 espadas (Cobalto->Endgame); Bloodletter Blade
+  (premio de promo) cubre el tier cobalto. (b) 2da pasada de obtencion: drops de jefe
+  reales, loot de cofres del Dungeon (Bonewarden), drops de evento. (c) ARTE: todas
+  reutilizan el sprite placeholder del TrainingGauntlet; falta arte real de espada.
+  (d) Dread Reaver (Ojo Cthulhu) y Bonewarden (Dungeon) estan soft-gated por material
+  (Lens / Bone), no hard-gated al jefe/zona; candidatos a drop real.
+
+## 2026-07-09 - Armas de promocion subidas a tier HARDMODE (promoverse ya no es un downgrade)
+
+- Objetivo (peticion del usuario tras auditar las armas): las 18 recompensas de
+  promocion tenian stats pre-hardmode pero se entregan EN hardmode.
+- Diagnostico: `ClassPromotionRules.ResolveSubclass` devuelve la clase base si
+  `!Main.hardMode` -> la promocion SOLO ocurre en hardmode. Pero las 18 armas
+  tenian 8-20 de dano y rareza Blue. La del Espadachin (Bloodletter Blade, 16) era
+  MAS DEBIL que el Molten Gutripper (27) crafteable pre-hardmode. El Necromancer
+  recibia un libro de 8 de dano. Ademas, 2 de ellas eran crafteables con materiales
+  de inicio (Book + Fallen Star / Book + 15 Bone).
+- Archivos: las 18 armas de promocion; `tests/WeaponBalanceSourceSmokeTest.ps1`.
+- Cambios:
+  - Dano reescalado a tier de entrada de hardmode (cobalt/palladium), escalado por
+    `useTime` de cada arma: Melee 34-58 (RageCleaver 20->58 por ser la mas lenta,
+    BloodletterBlade 16->42), Ranged 30-36, Magic 31-36, Latigos/invocacion 26-30
+    (bajos a proposito: en vanilla el latigo de hardmode Firecracker hace 30).
+  - Rareza Blue -> LightRed (tier cobalt) en las 18. Valor -> 2 oro.
+  - `CursedApprenticeTome` y `BeginnerNecromancyBook` PIERDEN su receta: eran armas
+    de promocion crafteables con materiales de inicio, lo que ahora daria un arma
+    de hardmode en los primeros minutos.
+  - Test reescrito: verifica LightRed + sin receta + que cada arma supere a la mejor
+    crafteable pre-hardmode DE SU PROPIA CLASE DE DANO (comparar un latigo contra un
+    espadon era incorrecto; el primer intento del test lo cazo) + piso de hardmode.
+- Verificacion: build 0/0; suite PASS=74. SIN probar in-game.
+- Pendientes: (a) Ranger/Mage/Summoner siguen con UNA sola arma crafteable (la de
+  madera); falta su escalera pre-hardmode como la del Warrior. (b) Siguen sin existir
+  armas POST-hardmode. (c) "Training Gauntlet"/"Training Shield" conservan nombre de
+  arma de entrenamiento pese a ser premios de hardmode (renombrar es churn: hjson,
+  refs, tests).
+
+## 2026-07-09 - Balance de progresion de la rama Bleed (Espadachin)
+
+- Objetivo (peticion del usuario): auditar si la rama del Espadachin esta balanceada
+  "en cuestion de desarrollo". Diagnostico: NO. Tres problemas.
+- Diagnostico (numeros del codigo, `PassivePointsPerLevel = 1`):
+  - La rama Bleed costaba 41 puntos (= nivel 42 para completarla).
+  - P1 GRAVE: los 3 escalados del bleed (chance, duracion, dano DoT) se capeaban en
+    afinidad Bleed 20, alcanzada en el 5o nodo (9 de 41 puntos, 22% del costo). De
+    los 76 de afinidad de la rama, 56 (74%) no hacian NADA por el sangrado.
+  - P2 GRAVE: los 10 nodos Minor costaban 13 pts (32% de la rama) y su aporte
+    marginal real era +1.6% melee (cap de mastery ya alcanzado) = ~0.12%/pt, contra
+    5.0%/pt de Sword Mastery. ~40x peores. 13 niveles sin sentir nada.
+  - P3: Exsanguinate (costo 4) daba el MISMO +15% vs sangrantes que Execution (costo 2).
+  - P4: la rama otorgaba 76 de afinidad con cap de mastery 75 -> 1 punto desperdiciado.
+    `Blood Flow` hacia 2 cosas (armor pen + duracion) y describia solo una.
+- Archivos: `Content/NPCs/BleedGlobalNPC.cs`, `Content/Players/WarriorBleedPlayer.cs`,
+  `Content/Passives/PassiveRegistry.cs`, `Content/Players/EterniaStatsPlayer.cs`;
+  `tests/BleedProgressionSourceSmokeTest.ps1` (nuevo).
+- Cambios:
+  - P1: dano y duracion del bleed ahora escalan por tramos (valor completo hasta
+    afinidad 20; luego +1/3 de dano y +2 ticks por afinidad hasta 90). El tope 90
+    esta por ENCIMA de los ~86 que da la rama completa -> el sangrado crece durante
+    TODA la rama. `BleedGlobalNPC.GetBleedDamage(affinity)` centraliza el dano.
+    La PROBABILIDAD se dejo intacta (capeada en +10) porque el usuario ya la habia
+    pedido nivelar; ahora invertir profundo te hace mas letal, no mas frecuente.
+  - P2: los nodos Minor cuestan 1 (antes hasta 2) y dan 2 de afinidad (antes 1). La
+    rama baja de 41 a 38 puntos y su afinidad sube a ~86, que ahora SI alimenta el
+    sangrado.
+  - P3: Exsanguinate +15% -> +25% vs sangrantes.
+  - P4: `AffinityCap` 75 -> 100 (ningun punto invertido se desperdicia). Descripcion
+    de `Blood Flow` completada.
+- Efecto neto (rama Bleed full, 38 pts): dano DoT 26 -> ~48/tick (53 con Rupture);
+  duracion ~9s -> ~11s; melee de mastery +13.5% -> +15.5%.
+- Verificacion: build 0/0; suite PASS=74. SIN probar in-game.
+- Pendientes/riesgos: los numeros de P1 son un buff notable al DoT; tunear jugando.
+  P2 se aplico a las 18 ramas (los Minor son genericos), no solo a Bleed: revisar
+  que no infle otras clases.
+
+## 2026-07-09 - Panel de Stats: mostrar el TOTAL actual + preview del siguiente punto
+
+- Objetivo (peticion del usuario): mejorar el panel de Character Stats.
+- Diagnostico: el panel decia el ritmo POR PUNTO ("+0.3% all damage") pero nunca
+  cuanto te daban ya tus puntos invertidos (Power 42 -> +12.6%). Tampoco habia
+  progreso de EXP ni senal de que tenias puntos sin gastar.
+- Archivos: `Content/UI/StatsUI.cs`; `tests/StatsPanelClaritySourceSmokeTest.ps1` (nuevo).
+- Cambios:
+  - Nuevo `CurrentEffect(name, value)` que espeja la matematica de
+    `EterniaStatsPlayer.PostUpdateEquips` -> cada fila muestra su TOTAL actual como
+    linea principal (ej. Power 42 -> "+12.6% all damage"), y el ritmo por punto como
+    linea secundaria atenuada. Sin puntos: "Not invested yet".
+  - Tooltip mejorado: "Now: ..." / "Per point: ..." / "Next point: ..." (preview del
+    total DESPUES de gastar el punto).
+  - Barra de progreso de EXP dentro del panel ("EXP 1234 / 2000").
+  - Las pildoras Stats/Passives PULSAN cuando tienes puntos sin gastar, y el boton
+    "+" tiene glow pulsante cuando puedes gastar (ya se atenuaba sin puntos).
+  - Descripciones por punto corregidas (Agility "+0.5% move, +1% run", Focus
+    "+3 max mana, +0.5 mana regen") para que coincidan con el codigo real.
+  - Panel 486x520 -> 486x548 para acomodar la barra de EXP.
+- Riesgo/mantenimiento: `CurrentEffect` DUPLICA la matematica de
+  `EterniaStatsPlayer`. El test nuevo verifica que los multiplicadores del player no
+  cambien sin actualizar la UI (falla ruidosamente si hay drift).
+- Verificacion: build 0/0; suite PASS=73. SIN probar in-game.
+
+## 2026-07-09 - ELIMINADO el recurso de clase base (Momentum/Charge/Focus/Bond)
+
+- Objetivo (decision del usuario): quitar por completo el recurso de las clases
+  base. Un recurso pasa a ser estrictamente una mecanica de SUBCLASE.
+- Archivos: `Content/Players/BaseClassPlayer.cs` (reescrito), `Content/UI/SoulUI.cs`,
+  `docs/gameplay-systems.md`. BORRADOS: `Content/UI/BaseClassResourceUI.cs`,
+  `tests/BaseClassResourceUISourceSmokeTest.ps1`. Tests ajustados:
+  `OverlayClampSourceSmokeTest`, `OverlayPlayerStateSourceSmokeTest`.
+- Cambios:
+  - `BaseClassPlayer` pierde los 4 campos de recurso y toda su logica (acumulacion
+    en OnHit, decay, escalado de dano en `ModifyWeaponDamage`, velocidad en
+    `UseSpeedMultiplier`). CONSERVA los `+stat` fijos de clase base en
+    `PostUpdateEquips` y `IsActiveBaseClass` (que el test de gating exige).
+  - Se borro la barra flotante del recurso base y su test.
+  - `SoulUI`: ya no depende de `BaseClassPlayer`; la fila Resource de una clase sin
+    promover ahora dice "None - promote to gain one".
+- Consecuencia de balance: una clase base pre-promocion pierde el escalado que daba
+  el recurso (hasta ~+15% dano / +10% velocidad a full). Ahora solo tiene sus
+  `+stat` fijos. Queda por validar in-game si la pre-promocion se siente sosa.
+- Verificacion: build 0/0; suite PASS=72 (73 -> 72 al borrar el test de la UI).
+
+## 2026-07-09 - Barra de recurso flotante COMPARTIDA (mismo look para las demas clases)
+
+- Objetivo (peticion del usuario): aplicar la mejora visual de la barra base a las
+  demas clases/subclases.
+- Archivos: `Content/UI/EterniaUI.cs` (nuevo helper), `BaseClassResourceUI.cs`,
+  `CrimsonTrailUI.cs`, `SubclassResourceUI.cs`; tests `CrimsonTrailSourceSmokeTest`,
+  `SubclassResourceUISourceSmokeTest`, `OverlayClampSourceSmokeTest`.
+- Cambios:
+  - Nuevo `EterniaUI.DrawFloatingResourceBar(spriteBatch, player, label, value, max,
+    color, ready, readyPrompt)`: fade in/out con el valor (nunca se queda en 0),
+    track oscuro + relleno con borde brillante y gloss, glow pulsante cuando esta
+    casi lleno o "ready", etiqueta compacta arriba ("X 45" / "X MAX"), pill
+    "Q: ..." opcional debajo. Ancla y CLAMPEA la posicion internamente. Un solo
+    `resourceBarAlpha` estatico compartido (solo una subclase activa a la vez).
+  - `BaseClassResourceUI`, `CrimsonTrailUI` y `SubclassResourceUI` ahora solo
+    resuelven (label, value, max, color, ready) y delegan el dibujo al helper ->
+    se elimino el dibujo duplicado. Cubre: 4 clases base + Espadachin (Crimson
+    Trail) + las 6 subclases de `SubclassResourceUI` = 11 recursos con el look nuevo.
+  - Tests actualizados: Crimson/SubclassResourceUI ahora exigen
+    `DrawFloatingResourceBar`; `OverlayClamp` acepta el clamp delegado al helper.
+- Verificacion: build 0/0; suite PASS=73. SIN probar in-game.
+- Pendientes: quedan 10 medidores BESPOKE con visual propio (FighterComboUI contador
+  de combo, StunnerChargeUI, BerserkerUI, ArcherFocusUI, GunnerUI, EnergyHeatUI,
+  VirtuosoUI notas, CursedMageUI, ElementalistUI, NecromancerUI). Decidir si se
+  unifican al helper (consistencia) o conservan su estilo propio.
+
+## 2026-07-09 - REVERT del Momentum-buff + mejora visual de la barra flotante
+
+- Objetivo: el usuario decidio que lo del buff+nodo del Momentum fue mala idea;
+  pidio "regresalo a como estaba y mejora lo visual".
+- REVERTIDO (la entrada de abajo "Momentum -> buff + nodo" queda anulada): se
+  quitaron los 4 nodos "Core", el gate en `BaseClassPlayer`, `TryGetResourceDisplay`
+  y el AddBuff; se borro `Content/Buffs/ClassResourceBuff.cs(.png)` y su test; se
+  reactivo `BaseClassResourceUI`; se limpio la entrada huerfana del buff en
+  `en-US.hjson`; se revirtieron los conteos de `PassiveTreeDepthSourceSmokeTest`.
+  El recurso de clase base vuelve a ser automatico (sin nodo).
+- MEJORA VISUAL de la barra flotante (`Content/UI/BaseClassResourceUI.cs`):
+  - Solo aparece cuando hay recurso (fade in/out suave via `barAlpha`) -> se acabo
+    el feo "MOMENTUM 0/100" permanente sobre la cabeza.
+  - Dibujo pulido a mano (paleta EterniaUI): track oscuro + relleno con borde
+    brillante y gloss superior, glow pulsante cuando esta casi lleno, sombra suave.
+  - Etiqueta compacta arriba de la barra ("MOMENTUM 45" / "MOMENTUM MAX"),
+    posicionada un poco mas alto. Barra 118x12.
+- Verificacion: build 0/0; suite PASS=73. SIN probar in-game.
+
+## 2026-07-09 - [ANULADO] Momentum -> buff + desbloqueo por nodo (revertido arriba)
+
+- Objetivo (peticion del usuario): la barra flotante del Momentum (recurso de clase
+  base) sobre el personaje se ve mal; convertirla a buff y desbloquearla con un nodo
+  del arbol. El usuario tambien pidio "todas a buff", pero eso toca 13 UIs (incl.
+  paneles interactivos) + 6 tests y no se puede validar in-game -> se hace por etapas.
+  ESTA etapa: solo el recurso de clase base.
+- Archivos (nuevos): `Content/Buffs/ClassResourceBuff.cs` + `.png` (orbe generado),
+  `tests/ClassResourceBuffSourceSmokeTest.ps1`. (mod) `PassiveRegistry.cs`,
+  `BaseClassPlayer.cs`, `UI/PassiveUI.cs`, `UI/BaseClassResourceUI.cs`,
+  `tests/PassiveTreeDepthSourceSmokeTest.ps1`.
+- Cambios:
+  - NODO de desbloqueo: se agrego 1 nodo "Core" por clase al inicio de cada lista
+    (Warrior "Momentum", Mage "Arcane Charge", Ranger "Steady Focus", Summoner
+    "Spirit Bond"), afinidad "Core" (ignorada por afinidad/mastery), costo 1,
+    comprable de inmediato. `PadBranchesTo` excluye "Core" (no lo rellena ni le
+    pone keystone); se renderiza como su propio spoke corto (color Goldenrod).
+  - GATE: `BaseClassPlayer` solo acumula/da el recurso si el nodo Core esta
+    desbloqueado (`HasActivePassive` con literal por clase). Los +stat base de clase
+    NO se tocan (siguen siempre).
+  - BUFF: un solo `ClassResourceBuff` dinamico (nombre + tooltip vivos via
+    `BaseClassPlayer.TryGetResourceDisplay`), aplicado cada frame cuando el recurso
+    esta desbloqueado y > 0. Icono = orbe generado por codigo (System.Drawing).
+    Sin tinte por ahora (BuffDrawParams no resolvio; es solo estetico).
+  - La barra flotante base (`BaseClassResourceUI`) se apago via flag
+    `DrawFloatingBar=false` (se conservan los strings que verifican los tests).
+- Verificacion: build 0/0; suite PASS=74. SIN probar in-game.
+- Pendientes: ETAPA 2 = convertir las 18 barras de subclase a este mismo buff
+  (extender `ClassResourceBuff`/aplicador con el mapeo de las 18) y apagar sus UIs.
+  Falta: localizacion del buff (hjson) y opcional tinte del icono por color.
+
+## 2026-07-09 - Panel de Soul: seccion de SUBCLASE (especialidad + bonus + recurso)
+
+- Objetivo (peticion del usuario): el panel de Soul mostraba solo la identidad de
+  la clase base y una fila "Base resource: Inactive after promotion" (fea al estar
+  promovido). Pedido: que muestre tambien lo de la SUBCLASE.
+- Archivos: `Content/UI/SoulUI.cs`.
+- Cambios:
+  - Panel dividido en dos: **CLASE** (Survival/Damage/Combat/Speed, ya reflejan el
+    total con bonus de subclase) y una seccion **SUBCLASE - <nombre>** con divisor.
+  - La seccion subclase tiene 3 filas: **Specialty** (one-liner de su mecanica),
+    **Subclass bonus** (los +stat que da, espejo de `SubclassEffectsPlayer`) y
+    **Resource** (el recurso EN VIVO de esa subclase: Crimson Trail, Rage, Overflow,
+    Ferocity, Necro slots, etc. — mapeo de las 18 subclases + las 4 base).
+  - Se elimino la fila "Base resource / Inactive after promotion"; ahora sin
+    promover se muestra el recurso base (Momentum/Charge/Focus/Bond) en la fila
+    Resource, y las clases base dicen "Not promoted - build affinity to promote".
+  - Panel agrandado 368x402 -> 384x500 para las filas nuevas.
+- Verificacion: build 0/0; suite PASS=73. SIN probar in-game.
+- Pendientes/riesgos: los textos de bonus son estaticos (si se cambian los stats en
+  `SubclassEffectsPlayer` hay que actualizarlos aqui). Confirmar in-game que el
+  panel mas alto no se sale en resoluciones chicas (usa ClampToScreen).
+
+## 2026-07-09 - HUD: barras de recurso para las 6 subclases que no tenian
+
+- Objetivo (eleccion del usuario, rumbo v1): completar el HUD. 6 subclases tenian
+  mecanica pero NINGUNA barra (solo texto/particulas): Infinity Mage (Overflow),
+  Arcane Bard (Crescendo), Beast Tamer (Ferocity), Advanced Summoner (Command),
+  Tech Summoner (Power Core) y Yoyo Master (Precision). Ahora las 18 subclases
+  muestran su recurso.
+- Archivos: `Content/UI/SubclassResourceUI.cs` (nuevo),
+  `tests/SubclassResourceUISourceSmokeTest.ps1` (nuevo).
+- Diseno: UN solo ModSystem consolidado (como `BaseClassResourceUI`) via
+  `ModifyInterfaceLayers` -> barra `DrawProgressBar` anclada sobre el jugador +
+  pill "Q: ..." cuando la tecnica esta lista (Overload/Roar/Overclock/Overdrive).
+  Crescendo y Precision no tienen pill (uno es pasivo, el otro auto-dispara a 5).
+  Solo una subclase activa a la vez; no colisiona con la barra de Crimson Trail
+  (Espadachin) ni con la de clase base.
+- Verificacion: build 0/0; suite PASS=73. SIN probar in-game.
+- Pendientes/riesgos: colores/posicion tuneables. Confirmar in-game que la barra
+  no tapa otra UI. Netcode: los recursos no estan sincronizados en multiplayer.
+
+## 2026-07-09 - Fuente mas grande via wrap de 2 lineas (sin agrandar cards)
+
+- Objetivo (peticion del usuario): "haz que la fuente crezca sin agrandar las
+  tarjetas". Hasta ahora, subir la fuente obligaba a ensanchar la card (los
+  nombres largos se recortaban con "...").
+- Solucion: nuevo helper `DrawNodeLabel` en `PassiveUI` que ENVUELVE el nombre en
+  hasta 2 lineas (`EterniaUI.WrapText`) y lo centra vertical/horizontalmente,
+  usando el espacio vertical libre de la card. Un nombre corto = 1 linea grande;
+  uno de 2 palabras = 2 lineas ("Adrenaline"/"Rush") en vez de encogerse/recortarse.
+- Fuente base 0.85 -> 0.95 para los 3 tipos (Minor/Notable/Keystone). Cards SIN
+  cambios (Minor/Notable 198x40, Keystone 238x58); el keystone dibuja el nombre en
+  su region superior y el tag "KEYSTONE" (centrado) abajo, sin solaparse.
+- Verificacion: build 0/0; suite PASS=72. SIN probar in-game.
+- Pendientes/riesgos: si un nombre necesitara 3+ lineas se recorta a 2 (ninguno
+  actual lo necesita). Las cards quedaron algo mas anchas de lo necesario ahora
+  que el texto envuelve; se podrian estrechar a futuro para compactar el arbol.
+
+## 2026-07-09 - Auditoria de balance del arbol + fuente 0.85
+
+- Objetivo (peticion del usuario): fuente un poco mas grande + "verifica si cada
+  nodo esta balanceado y se ve crecimiento en el desarrollo del jugador".
+- Fuente: 0.8->0.85; cards 188->198 (keystone 224->238); `TierStep`/`LaneSpacing`
+  -> no-keystone 220/216, keystone 263/259. Anti-solape reverificado.
+- Auditoria (hallazgos):
+  - OK: todo nodo tiene efecto runtime (test de coverage lo garantiza; cero nodos
+    muertos). Costo sube con profundidad (1->4). Efectos escalan. Ramas simetricas.
+  - FIX 1 - 6 descripciones no coincidian con el efecto real (la tarjeta "mentia",
+    el jugador no veia bien su progreso). Corregidas en `PassiveRegistry`:
+    Blood Flow "+10% bleed duration"->"+3 melee armor penetration";
+    Precision Flow "+10% yoyo range"->"Infinite yoyo string";
+    Blood Rage "+5% low HP damage"->"+12% melee below 35% HP";
+    Musical Soul "+3% support power"->"+3% movement speed";
+    Resonance "+5% buff duration"->"+2% damage reduction";
+    Symphony Master "+10% ally buffs"->"+5% damage".
+  - FIX 2 - crecimiento se aplanaba a mitad de rama: `AffinityCap` estaba en 40,
+    pero los notables de una rama ya suman ~63, asi que los ~11 nodos Minor
+    profundos daban CERO stat directo (via `ApplyAffinityMastery`). Subido a 75
+    para que llenar la rama (incluidos los Minor) siga dando crecimiento.
+- Verificacion: build 0/0; suite PASS=72. SIN probar in-game.
+- Pendientes/riesgos: el cap 40->75 sube ~+5% el bonus de una rama full-invertida
+  (endgame). Tunear con pruebas in-game. La fuente sigue creciendo el arbol; si se
+  quiere mas grande sin agrandar cards, evaluar nombres en 2 lineas (wrap).
+
+## 2026-07-09 - Fix: nodos del arbol se enimaban (tarjetas Minor 92px)
+
+- Objetivo: bug reportado por screenshot -> los nodos se montaban unos sobre otros
+  (Expert/Apex/Ascendant amontonados, keystone tapando el nodo previo).
+- Causa: al pasar los Minor de "dots" (30px) a tarjetas con nombre (92px), el
+  `TierStep(Minor)` seguia en 50px, pensado para dots. Ademas el paso radial usaba
+  solo el tamano del tier ANTERIOR, asi que un Keystone ancho se enimaba con el
+  Minor previo.
+- Archivos: `Content/UI/PassiveUI.cs`.
+- Cambios:
+  - `TierStep` ahora es el footprint real (diagonal de la tarjeta + gap):
+    Minor 50->116, Notable 122->138, Keystone 168->180.
+  - El paso entre tiers t y t+1 usa `0.5*(TierStep[t]+TierStep[t+1])`: la mitad
+    del footprint de cada uno -> garantiza cero solape en cualquier angulo del
+    spoke (la diagonal es la distancia maxima centro-esquina).
+  - `LaneSpacing` subido a 112/136/176 para separar hermanos del mismo tier.
+  - Como el arbol quedo mas grande, `MinZoom` 0.5->0.4.
+  - Legibilidad (2do screenshot del usuario: "las letras se ven chicas, tengo que
+    hacer zoom"): el texto escala con el zoom, asi que el zoom inicial 0.7 lo hacia
+    chico. Se dejo el zoom inicial/reset en 1.0 (la vista que el usuario confirmo
+    legible) y se subio la letra de los Minor 0.44->0.5. Para el overview se aleja
+    con la rueda (hasta 0.4).
+  - Letra mas grande (3er screenshot: "haz la letra mas grande"): como los nombres
+    largos se recortan si la fuente crece sin ensanchar la tarjeta, se agrandaron
+    tarjeta+fuente JUNTAS: Minor 92x30->108x32 fuente 0.5->0.56; Notable
+    112x40->152x40 fuente 0.5->0.6; Keystone 152x54->184x58 fuente 0.6->0.64. El
+    espaciado (`TierStep`/`LaneSpacing`, derivado del footprint) se recalculo:
+    Minor 116/112->131/128, Notable 138/136->176/172, Keystone 180/176->211/207.
+    Verificado que ningun par (incluido Minor->Keystone) puede solaparse.
+  - Tamano uniforme + fuente 0.7 (4to screenshot: "haz la fuente mas grande y los
+    nuevos nodos no tienen el mismo tamano"): los Minor eran mas chicos que los
+    Notable -> ahora Minor y Notable comparten UNA sola card (168x40); solo el
+    Keystone es mayor (200x58, es el capstone dorado). La distincion es por estilo,
+    no por tamano. Fuente unificada a 0.7 (Minor/Notable/Keystone). `TierStep`/
+    `LaneSpacing` recalculados: no-keystone 191/187, keystone 226/222. Anti-solape
+    reverificado. Nota: el arbol crece; se recorre con pan y se aleja con la rueda.
+  - Fuente 0.8 (5to screenshot: "hazla mas grande"): fuente 0.7->0.8, cards
+    168x40->188x40 (keystone 200->224) para que los nombres largos no se recorten.
+    `TierStep`/`LaneSpacing` -> no-keystone 210/206, keystone 250/246. `MinZoom`
+    0.4->0.3 para que el overview siga cabiendo con el arbol mas grande.
+- Verificacion: build 0/0; suite PASS=72. SIN probar in-game (esperar screenshot).
+
+## 2026-07-09 - Mecanicas signature para las 5 subclases "solo-stats"
+
+- Objetivo (peticion del usuario, trabajo autonomo): mejorar la mecanica de cada
+  subclase "como el Espadachin". Diagnostico: 13 de 18 subclases ya tienen mecanica
+  propia; 5 eran SOLO `+stat` plano en `SubclassEffectsPlayer` (sin player propio):
+  Infinity Mage, Arcane Bard, Beast Tamer, Advanced Summoner, Tech Summoner. Se le
+  dio a cada una una mecanica signature distinta (recurso construido + payoff).
+- Archivos (nuevos): `Content/Players/InfinityMagePlayer.cs`,
+  `ArcaneBardPlayer.cs`, `BeastTamerPlayer.cs`, `AdvancedSummonerPlayer.cs`,
+  `TechSummonerPlayer.cs`; `tests/SubclassMechanicsSourceSmokeTest.ps1` (nuevo).
+- Cambios (5 mecanicas, todas gated a la subclase activa via `IsActiveX`,
+  reusan `SkillKey`+`SkillPlayer` cooldown como el Espadachin):
+  - **Infinity Mage — OVERFLOW**: castear rebosa un pozo (0-100); a tope empuja
+    +15% magia pasivo; `SkillKey` a full = ARCANE OVERLOAD (~5s de `manaCost=0` +
+    +25% magia). Fantasia "nunca te quedas sin mana".
+  - **Arcane Bard — CRESCENDO**: golpes magicos suben momento (0-100) que escala
+    magia/cast speed/move de forma CONTINUA y decae si dejas de pegar; a tope,
+    pulso de cura. Sin gasto ni boton (identidad = mantener el ritmo).
+  - **Beast Tamer — FEROCITY**: los golpes de tus minions suben furia (+15% invoc
+    pasivo); `SkillKey` a full = PRIMAL ROAR (~6s, +30% invoc + knockback).
+  - **Advanced Summoner — LEGION + OVERCLOCK**: +daño segun que tan llena esta la
+    tropa (`slotsMinions/maxMinions`); la tropa carga COMMAND; `SkillKey` a full =
+    OVERCLOCK (~5s, +2 al tope de minions + velocidad de invocacion).
+  - **Tech Summoner — POWER CORE**: bateria que carga sola (mas rapido con drones)
+    y da +defensa pasiva; `SkillKey` a full = OVERDRIVE PROTOCOL (~5s, +25% invoc +
+    15 defensa/escudo).
+- Nota: los `+stat` base en `SubclassEffectsPlayer` NO se tocaron (sirven de
+  baseline; la mecanica STACKEA encima). Feedback via CombatText/Dust/Sonido como
+  las demas subclases; sin barras de UI dedicadas todavia (opcional a futuro).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite completa PASS=72 FAIL=0.
+- Pendientes/riesgos: SIN probar in-game. Numeros tuneables. Posible barra de UI
+  por recurso (como Crimson Trail) si se quiere. Revisar balance del stack
+  baseline+mecanica. Esperar feedback del usuario antes de tocar mas.
+
+## 2026-07-08 - Tipos de nodo (Minor/Notable/Keystone) + 18 Keystones
+
+- Objetivo (eleccion del usuario): la mejora #1 recomendada -> distinguir tipos de
+  nodo (arbol legible) y agregar keystones (decisiones que definen build).
+- Archivos: `Content/Passives/PassiveNode.cs` (`PassiveKind` + `Kind`),
+  `Content/Passives/PassiveRegistry.cs` (Minor/Keystone + KeystoneName/Description),
+  `Content/Players/KeystonePlayer.cs` (nuevo, efectos), `Content/UI/PassiveUI.cs`
+  (render + layout por tipo), `tests/PassiveNodeTypesSourceSmokeTest.ps1` (nuevo).
+- Cambios:
+  - `PassiveKind` = Minor / Notable / Keystone. Hand-authored = Notable (default);
+    generados = Minor; capstone de rama = Keystone.
+  - RENDER por tipo: Minor = tarjeta CHICA con el nombre (se quita el prefijo de
+    afinidad: "Bleed Adept" -> "Adept"), Notable = tarjeta con nombre,
+    Keystone = tarjeta GRANDE dorada ("KEYSTONE" + glow/borde pulsante).
+    (Correccion: los Minor empezaron como dots sin texto; el usuario pidio ver el
+    nombre, asi que ahora son tarjetas chicas legibles.)
+  - LAYOUT por tipo: espaciado/tamano segun el kind del tier (`CardWidth`,
+    `TierStep`, `LaneSpacing`). Los dots se empacan densos cerca de las puntas,
+    las tarjetas notables tienen aire cerca del hub -> arbol mucho mas legible.
+  - 18 KEYSTONES (uno por rama) con efecto que define build + TRADE-OFF, aplicados
+    en `KeystonePlayer` solo para la clase activa. Ej: Bleed "Hemorrhagic Frenzy"
+    (+20% melee, -10% vel), Rage "Death Wish" (+25% melee, -40 vida), Beast
+    "Apex Alpha" (+30% invoc, -1 minion), etc. El keystone cierra cada rama y pide
+    haberla recorrido.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 71/71.
+- Pendientes/riesgos: SIN probar in-game. Numeros de keystone ajustables. Beast
+  "-1 minion" puede quedar bajo si tienes pocos (keystone es profundo, post-promo).
+
+## 2026-07-08 - Fix tooltip: mostrar TODOS los prerequisitos (no uno solo)
+
+- Bug (reportado con screenshot): un nodo tras un gate de 3 mostraba "Requires: X"
+  (uno solo) aunque el gating real pedia los 3. La linea del tooltip usaba el campo
+  viejo `passive.RequiredPassive` en vez de `GetPrerequisites` (derivado de tiers).
+- Fix: `GetTooltipLines` ahora usa `PassiveRegistry.GetPrerequisites` y lista TODOS
+  los prerequisitos ("Requires ALL of:" + cada uno, marcando "(owned)"). El gating
+  ya era correcto; era solo la visualizacion.
+- Archivos: `Content/UI/PassiveUI.cs`, `tests/PassiveDiamondTreeSourceSmokeTest.ps1`.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 70/70.
+
+## 2026-07-08 - Passive Tree: zoom + tooltip grande + efectos de nodo + gates de 3
+
+- Objetivo (pedido del usuario): zoom para el arbol grande; efectos/descripciones
+  tematicas en los nodos generados; tooltip mas visible; y que algunos nodos
+  requieran 1 o mas nodos.
+- Archivos: `Content/UI/PassiveUI.cs` (zoom), `Content/UI/EterniaUI.cs` (tooltip),
+  `Content/Passives/PassiveRegistry.cs` (TierSize gate + descripciones),
+  `Content/Players/EterniaStatsPlayer.cs` (efecto generico de afinidad).
+- Cambios:
+  - ZOOM: rueda del mouse sobre el area (0.5x-1.35x). Se agrego un `ToScreen` que
+    escala posicion Y tamano por zoom; conectores, hub y texto de nodo escalan con
+    el. Reset al abrir. Hint: "Drag to pan - wheel to zoom".
+  - TOOLTIP: mas grande y legible (ancho 408, fuente 0.7, titulo 0.84, mas alto de
+    linea) en vez del 0.58 chico.
+  - EFECTOS TEMATICOS: cada punto de afinidad da un bonus pequeno y TEMATICO
+    (Bleed->melee, Defense->toughness, Elemental->magic, Shadow->summon, etc.;
+    `ApplyAffinityMastery` en EterniaStatsPlayer, capado a 40/afinidad). Asi los
+    nodos generados (que solo dan afinidad) SI hacen algo. Sus descripciones ahora
+    dicen el efecto (`AffinityEffectText`).
+  - GATES: `TierSize` ahora incluye un tier ancho de 3 nodos periodico (aislado,
+    1->3->1), asi algunos nodos requieren TRES prerequisitos. Ya habia de 1 y 2.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 70/70.
+- Pendientes/riesgos: SIN probar in-game. El zoom escala texto de nodo (a zoom muy
+  bajo el nombre queda chico, es overview). El efecto generico apila con milestones
+  + nodos notables; capado, pero revisable en balance.
+
+## 2026-07-08 - Arbol extenso (20 nodos/rama) + fix estilos + letra milestone
+
+- Objetivo (feedback con screenshot): letra chica en Milestones; la rama Control
+  salia recta; y llevar cada rama a 20 nodos para v1 mas extensa.
+- Archivos: `Content/UI/PassiveUI.cs` (letra milestone),
+  `Content/Passives/PassiveRegistry.cs` (TierSize + padding),
+  `tests/PassiveDiamondTreeSourceSmokeTest.ps1`.
+- Cambios:
+  - Milestone: el subtexto del perk ahora es mas grande y legible (DrawTrimmedText
+    0.62, color claro) en vez del 0.5 minusculo.
+  - Estilos de rama: ninguno es ya una LINEA RECTA. Los 4 estilos ahora tienen
+    diamantes en distintos "beats" (antes el estilo 1 era lineal -> Control salia
+    derecho). Se mantiene la regla: un tier de 2 siempre lo sigue uno de 1.
+  - Padding a 20 nodos/rama: cada arbol se autogenera hasta `BranchTarget = 20`
+    nodos por rama con nodos "de camino" (`PadBranchesTo`, nombres unicos
+    "{Afinidad} {Titulo}") que dan +1 afinidad. No se escriben a mano ~215 nodos;
+    se generan en el ctor estatico. Los nodos menores alimentan la eleccion de
+    subclase + los milestones (el sistema de milestones es su recompensa).
+    Totales runtime: Warrior 120, Ranger/Mage/Summoner 80 c/u.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 70/70 (los nodos generados no
+  rompen los tests de conteo/cobertura porque usan nombres interpolados/variables).
+- Pendientes/riesgos: SIN probar in-game. Con 20/rama los brazos quedan MUY largos
+  -> mucho pan; aqui el ZOOM ayudaria bastante (siguiente paso natural). Balance de
+  afinidad acumulada (p.ej. slots de Necromancer) revisable.
+
+## 2026-07-08 - Milestones potencian la MECANICA de la subclase
+
+- Objetivo (feedback del usuario): que el milestone ayude a la mecanica de la
+  subclase, no solo a stats.
+- Archivos: `Content/Players/NecromancerPlayer.cs`, `SwordsmanPlayer.cs`,
+  `BerserkerPlayer.cs`, `CursedMagePlayer.cs`, `MilestonePlayer.cs` (PerkLabel),
+  `tests/MilestoneRewardsSourceSmokeTest.ps1`.
+- Cambios: cada subclase con RECURSO/sistema propio ahora escala su mecanica con la
+  cantidad de milestones (leyendo `MilestonePlayer.Milestones`), encima del stat:
+  - Necromancer: +1 slot de minion cada 2 milestones (`MaxNecroSlots`).
+  - Swordsman: +Rastro Carmesi ganado por golpe (= n de milestones).
+  - Berserker: +tope de Rage (`MaxRage` 100 -> 100 + milestones*10; mas Overrage y
+    mas dano escalado por rage).
+  - Cursed Mage: +regen de energia maldita (solo cuando ya regenera, para no
+    romper el acople con la corrupcion).
+  - `PerkLabel` actualizado en la UI para reflejar la mecanica.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 70/70.
+- Pendientes/riesgos: SIN probar in-game. Las subclases sin recurso propio siguen
+  con el bonus tematico de stat. Se puede extender a Fighter (combo), Elementalist
+  (carga) y las de Ranger si se quiere.
+
+## 2026-07-08 - Milestones: cada 5 nodos, algo especial
+
+- Objetivo (idea del usuario): cada 5 pasivas desbloqueadas, desbloquear algo
+  especial.
+- Archivos: `Content/Players/MilestonePlayer.cs` (nuevo),
+  `Content/UI/MilestoneBannerUI.cs` (nuevo), `Content/Progression/ProgressionService.cs`,
+  `Content/UI/PassiveUI.cs` (sidebar), `tests/MilestoneRewardsSourceSmokeTest.ps1`.
+- Cambios:
+  - Cada 5 pasivas desbloqueadas = 1 MILESTONE (`NodesPerMilestone = 5`).
+  - Cada milestone da un bonus ESCALADO tematico segun la SUBCLASE activa (no la
+    clase base): p.ej. Swordsman = melee + penetracion, Guardian = defensa,
+    Berserker = dano melee, Elementalist = dano magico, Infinity Mage = mana +
+    eficiencia, Necromancer = dano de invocacion, etc. (`MilestonePlayer`,
+    switch por `SubclassPlayer.CurrentSubclass`). Antes de promocionar, cae a un
+    bonus generico de la clase (por Soul). `PerkLabel` da la etiqueta para la UI.
+  - Momento especial: al alcanzar un milestone, `ProgressionService` dispara un
+    banner dorado (`MilestoneBannerUI`, "MILESTONE X") + sonido.
+  - El sidebar del panel muestra "Milestones: X (n/5)" + el bonus acumulado.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 70/70.
+- Pendientes/riesgos: SIN probar in-game. Numeros ajustables (4%/2 crit por
+  milestone). Idea futura: milestones con perks DISTINTOS/elegibles (keystones) en
+  vez de solo escalado.
+
+## 2026-07-08 - Passive Tree: conectores rectos + formas de rama variadas
+
+- Objetivo (feedback con screenshot): los conectores diagonales se entrelazaban y
+  todas las ramas se veian iguales.
+- Causa del enredo: `DrawConnector` rutea en angulo recto por el punto medio (Z);
+  en ramas diagonales sus tramos horizontales cruzaban los verticales de otros.
+- Archivos: `Content/UI/EterniaUI.cs` (nuevo `DrawLine`), `Content/UI/PassiveUI.cs`
+  (conectores rectos), `Content/Passives/PassiveRegistry.cs` (BranchStyle/TierSize),
+  `tests/PassiveDiamondTreeSourceSmokeTest.ps1`.
+- Cambios:
+  - `EterniaUI.DrawLine` = linea recta (rotada) entre dos puntos. Los conectores del
+    arbol ahora son ARISTAS RECTAS tipo telarana PoE: un diamante se ve como una V/◇
+    limpia, sin escaleras que se cruzan. (Se conserva el glow de camino tomado y el
+    pulso de disponible.)
+  - Formas de rama VARIADAS: `BranchStyle` (deterministico por afinidad) elige entre
+    4 patrones de `TierSize` -> diamante en escalera, linea recta, diamantes
+    espaciados, o split temprano + linea. Asi las ramas no se ven todas iguales
+    (y varian su largo). Un tier de 2 nodos siempre lo sigue uno de 1 (merge limpio).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 69/69.
+- BUGFIX (reportado con screenshot): la 1a version de `DrawLine` escalaba
+  `MagicPixel` por `(length, thickness)`; como esa textura no es 1x1, dibujaba
+  cuñas gigantes que llenaban la pantalla. Corregido dividiendo la escala por las
+  dimensiones reales de la textura (`length / pixel.Width`, `thickness / pixel.Height`).
+- Pendientes/riesgos: SIN probar in-game. Ajustable: `laneSpacing`/`nodeSpacing`
+  si un diamante queda muy junto/separado, grosor de linea, y el reparto de estilos.
+
+## 2026-07-08 - Passive Tree: estructura de diamantes (requiere DOS para el siguiente)
+
+- Objetivo (feedback del usuario): el arbol se veia lineal (cada nodo pedia solo al
+  anterior); querer que a veces necesites desbloquear DOS juntos para el siguiente.
+- Archivos: `Content/Passives/PassiveRegistry.cs` (BuildTiers/GetBranch/GetPrerequisites),
+  `Content/Progression/ProgressionService.cs`, `Content/UI/PassiveUI.cs`,
+  `tests/PassiveDiamondTreeSourceSmokeTest.ps1` (nuevo).
+- Cambios:
+  - Estructura de TIERS derivada del orden de la rama: tier par = 1 nodo, tier impar
+    = 2 nodos, alternando. Los prerequisitos de un nodo son TODOS los nodos del tier
+    anterior -> tras un tier de 2 nodos, el siguiente requiere AMBOS (merge/gate).
+    Sin re-cablear a mano los 145 nodos: se deriva del orden (`BuildTiers`,
+    `GetPrerequisites`).
+  - `ProgressionService.TryUnlockPassive` y `GetPassiveState` (UI) ahora exigen TODOS
+    los prerequisitos (ya no un solo `RequiredPassive`, que queda vestigial).
+  - Layout radial: los 2 nodos de un tier se abren en perpendicular al brazo
+    (`laneSpacing`) formando un DIAMANTE que el siguiente nodo vuelve a juntar.
+  - Conectores: una linea por prerequisito -> un merge muestra DOS lineas
+    convergiendo (con el mismo highlight de camino tomado / pulso de disponible).
+  - Efecto secundario: las ramas quedan mas compactas (menos tiers que nodos).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 69/69.
+- Pendientes/riesgos: SIN probar in-game. `GetPrerequisites` aloca listas por
+  frame en el panel abierto (menu, no gameplay; optimizable si se nota). Las ramas
+  de 8 nodos dan 2 diamantes + cola; las de 9 (Bleed) dan 3 diamantes.
+
+## 2026-07-08 - Passive Tree: juice RPG (camino iluminado + halos + hub)
+
+- Objetivo (feedback del usuario): la web radial se veia bien pero le faltaba algo
+  para sentirse mas RPG.
+- Archivos: `Content/UI/PassiveUI.cs` (`DrawTree` + `DrawPassiveNode`).
+- Cambios (solo visual, sin tocar mecanica):
+  - Conectores por estado de asignacion: el CAMINO tomado se ilumina (glow + nucleo
+    brillante), el siguiente nodo disponible PULSA para invitarlo, el resto queda
+    tenue. Da el feel de "tu build se enciende" de PoE.
+  - Nodos: halo suave detras de los tomados (glow fijo) y de los disponibles (pulso
+    animado), marco exterior por estado (disponible pulsa, tomado brillante, resto
+    tenue) + bisel interior blanco. Todo con `GlobalTimeWrappedHourly`.
+  - Nucleo "CORE" con doble glow pulsante y borde en color de clase (se pasa
+    `accent` a `DrawTree`).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 68/68.
+- Pendientes/riesgos: SIN probar in-game. Siguiente nivel de RPG (opcional):
+  iconos por nodo (requiere texturas), fondo arcano/vignette, o zoom.
+
+## 2026-07-08 - Passive Tree estilo Path of Exile (web radial paneable)
+
+- Objetivo (pedido del usuario): que el arbol se sienta mas RPG, tipo PoE.
+  Se eligio "web radial paneable" (reusa la logica; sin zoom en v1).
+- Archivos: `Content/UI/PassiveUI.cs` (`BuildLayouts` + `DrawTree` + estado de pan
+  + `DrawPassiveNode` con `allowClicks`),
+  `tests/ResponsiveUILayoutSourceSmokeTest.ps1` (asserts hubRadius/nodeSpacing/panX).
+- Cambios (estructura):
+  - `BuildLayouts` ahora es PROCEDURAL y radial: cada rama de afinidad es un BRAZO
+    que irradia desde un nucleo central (`hubRadius` 170, `nodeSpacing` 122); los
+    nodos avanzan hacia afuera por tier. Posiciones en espacio de lienzo (hub 0,0).
+    Sin colocar nodos a mano; escala solo al agregar nodos (brazo mas largo).
+  - `DrawTree` = lienzo PANEABLE: se arrastra para moverse (`panX/panY`, con clamp a
+    `reach`). Conectores nodo->prerequisito (o al hub) tipo telarana. Nucleo "CORE"
+    al centro. Culling: solo se dibujan/clickean las tarjetas completamente dentro
+    del area (sin tocar el SpriteBatch -> sin riesgo de scissor).
+  - Distincion arrastre vs click: un drag (>6px) NO cuenta como click de nodo
+    (`allowClicks = !dragMoved` pasado a `DrawPassiveNode`).
+  - Tarjetas de nodo compactas (112x40, estilo solo-texto: nombre + click).
+  - La mecanica no cambia (afinidad, promocion por afinidad dominante, requiredPassive).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 68/68.
+- Pendientes/riesgos: SIN probar in-game. Knobs a ajustar segun se sienta:
+  `hubRadius`/`nodeSpacing`/`cardWidth`/`cardHeight`, velocidad de pan, umbral de
+  drag (6px), y el culling "completo" deja zona muerta ~1 tarjeta en los bordes.
+  Sin ZOOM (siguiente paso si se quiere). Hub dice "CORE" (placeholder).
+
+## 2026-07-08 - Passive Tree scrollable (nodos de altura fija + scroll)
+
+- Objetivo (pedido del usuario): que la interfaz del arbol escale a MUCHOS nodos a
+  futuro sin verse mal (dejar de encoger nodos).
+- Archivos: `Content/UI/PassiveUI.cs` (`BuildLayouts` + `DrawTree`),
+  `tests/ResponsiveUILayoutSourceSmokeTest.ps1` (asercion `treeScroll`).
+- Cambios (estructura):
+  - Los nodos ahora usan una altura FIJA legible (clamp `NodeMinHeight..NodeMaxHeight`);
+    `maxFittingNodeHeight` decide si caben sin scroll, pero nunca se encogen por
+    debajo del minimo.
+  - Las filas se dimensionan al CONTENIDO y se apilan; si el total supera el area,
+    el arbol hace SCROLL vertical (rueda del mouse sobre el area), con barra
+    indicadora. Cuando todo cabe, scroll = 0 y se ve igual que antes.
+  - Dibujo con culling manual: solo se dibujan/clickean los nodos completamente
+    dentro del area (sin tocar el estado del SpriteBatch -> sin riesgo de scissor).
+    Fondos de grupo recortados via `Rectangle.Intersect`; se quitaron los bordes de
+    caja (eran los que se desbordaban).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 68/68.
+- Pendientes/riesgos: SIN probar in-game (no puedo ejecutar el juego). Posibles
+  ajustes: (a) direccion de la rueda (`treeScroll -=`), invertir si va al reves;
+  (b) el culling "completamente dentro" deja una pequena zona muerta (~1 nodo) en
+  los bordes al hacer scroll (efecto lista que encaja); si molesta, se puede pasar
+  a clipping por scissor. La velocidad de scroll es `delta / 4`.
+
+## 2026-07-08 - Arbol de pasivas extenso para v1 (todas las ramas a 8+)
+
+- Objetivo (pedido del usuario): para v1 el arbol debe sentirse extenso, no corto.
+  Se profundizaron las 17 ramas que seguian en 5 nodos (igual que Bleed).
+- Archivos: `Content/Passives/PassiveRegistry.cs` (+51 nodos),
+  `Content/Players/EterniaStatsPlayer.cs` (+51 efectos),
+  `tests/PassiveTreeDepthSourceSmokeTest.ps1` (conteos).
+- Cambios:
+  - +3 nodos por rama (tiers 6-8, afinidad 8/9/10) a Combo, Defense, Precision,
+    Rage, Control (Warrior); Energy, Bow, Gun, Music (Ranger); Elemental, Curse,
+    Infinity, Arcane (Mage); Beast, Fusion, Tech, Shadow (Summoner).
+  - Cada nodo con efecto real en `EterniaStatsPlayer` (dano/crit/velocidad/defensa/
+    penetracion/mana/+minion/vida) segun el tema de la rama.
+  - Totales: Warrior 49 (Bleed 9 + 5x8), Ranger/Mage/Summoner 32 c/u (4x8).
+    145 nodos de pasiva en total. La rama Bleed sigue mas profunda (9) como
+    vitrina del Espadachin; la promocion sigue siendo relativa, no se rompe.
+  - El layout de filas proporcionales absorbe las ramas mas largas sin desbordar.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 68/68
+  (cobertura confirma que los 51 nodos tienen efecto en runtime).
+
+## 2026-07-08 - Passive Tree: filas proporcionales (arreglo de desborde)
+
+- Objetivo (bug reportado con screenshot): la rama Bleed (9 nodos) se desbordaba y
+  pisaba la rama de abajo (Precision). Debia escalar para futuras ramas mas grandes.
+- Causa: `BuildLayouts` usaba grilla de altura de fila FIJA (treeHeight/rows) +
+  `maxFittingNodeHeight = Math.Max(24, fittedNodeHeight)` que forzaba 24px por nodo
+  aunque cupieran menos, empujando los nodos fuera de la caja del grupo.
+- Archivos: `Content/UI/PassiveUI.cs` (`BuildLayouts`),
+  `tests/ResponsiveUILayoutSourceSmokeTest.ps1` (asercion `rowMaxNodes`).
+- Cambios (cambio de estructura):
+  - Cada FILA se dimensiona proporcional a su rama mas larga (`rowMaxNodes` -> peso),
+    asi una rama densa reclama mas altura en vez de desbordar la fila de abajo.
+  - La altura de nodo se ajusta a la rama mas larga de la fila (columnas alineadas);
+    `maxFittingNodeHeight` ya no fuerza un piso de 24 (nunca rebasa la caja).
+  - Se quito el bloque que forzaba `NodeMinHeight`. Piso legible bajado a 22, pero
+    siempre acotado por lo que realmente cabe.
+  - Resultado: sin solape; una rama de 9 nodos entra exacta en su fila y escala si
+    crecen mas nodos (los nodos se encogen gradualmente, sin pisarse).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 68/68.
+- Pendientes/riesgos: con MUCHISimos nodos por rama a futuro, los nodos se harian
+  pequenos; si llega ese caso, agregar scroll vertical al area del arbol.
+
+## 2026-07-08 - Rama Bleed ampliada (4 nodos de potencia + caps de afinidad)
+
+- Objetivo (pedido del usuario): agregar mas al arbol de pasivas del Bleed. Se hizo
+  sin re-inflar el proc (que se acababa de nivelar): los nodos suben POTENCIA del
+  sangrado, no probabilidad, y se acota el aporte de afinidad.
+- Archivos: `Content/Passives/PassiveRegistry.cs` (rama Bleed 5 -> 9 nodos),
+  `Content/Players/WarriorBleedPlayer.cs`, `Content/NPCs/BleedGlobalNPC.cs`,
+  `tests/BleedPassiveTreeSourceSmokeTest.ps1` (nuevo),
+  `tests/PassiveTreeDepthSourceSmokeTest.ps1` (Warrior 30 -> 34).
+- Cambios:
+  - 4 nodos nuevos en la rama Bleed (encadenados tras Crimson Reaper):
+    - `Rupture` (+5 dano de sangrado, en `BleedGlobalNPC`).
+    - `Hemoplague` (+2s de duracion).
+    - `Exsanguinate` (+15% dano vs sangrantes, apila con `Execution`).
+    - `Bloodthirst` (curas al golpear enemigos sangrantes; ~1/5 hits, +2 HP).
+  - Caps de afinidad para que un arbol profundo no dispare los numeros:
+    - chance: `Math.Min(affinity / 2, 10)`,
+    - duracion: `Math.Min(affinity, 20) * 6`,
+    - DoT: `Math.Min(affinity, 20)`.
+  - La rama Bleed queda mas profunda que las demas (9 vs 5), tematico para el
+    camino del Espadachin; la promocion sigue siendo relativa, no se rompe.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 68/68.
+
+## 2026-07-08 - Nivelacion del chance de sangrado (estaba muy alto)
+
+- Objetivo (feedback del usuario): el % de aplicar sangrado se sentia muy alto,
+  agravado porque la afinidad Bleed se sumaba 1:1 (una build full daba +25%).
+- Archivos: `Content/Globals/EterniaGlobalItem.cs` (tabla vanilla),
+  `Content/Players/WarriorBleedPlayer.cs` (aporte de afinidad),
+  las 6 espadas insignia (`BleedChance`), `tests/SwordsmanBleedSourceSmokeTest.ps1`.
+- Cambios:
+  - Chances base reducidos ~a la mitad. Insignia: TrainingBlade 25->10,
+    SerratedIronBlade 32->16, HuntersWarblade 28->12, Thornrender 36->20,
+    MoltenGutripper 35->16, BloodletterBlade 45->22. Vanilla curadas tambien
+    (p.ej. BloodButcherer 30->16, DeathSickle 35->18, Katana 18->10, ...).
+  - La afinidad Bleed ahora aporta `affinity / 2` al chance (antes 1:1), asi una
+    build maxeada suma +12 en vez de +25.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 67/67 (test afirma `affinity / 2`).
+- Pendientes/riesgos: ajustable; si aun se siente alto/bajo, tunear base o el divisor.
+
+## 2026-07-08 - Arsenal pre-hardmode del Espadachin (4 espadas de sangrado)
+
+- Objetivo (pedido del usuario): dar variedad de espadas pre-hardmode para el
+  camino del Guerrero/Espadachin, con distintos nichos.
+- Archivos: `Content/Items/Weapons/Warrior/SerratedIronBlade.cs`,
+  `HuntersWarblade.cs`, `Thornrender.cs`, `MoltenGutripper.cs` (nuevos),
+  `en-US.hjson` (nombres/tooltips), `tests/SwordsmanArsenalSourceSmokeTest.ps1`.
+- Cambios: 4 espadas craftables `IBleedWeapon` (no subclass-locked, usables pre-HM),
+  cada una con nicho y chance de sangrado insignia:
+  - SerratedIronBlade: rapida-sangradora. dmg 13 / useTime 17 / White / bleed 32.
+    Receta: IronBar 8 + Wood 5 (Anvil).
+  - HuntersWarblade: equilibrada. dmg 16 / 21 / Blue / bleed 28. IronBar 12 + Wood 10.
+  - Thornrender: especialista en sangrado (jungla). dmg 19 / 23 / Blue / bleed 36.
+    Stinger 8 + JungleSpores 6 + Vine 3.
+  - MoltenGutripper: pesada (infierno). dmg 27 / 25 / Orange / bleed 35.
+    HellstoneBar 12 + Wood 5.
+  - Todas usan `CanInflictBleed` (via IBleedWeapon) y muestran su % en el tooltip.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 67/67.
+- Pendientes/riesgos: texturas placeholder (override Texture al sprite del
+  TrainingGauntlet, como TrainingBlade/BloodletterBlade). Recetas usan el grupo
+  vanilla "IronBar" (hierro/plomo).
+
+## 2026-07-08 - Pase de balance de armas del mod
+
+- Objetivo: revisar y balancear las armas del mod (4 starters de clase + 18
+  recompensas de promocion) buscando outliers e inconsistencias.
+- Hallazgos: la distribucion de DPS estaba mayormente bien (gradiente ~22-46 con
+  subclases de utilidad abajo y de dano arriba). Outliers/inconsistencias puntuales:
+  - `InfinityTome` era el DPS mas alto del tier (15 dmg / 18 = 50), por encima del
+    melee y con seguridad de rango.
+  - `TrainingShield` con 9 de dano, muy bajo incluso para arma defensiva.
+  - `CursedApprenticeTome` y `BeginnerNecromancyBook` eran rareza White pese a ser
+    recompensas de promocion (el resto son Blue).
+- Cambios:
+  - `InfinityTome` dmg 15 -> 13 (50 -> ~43 DPS, en linea con Pistol/Bloodletter;
+    mantiene su identidad rapida/eficiente por el mana bajo del Infinity Mage).
+  - `TrainingShield` dmg 9 -> 11 (sube el piso; sigue siendo el melee mas bajo,
+    coherente con el rol tanque del Guardian).
+  - `CursedApprenticeTome` y `BeginnerNecromancyBook` White -> Blue (consistencia).
+    El mana gratis del Cursed Tome es intencional (usa CursedEnergy), se dejo.
+  - No se toco el resto: la variedad de DPS por rol/subclase es intencional.
+- Archivos: `Content/Items/Weapons/Promotion/InfinityTome.cs`,
+  `Content/Items/Weapons/Guardian/TrainingShield.cs`,
+  `Content/Items/Weapons/Magic/CursedApprenticeTome.cs`,
+  `Content/Items/Weapons/Summoner/BeginnerNecromancyBook.cs`,
+  `tests/WeaponBalanceSourceSmokeTest.ps1` (nuevo, invariantes de rareza),
+  `tests/PromotionRewardsSourceSmokeTest.ps1` (afloje del assert de dano fijo).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 66/66.
+
+## 2026-07-08 - Sangrado: lista curada de espadas (no todas) con chance base
+
+- Objetivo (pedido del usuario): que no todas las espadas sangren, sino una
+  seleccion tematica de espadas vanilla, y que algunas ya traigan un chance base.
+- Archivos: `Content/Globals/EterniaGlobalItem.cs`,
+  `Content/Players/WarriorBleedPlayer.cs`, `Content/Players/SwordsmanPlayer.cs`,
+  `tests/SwordsmanBleedSourceSmokeTest.ps1`, `docs/gameplay-systems.md`.
+- Cambios:
+  - `EterniaGlobalItem.IsSword` (aceptaba cualquier espada) se reemplazo por una
+    **tabla curada** `VanillaBleedSwords` (ItemID -> chance base) + `CanInflictBleed`.
+  - Espadas elegidas (tematicas): IronBroadsword 8, LeadBroadsword 8, BladeofGrass
+    15, FalconBlade 16, Katana 18, Muramasa 20, Cutlass 20, LightsBane 20,
+    BloodButcherer 30, Bladetongue 30, NightsEdge 22, TrueNightsEdge 30, Seedler 25,
+    DeathSickle 35. Mas las insignia del mod (IBleedWeapon: TrainingBlade 25,
+    BloodletterBlade 45). El resto de espadas ya **no** sangran.
+  - `WarriorBleedPlayer`/`SwordsmanPlayer` usan `CanInflictBleed` en vez de `IsSword`.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 65/65 (test reescrito).
+- Pendientes/riesgos: lista ajustable a gusto (agregar/quitar ItemID o tunear
+  chances). El tooltip solo se muestra a Guerreros activos.
+
+## 2026-07-08 - Sangrado: solo espadas + porcentaje visible
+
+- Objetivo (pedido del usuario): el sangrado debe aplicarse **solo con espadas** y
+  el **porcentaje** de aplicarlo debe ser **visible** (revierte el diseno previo de
+  "arma de filo marcada" + "probabilidad oculta").
+- Archivos: `Content/Globals/EterniaGlobalItem.cs` (antes vacio),
+  `Content/Players/WarriorBleedPlayer.cs`, `Content/Players/SwordsmanPlayer.cs`,
+  `Content/Items/IBleedWeapon.cs`, `tests/SwordsmanBleedSourceSmokeTest.ps1`,
+  `docs/gameplay-systems.md`.
+- Cambios:
+  - `EterniaGlobalItem.IsSword` = deteccion de espada real (Swing/Rapier, melee,
+    sin pick/axe/hammer; excluye lanzas/manguales/yoyos/latigos/herramientas).
+    Ahora **cualquier espada** (vanilla o del mod) puede aplicar sangrado, no solo
+    las 2 armas marcadas.
+  - `IBleedWeapon` pasa de "chance oculto por arma" a **override de chance para
+    espadas insignia**; `DefaultSwordBleedChance` (15) para el resto.
+  - `EterniaGlobalItem.ModifyTooltips` muestra "`X% chance to inflict Bleed`" en el
+    tooltip de las espadas cuando el jugador es Guerrero activo (chance efectivo =
+    base + afinidad Bleed).
+  - `WarriorBleedPlayer`/`SwordsmanPlayer` usan `IsSword` en vez del marcador.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 65/65 (test reescrito,
+  rojo->verde).
+- Pendientes/riesgos: si el usuario queria SOLO las espadas del mod (no vanilla),
+  restringir `IsSword` a `IBleedWeapon`. Heuristica de espada podria incluir/excluir
+  algun caso borde (shortswords incluidas via estilo Rapier).
+
+## 2026-07-08 - Espadachin Fase 2: Rastro Carmesi (recurso + tecnica + barra)
+
+- Objetivo: dar identidad al Espadachin con su recurso exclusivo, cerrando el
+  rediseno. El Sangrado (Fase 1) ya es del Guerrero; el Espadachin lo explota.
+- Archivos principales:
+  - `Content/Players/CrimsonTrailPlayer.cs` (nuevo, recurso + save/load).
+  - `Content/Players/SwordsmanSkillPlayer.cs` (nuevo, tecnica con SkillKey).
+  - `Content/UI/CrimsonTrailUI.cs` (nueva barra, clon de BerserkerUI).
+  - `Content/Players/SwordsmanPlayer.cs` (gana recurso en golpes de filo).
+  - `tests/CrimsonTrailSourceSmokeTest.ps1` (nuevo), `docs/gameplay-systems.md`.
+- Cambios:
+  - Rastro Carmesi = recurso **exclusivo del Espadachin** (cap 100). Solo acumula
+    con `IsActiveSwordsman`; si no, `ResetEffects` lo pone en 0. **Sin auto-regen**:
+    solo se gana al golpear con arma de filo (12 primera sangre / 6 sostener).
+    `Add`/`TrySpend` + `SaveData`/`LoadData`. Logica separada del sangrado.
+  - Tecnica **Crimson Execution** (`SwordsmanSkillPlayer`, tecla Q + cooldown
+    compartido): gasta 50 y golpea a todos los sangrantes cercanos con un burst
+    (el "EXECUTE!" renacido, `SimpleStrikeNPC` escalado por afinidad Bleed).
+  - Barra `CrimsonTrailUI` solo-Espadachin; se enciende (`Q: EXECUTE`) al tener
+    recurso suficiente.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 65/65
+  (nuevo `CrimsonTrailSourceSmokeTest`, rojo->verde por TDD).
+- Pendientes/riesgos: el burst usa `SimpleStrikeNPC` (netcode propio de tML);
+  la barra/tecnica no requieren sync extra (recurso local del jugador). Falta
+  probar in-game el flujo completo (aplicar bleed -> cargar -> Q).
+
+## 2026-07-08 - Espadachin Fase 1: Sangrado como mecanica del Guerrero
+
+- Objetivo: rediseno del Espadachin (spec del usuario). Fase 1 = convertir el
+  Sangrado en mecanica del Guerrero (class-wide), no exclusiva del Espadachin.
+- Archivos principales:
+  - `Content/Buffs/BleedDebuff.cs` (nuevo ModBuff) + `BleedDebuff.png` (placeholder).
+  - `Content/Items/IBleedWeapon.cs` (nueva interfaz, `BleedChance` oculto).
+  - `Content/Players/WarriorBleedPlayer.cs` (nuevo, aplicacion class-wide).
+  - `Content/NPCs/BleedGlobalNPC.cs`, `Content/Players/SwordsmanPlayer.cs`,
+    `Content/Players/SubclassEffectsPlayer.cs` (refactor).
+  - `Content/Items/Weapons/Warrior/TrainingBlade.cs`,
+    `Content/Items/Weapons/Promotion/BloodletterBlade.cs` (marcadas IBleedWeapon).
+  - `en-US.hjson` (localizacion del debuff), `docs/gameplay-systems.md`,
+    `tests/SwordsmanBleedSourceSmokeTest.ps1` (reescrito).
+- Cambios:
+  - El Sangrado ahora es un **debuff real** (`BleedDebuff`, visible en el enemigo),
+    de **un solo nivel** y **dano fijo** (`BaseBleedDamage` 6 + afinidad Bleed).
+  - Solo lo aplican **armas de filo compatibles** (`IBleedWeapon`) con una
+    **probabilidad oculta por arma** (TrainingBlade 25, BloodletterBlade 45),
+    rodada en `WarriorBleedPlayer` para cualquier Warrior Soul activa. La afinidad
+    Bleed sube chance y duracion; `Blood Flow` alarga; `Execution` da dano vs
+    sangrantes (todo Warrior-wide).
+  - El **Espadachin** es la maestria: garantiza el sangrado en cada golpe de filo
+    (`SwordsmanPlayer.OnHitNPCWithItem` gateado por `IsActiveSwordsman`).
+  - Se retiro el sistema de 5 stacks + "EXECUTE!" de `SubclassEffectsPlayer`
+    (se reconvertira en tecnica del Rastro Carmesi en la Fase 2).
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 64/64.
+- Pendientes/riesgos: Fase 2 = recurso Rastro Carmesi + barra UI + tecnica(s).
+  Sync MP del debuff/timer es best-effort (cliente-driven, como antes); revisar si
+  se quiere autoridad de servidor. Textura del debuff es placeholder.
+
+## 2026-07-08 - Arboles de pasivas ampliados (3 -> 5 por rama)
+
+- Objetivo: cada rama de afinidad topaba en 3 nodos ("solo hay 3 mejoras por
+  subclase"); dar profundidad y decisiones de build.
+- Archivos principales: `Content/Passives/PassiveRegistry.cs`,
+  `Content/Players/EterniaStatsPlayer.cs`,
+  `tests/PassiveTreeDepthSourceSmokeTest.ps1` (nuevo).
+- Cambios: se agregaron 2 nodos (tier 4 y 5) a las 18 ramas -> 36 pasivas nuevas,
+  90 nodos en total. Escalado uniforme: tier 4 = coste 2 / afinidad 6, tier 5 =
+  coste 3 / afinidad 7, encadenados por `requiredPassive`. Cada nodo nuevo aplica
+  un efecto real en `EterniaStatsPlayer` (dano, crit, velocidad, defensa,
+  penetracion, mana o +minion) que coincide con su descripcion.
+- Verificacion: `dotnet build -t:Compile` 0/0; suite 64/64
+  (nuevo `PassiveTreeDepthSourceSmokeTest`, rojo->verde por TDD).
+- Pendientes/riesgos: balance sin probar in-game; varias ramas de Summoner dan
+  +1 minion (stackeable). Revisar el scroll de `PassiveUI` con 5 filas por rama.
+
 ## 2026-07-06 - Banner de promocion (fuera del chat) + sonido
 
 - Objetivo: la promocion a subclase salia como mensaje de chat; darle fanfarria.
