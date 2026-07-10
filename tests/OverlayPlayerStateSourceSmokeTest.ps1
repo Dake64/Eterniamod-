@@ -10,7 +10,6 @@ if ($shared -notmatch "ShouldDrawPlayerUI\(") {
 
 $overlayFiles = @(
     "ArcherFocusUI.cs",
-    "BaseClassResourceUI.cs",
     "BerserkerUI.cs",
     "ClassProgressionUI.cs",
     "CursedMageUI.cs",
@@ -54,14 +53,7 @@ foreach ($entry in $runtimeOverlayChecks.GetEnumerator()) {
     }
 }
 
-$baseClassResource = Get-Content -Raw (Join-Path $uiRoot "BaseClassResourceUI.cs")
-
-if ($baseClassResource -notmatch "SoulId\.Warrior" -or
-    $baseClassResource -notmatch "SoulId\.Mage" -or
-    $baseClassResource -notmatch "SoulId\.Ranger" -or
-    $baseClassResource -notmatch "SoulId\.Summoner" -or
-    $baseClassResource -notmatch "soul\.HasClassSoul") {
-    throw "BaseClassResourceUI should gate each base resource with the matching active SoulId and class Soul."
-}
+# Base classes no longer have a combat resource (Momentum/Charge/Focus/Bond were
+# removed), so there is no BaseClassResourceUI overlay left to gate.
 
 Write-Host "Overlay player state source smoke test passed."

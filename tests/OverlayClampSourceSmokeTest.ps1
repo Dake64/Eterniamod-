@@ -15,7 +15,6 @@ if ($eternia -notmatch "public static Vector2 ClampWorldAnchored\(") {
 }
 
 $overlays = @(
-    "BaseClassResourceUI",
     "ArcherFocusUI",
     "BerserkerUI",
     "EnergyHeatUI",
@@ -28,8 +27,11 @@ $overlays = @(
 foreach ($overlay in $overlays) {
     $content = Get-Content -Raw (Join-Path $uiRoot "$overlay.cs")
 
-    if ($content -notmatch "EterniaUI\.ClampWorldAnchored\(") {
-        throw "$overlay should clamp its player-anchored draw position via EterniaUI.ClampWorldAnchored."
+    # Either clamp directly, or route through the shared floating resource bar
+    # helper (EterniaUI.DrawFloatingResourceBar), which clamps internally.
+    if ($content -notmatch "EterniaUI\.ClampWorldAnchored\(" -and
+        $content -notmatch "EterniaUI\.DrawFloatingResourceBar\(") {
+        throw "$overlay should clamp its player-anchored draw position via EterniaUI.ClampWorldAnchored (directly or through DrawFloatingResourceBar)."
     }
 }
 

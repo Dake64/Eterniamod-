@@ -478,6 +478,124 @@ namespace Eternia.Content.UI
                 textScale);
         }
 
+        // Shared floating resource bar that hovers over the player. It fades in/out
+        // with the value (so it never sits permanently at 0), draws a polished fill
+        // with a bright leading edge + gloss, pulses a glow when nearly full, and can
+        // show an optional "Q: ..." ready pill. Only one class/subclass resource is
+        // ever active at a time, so one shared fade alpha is enough for all callers.
+        private static float resourceBarAlpha;
+
+        public static void DrawFloatingResourceBar(
+            SpriteBatch spriteBatch,
+            Player player,
+            string label,
+            int value,
+            int max,
+            Color color,
+            bool ready = false,
+            string readyPrompt = null)
+        {
+            float target = value > 0 ? 1f : 0f;
+            resourceBarAlpha += (target - resourceBarAlpha) * 0.12f;
+
+            if (resourceBarAlpha < 0.02f)
+            {
+                return;
+            }
+
+            Texture2D pixel = TextureAssets.MagicPixel.Value;
+
+            float a = resourceBarAlpha;
+            int clamped = value < 0 ? 0 : (value > max ? max : value);
+            float percent = max <= 0 ? 0f : clamped / (float)max;
+            bool nearFull = percent >= 0.8f;
+
+            float pulse =
+                0.5f + 0.5f * (float)System.Math.Sin(
+                    Main.GlobalTimeWrappedHourly * 4f);
+
+            const int barWidth = 118;
+            const int barHeight = 12;
+
+            Vector2 drawPos =
+                player.Top - Main.screenPosition + new Vector2(0f, -64f);
+
+            drawPos = ClampWorldAnchored(drawPos, -64, -20, 128, 44);
+
+            int x = (int)drawPos.X - (barWidth / 2);
+            int y = (int)drawPos.Y;
+
+            Rectangle bar = new Rectangle(x, y, barWidth, barHeight);
+
+            if (nearFull || ready)
+            {
+                Rectangle glow = bar;
+                glow.Inflate(4, 4);
+                spriteBatch.Draw(pixel, glow, color * (0.16f * pulse * a));
+            }
+
+            spriteBatch.Draw(
+                pixel,
+                new Rectangle(x - 1, y + 1, barWidth + 2, barHeight + 2),
+                PanelBackground * (0.55f * a));
+
+            spriteBatch.Draw(pixel, bar, PanelSurface * (0.95f * a));
+
+            int fillW = (int)(barWidth * percent);
+
+            if (fillW > 0)
+            {
+                spriteBatch.Draw(
+                    pixel, new Rectangle(x, y, fillW, barHeight),
+                    color * (0.9f * a));
+
+                spriteBatch.Draw(
+                    pixel, new Rectangle(x, y, fillW, 2),
+                    Color.White * (0.18f * a));
+
+                spriteBatch.Draw(
+                    pixel, new Rectangle(x + fillW - 2, y, 2, barHeight),
+                    Color.White * (0.55f * a));
+            }
+
+            Color border =
+                (nearFull || ready)
+                    ? Color.Lerp(color, Color.White, 0.35f) *
+                        ((0.55f + 0.45f * pulse) * a)
+                    : color * (0.5f * a);
+
+            DrawBorder(spriteBatch, bar, border);
+
+            string valueText =
+                max <= 20 ? $"{clamped}/{max}" : clamped.ToString();
+
+            string labelText =
+                clamped >= max ? $"{label}  MAX" : $"{label}  {valueText}";
+
+            float labelScale = 0.62f;
+
+            float labelWidth =
+                FontAssets.MouseText.Value.MeasureString(labelText).X * labelScale;
+
+            DrawText(
+                spriteBatch,
+                labelText,
+                new Vector2(x + (barWidth - labelWidth) / 2f, y - 16),
+                Color.Lerp(color, Color.White, 0.35f) * a,
+                labelScale);
+
+            if (ready && readyPrompt != null)
+            {
+                DrawPill(
+                    spriteBatch,
+                    new Rectangle(
+                        x + (barWidth - 104) / 2, y + barHeight + 4, 104, 18),
+                    readyPrompt,
+                    color,
+                    0.42f);
+            }
+        }
+
         public static void DrawProgressBar(
             SpriteBatch spriteBatch,
             Rectangle rect,
@@ -545,54 +663,90 @@ namespace Eternia.Content.UI
                 half);
         }
 
+        // A straight (rotated) line between two points -- reads as a clean web edge,
+        // unlike the right-angle DrawConnector which tangles on diagonal branches.
+        public static void DrawLine(
+            SpriteBatch spriteBatch,
+            Vector2 start,
+            Vector2 end,
+            Color color,
+            float thickness)
+        {
+            Texture2D pixel = TextureAssets.MagicPixel.Value;
+
+            Vector2 delta = end - start;
+            float length = delta.Length();
+
+            if (length < 0.5f)
+            {
+                return;
+            }
+
+            float rotation = (float)Math.Atan2(delta.Y, delta.X);
+
+            // Scale is a multiplier on the texture size, so divide by the real
+            // texture dimensions to get an exact length x thickness line (guards
+            // against MagicPixel not being 1x1, which would draw huge wedges).
+            spriteBatch.Draw(
+                pixel,
+                start,
+                null,
+                color,
+                rotation,
+                new Vector2(0f, pixel.Height / 2f),
+                new Vector2(length / pixel.Width, thickness / pixel.Height),
+                SpriteEffects.None,
+                0f);
+        }
+
         public static void DrawTooltip(
             SpriteBatch spriteBatch,
             string title,
             IEnumerable<string> lines,
             Color accent)
         {
-            const int width = 330;
-            const float scale = 0.58f;
+            const int width = 408;
+            const float scale = 0.7f;
             List<string> wrapped = new List<string>();
 
             foreach (string line in lines)
             {
-                wrapped.AddRange(WrapText(line, width - 28, scale));
+                wrapped.AddRange(WrapText(line, width - 32, scale));
             }
 
             int desiredHeight =
-                52 + wrapped.Count * 18;
+                62 + wrapped.Count * 24;
 
             int maxHeight =
-                Math.Max(88, Main.screenHeight - 32);
+                Math.Max(96, Main.screenHeight - 32);
 
             int height =
                 Math.Min(
                     maxHeight,
-                    Math.Max(88, desiredHeight));
+                    Math.Max(96, desiredHeight));
 
             Rectangle panel =
                 ClampToScreen(
                     new Rectangle(
-                        (int)Main.MouseScreen.X + 18,
-                        (int)Main.MouseScreen.Y + 18,
+                        (int)Main.MouseScreen.X + 20,
+                        (int)Main.MouseScreen.Y + 20,
                         width,
-                        Math.Max(88, height)),
+                        Math.Max(96, height)),
                     16);
 
             DrawPanel(spriteBatch, panel, accent, 0.96f);
-            DrawText(spriteBatch, title, new Vector2(panel.X + 16, panel.Y + 14), Color.White, 0.68f);
+            DrawText(spriteBatch, title, new Vector2(panel.X + 18, panel.Y + 15), Color.White, 0.84f);
 
-            int y = panel.Y + 42;
+            int y = panel.Y + 48;
             foreach (string line in wrapped)
             {
-                if (y + 18 > panel.Bottom - 10)
+                if (y + 24 > panel.Bottom - 10)
                 {
                     break;
                 }
 
-                DrawText(spriteBatch, line, new Vector2(panel.X + 16, y), MutedText, scale);
-                y += 18;
+                DrawText(spriteBatch, line, new Vector2(panel.X + 18, y), MutedText, scale);
+                y += 24;
             }
         }
 

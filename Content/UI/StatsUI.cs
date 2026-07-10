@@ -79,7 +79,7 @@ namespace Eternia.Content.UI
                 Main.spriteBatch;
 
             Rectangle panel =
-                EterniaUI.GetCenteredPanel(486, 520, 32);
+                EterniaUI.GetCenteredPanel(486, 548, 32);
 
             if (panel.Contains(Main.MouseScreen.ToPoint()))
             {
@@ -104,7 +104,7 @@ namespace Eternia.Content.UI
             }
 
             Rectangle pointBar =
-                new Rectangle(panel.X + 18, panel.Y + 78, panel.Width - 36, 36);
+                new Rectangle(panel.X + 18, panel.Y + 78, panel.Width - 36, 56);
 
             Texture2D pixel =
                 TextureAssets.MagicPixel.Value;
@@ -125,8 +125,29 @@ namespace Eternia.Content.UI
                 level,
                 stats);
 
+            // Progress toward the next level, shown right where you spend the points.
+            Rectangle expBar =
+                new Rectangle(
+                    pointBar.X + 10,
+                    pointBar.Y + 34,
+                    pointBar.Width - 20,
+                    14);
+
+            float expPercent =
+                level.expToNextLevel <= 0
+                    ? 0f
+                    : System.Math.Clamp(
+                        level.currentExp / (float)level.expToNextLevel, 0f, 1f);
+
+            EterniaUI.DrawProgressBar(
+                spriteBatch,
+                expBar,
+                expPercent,
+                Color.DeepSkyBlue,
+                $"EXP {level.currentExp} / {level.expToNextLevel}");
+
             int rowsTop =
-                panel.Y + 132;
+                panel.Y + 146;
 
             int rowGap =
                 panel.Height < 460 ? 6 : 10;
@@ -136,11 +157,11 @@ namespace Eternia.Content.UI
 
             StatRow[] rows =
             {
-                new StatRow("Vitality", stats.Vitality, "+3 Max HP, +0.1% damage reduction", Color.IndianRed),
+                new StatRow("Vitality", stats.Vitality, "+3 max HP, +0.1% damage reduction", Color.IndianRed),
                 new StatRow("Power", stats.Power, "+0.3% all damage", Color.Orange),
                 new StatRow("Precision", stats.Precision, "+0.15% critical chance", Color.Yellow),
-                new StatRow("Agility", stats.Agility, "+Movement speed and run speed", Color.LimeGreen),
-                new StatRow("Focus", stats.Focus, "+3 Mana and mana regeneration", Color.Cyan)
+                new StatRow("Agility", stats.Agility, "+0.5% move speed, +1% run speed", Color.LimeGreen),
+                new StatRow("Focus", stats.Focus, "+3 max mana, +0.5 mana regen", Color.Cyan)
             };
 
             int availableRowsHeight =
@@ -208,6 +229,21 @@ namespace Eternia.Content.UI
                 Color.MediumPurple
             };
 
+            // Unspent points pulse, so you notice you have something to spend.
+            bool[] unspent =
+            {
+                false,
+                stats.StatPoints > 0,
+                level.passivePoints > 0
+            };
+
+            Texture2D pixel =
+                TextureAssets.MagicPixel.Value;
+
+            float pulse =
+                0.5f + 0.5f * (float)System.Math.Sin(
+                    Main.GlobalTimeWrappedHourly * 3.5f);
+
             int gap = 8;
             int x = pointBar.X + 10;
             int width =
@@ -229,6 +265,17 @@ namespace Eternia.Content.UI
                         pointBar.Y + 6,
                         System.Math.Max(48, pillRight - x),
                         24);
+
+                if (unspent[i])
+                {
+                    Rectangle glow = pill;
+                    glow.Inflate(3, 3);
+
+                    spriteBatch.Draw(
+                        pixel,
+                        glow,
+                        colors[i] * (0.16f + 0.22f * pulse));
+                }
 
                 EterniaUI.DrawPill(
                     spriteBatch,
@@ -313,20 +360,37 @@ namespace Eternia.Content.UI
                 name,
                 new Vector2(
                     rect.X + 14,
-                    rect.Y + (compact ? 7 : 10)),
+                    rect.Y + (compact ? 6 : 8)),
                 rect.Width - actionWidth - 24,
                 Color.White,
                 titleScale);
 
+            // Primary line: what this stat is ALREADY giving you.
+            string effectText =
+                value > 0
+                    ? CurrentEffect(name, value)
+                    : "Not invested yet";
+
+            EterniaUI.DrawTrimmedText(
+                spriteBatch,
+                effectText,
+                new Vector2(rect.X + 14, rect.Y + (compact ? 26 : 30)),
+                rect.Width - actionWidth - 26,
+                value > 0
+                    ? Color.Lerp(accent, Color.White, 0.55f)
+                    : EterniaUI.MutedText,
+                compact ? 0.5f : 0.54f);
+
+            // Secondary line: the rate you gain per additional point.
             if (!compact)
             {
                 EterniaUI.DrawTrimmedText(
                     spriteBatch,
-                    description,
-                    new Vector2(rect.X + 14, rect.Y + 34),
+                    $"{description} per point",
+                    new Vector2(rect.X + 14, rect.Y + 48),
                     rect.Width - actionWidth - 26,
-                    EterniaUI.MutedText,
-                    0.52f);
+                    EterniaUI.MutedText * 0.85f,
+                    0.44f);
             }
 
             EterniaUI.DrawPill(
@@ -335,6 +399,22 @@ namespace Eternia.Content.UI
                 value.ToString(),
                 accent,
                 compact ? 0.56f : 0.66f);
+
+            // Nudge the eye toward "+" while points are waiting to be spent.
+            if (canSpend)
+            {
+                float pulse =
+                    0.5f + 0.5f * (float)System.Math.Sin(
+                        Main.GlobalTimeWrappedHourly * 4f);
+
+                Rectangle buttonGlow = button;
+                buttonGlow.Inflate(3, 3);
+
+                spriteBatch.Draw(
+                    pixel,
+                    buttonGlow,
+                    accent * (0.16f + 0.22f * pulse));
+            }
 
             if (EterniaUI.DrawButton(
                 spriteBatch,
@@ -355,13 +435,35 @@ namespace Eternia.Content.UI
                     name,
                     new[]
                     {
-                        description,
+                        value > 0
+                            ? $"Now: {CurrentEffect(name, value)}"
+                            : "Not invested yet.",
+                        $"Per point: {description}",
                         canSpend
-                            ? "Click + to spend one stat point."
+                            ? $"Next point: {CurrentEffect(name, value + 1)}"
                             : "No stat points available."
                     },
                     accent);
             }
+        }
+
+        // What the stat is giving you RIGHT NOW at its current value. Mirrors the
+        // math in EterniaStatsPlayer.PostUpdateEquips, so the panel never lies.
+        private static string CurrentEffect(string name, int value)
+        {
+            return name switch
+            {
+                "Vitality" =>
+                    $"+{value * 3} max HP, +{value * 0.1f:0.#}% damage reduction",
+                "Power" =>
+                    $"+{value * 0.3f:0.#}% all damage",
+                "Precision" =>
+                    $"+{value * 0.15f:0.##}% critical chance",
+                "Agility" =>
+                    $"+{value * 0.5f:0.#}% move speed, +{value * 1f:0.#}% run speed",
+                _ =>
+                    $"+{value * 3} max mana, +{value / 2} mana regen"
+            };
         }
 
         private static StatId GetStatId(string name)
