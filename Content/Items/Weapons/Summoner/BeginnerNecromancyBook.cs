@@ -16,15 +16,15 @@ namespace Eternia.Content.Items.Weapons.Summoner
         {
             Item.width = 32;
             Item.height = 32;
-            Item.damage = 8;
+            Item.damage = 26;
             Item.DamageType = DamageClass.Summon;
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;
             Item.noMelee = true;
             Item.mana = 10;
-            Item.value = Item.buyPrice(silver: 10);
-            Item.rare = ItemRarityID.White;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item44;
             Item.shoot = ModContent.ProjectileType<SkeletonMinion>();
             Item.shootSpeed = 0f;
@@ -83,13 +83,8 @@ namespace Eternia.Content.Items.Weapons.Summoner
             return false;
         }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe()
-                .AddIngredient(ItemID.Book)
-                .AddIngredient(ItemID.Bone, 15)
-                .AddTile(TileID.WorkBenches)
-                .Register();
-        }
+        // No recipe on purpose: this is the Necromancer's PROMOTION reward, and
+        // promotion only happens in hardmode. It used to be craftable from a Book +
+        // 15 Bones, which handed you a hardmode-tier weapon before the dungeon.
     }
 }

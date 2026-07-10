@@ -11,7 +11,7 @@ namespace Eternia.Content.Items.Weapons.Fighter
     {
         public override void SetDefaults()
         {
-            Item.damage = 10;
+            Item.damage = 34;
             Item.DamageType = DamageClass.Melee;
 
             Item.width = 40;
@@ -22,8 +22,8 @@ namespace Eternia.Content.Items.Weapons.Fighter
             Item.useStyle = ItemUseStyleID.Shoot;
 
             Item.knockBack = 3f;
-            Item.value = Item.buyPrice(silver: 50);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
             Item.noMelee = true;

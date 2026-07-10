@@ -16,7 +16,7 @@ namespace Eternia.Content.Items.Weapons.Promotion
         {
             Item.width = 32;
             Item.height = 32;
-            Item.damage = 15;
+            Item.damage = 31;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 4;
             Item.useTime = 18;
@@ -24,8 +24,8 @@ namespace Eternia.Content.Items.Weapons.Promotion
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = Item.buyPrice(silver: 70);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item20;
             Item.shoot = ModContent.ProjectileType<FireBoltProjectile>();
             Item.shootSpeed = 10f;

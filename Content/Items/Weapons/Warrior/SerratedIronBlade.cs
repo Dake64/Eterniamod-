@@ -7,29 +7,31 @@ using Eternia.Content.Items;
 
 namespace Eternia.Content.Items.Weapons.Warrior
 {
-    public class TrainingBlade : ModItem, IBleedWeapon
+    // Early pre-hardmode bleed sword: fast and jagged. Low per-hit but the fastest
+    // swing here, so it keeps bleed up better than anything at its tier.
+    public class SerratedIronBlade : ModItem, IBleedWeapon
     {
         public override string Texture =>
             "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
 
-        // Hidden base chance to inflict Bleed; tuned further by Bleed affinity.
-        public int BleedChance => 10;
+        // Signature bleed chance (percent); tuned further by Bleed affinity.
+        public int BleedChance => 16;
 
-        public Color SlashColor => new Color(170, 55, 55);
+        public Color SlashColor => new Color(225, 65, 55);
 
-        public float SlashScale => 0.9f;
+        public float SlashScale => 0.8f;
 
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 40;
-            Item.damage = 11;
+            Item.damage = 13;
             Item.DamageType = DamageClass.Melee;
-            Item.useTime = 22;
-            Item.useAnimation = 22;
+            Item.useTime = 17;
+            Item.useAnimation = 17;
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.knockBack = 4f;
-            Item.value = Item.buyPrice(silver: 15);
+            Item.knockBack = 3f;
+            Item.value = Item.buyPrice(silver: 25);
             Item.rare = ItemRarityID.White;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
@@ -38,8 +40,9 @@ namespace Eternia.Content.Items.Weapons.Warrior
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ItemID.Wood, 10)
-                .AddTile(TileID.WorkBenches)
+                .AddRecipeGroup("IronBar", 8)
+                .AddIngredient(ItemID.Wood, 5)
+                .AddTile(TileID.Anvils)
                 .Register();
         }
     }

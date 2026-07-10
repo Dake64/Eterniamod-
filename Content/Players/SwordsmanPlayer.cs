@@ -1,17 +1,20 @@
-﻿using Terraria;
-using Terraria.ID;
+using Terraria;
 using Terraria.ModLoader;
 using Eternia.Content.Souls;
-
-using Eternia.Content.NPCs;
+using Eternia.Content.Globals;
+using Eternia.Content.Buffs;
 
 namespace Eternia.Content.Players
 {
     public class SwordsmanPlayer : ModPlayer
     {
-        private const int MaxBleedStacks = 5;
-        private const int BleedDurationTicks = 300;
+        // Crimson Trail earned for drawing first blood vs. sustaining an existing bleed.
+        private const int FirstBloodGain = 12;
+        private const int SustainGain = 6;
 
+        // The Swordsman is the bleed MASTER: their edge-weapon hits always inflict
+        // bleed, bypassing the hidden chance other Warriors roll. Every edge hit also
+        // feeds the Crimson Trail resource, which is spent by the Swordsman technique.
         public override void OnHitNPCWithItem(
             Item item,
             NPC target,
@@ -23,49 +26,59 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            // =============================================
-            // ONLY SWORDS
-            // =============================================
-
-            if (!item.DamageType.CountsAsClass(
-                    DamageClass.Melee))
+            if (!EterniaGlobalItem.CanInflictBleed(item))
             {
                 return;
             }
 
-            if (item.useStyle != ItemUseStyleID.Swing)
-            {
-                return;
-            }
+            bool wasBleeding =
+                target.HasBuff(ModContent.BuffType<BleedDebuff>());
 
-            // =============================================
-            // APPLY BLEED
-            // =============================================
+            Player.GetModPlayer<WarriorBleedPlayer>().ApplyBleed(target);
 
-            BleedGlobalNPC bleedNPC =
-                target.GetGlobalNPC<BleedGlobalNPC>();
+            // Reward drawing first blood more than sustaining an existing bleed.
+            // Milestones deepen the mechanic: extra Crimson Trail gained per hit.
+            int milestoneBonus =
+                Player.GetModPlayer<MilestonePlayer>().Milestones;
 
-            bleedNPC.BleedStacks++;
-
-            if (bleedNPC.BleedStacks > MaxBleedStacks)
-            {
-                bleedNPC.BleedStacks = MaxBleedStacks;
-            }
-
-            bleedNPC.BleedTimer = HasActivePassive("Blood Flow")
-                ? BleedDurationTicks + 120
-                : BleedDurationTicks;
+            Player.GetModPlayer<CrimsonTrailPlayer>()
+                .Add((wasBleeding ? SustainGain : FirstBloodGain) + milestoneBonus);
         }
 
-        private bool HasActivePassive(string passiveName)
+        // The Swordsman's bleeding slash also inflicts guaranteed bleed and feeds
+        // Crimson Trail, exactly like a direct edge hit -- so throwing the slash is a
+        // real ranged extension of the mechanic, not a watered-down poke.
+        public override void OnHitNPCWithProj(
+            Projectile proj,
+            NPC target,
+            NPC.HitInfo hit,
+            int damageDone)
         {
-            var soul =
-                Player.GetModPlayer<EterniaPlayer>();
+            if (!IsActiveSwordsman())
+            {
+                return;
+            }
 
-            return Player.GetModPlayer<EterniaStatsPlayer>()
-                .HasActivePassive(
-                    soul.ActiveSoul,
-                    passiveName);
+            if (!proj.DamageType.CountsAsClass(DamageClass.Melee))
+            {
+                return;
+            }
+
+            if (!EterniaGlobalItem.CanInflictBleed(Player.HeldItem))
+            {
+                return;
+            }
+
+            bool wasBleeding =
+                target.HasBuff(ModContent.BuffType<BleedDebuff>());
+
+            Player.GetModPlayer<WarriorBleedPlayer>().ApplyBleed(target);
+
+            int milestoneBonus =
+                Player.GetModPlayer<MilestonePlayer>().Milestones;
+
+            Player.GetModPlayer<CrimsonTrailPlayer>()
+                .Add((wasBleeding ? SustainGain : FirstBloodGain) + milestoneBonus);
         }
 
         public bool IsActiveSwordsman()

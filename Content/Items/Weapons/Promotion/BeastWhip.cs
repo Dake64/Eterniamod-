@@ -16,7 +16,7 @@ namespace Eternia.Content.Items.Weapons.Promotion
         {
             Item.width = 40;
             Item.height = 40;
-            Item.damage = 12;
+            Item.damage = 30;
             Item.DamageType = DamageClass.SummonMeleeSpeed;
             Item.useTime = 26;
             Item.useAnimation = 26;
@@ -24,8 +24,8 @@ namespace Eternia.Content.Items.Weapons.Promotion
             Item.noMelee = true;
             Item.noUseGraphic = true;
             Item.knockBack = 3f;
-            Item.value = Item.buyPrice(silver: 60);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item152;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<BeastWhipProjectile>();

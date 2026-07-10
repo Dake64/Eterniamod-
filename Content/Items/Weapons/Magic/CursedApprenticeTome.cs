@@ -14,7 +14,7 @@ namespace Eternia.Content.Items.Weapons.Magic
     {
         public override void SetDefaults()
         {
-            Item.damage = 12;
+            Item.damage = 34;
             Item.DamageType = DamageClass.Magic;
             Item.width = 32;
             Item.height = 32;
@@ -23,8 +23,8 @@ namespace Eternia.Content.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 2f;
-            Item.value = Item.buyPrice(silver: 10);
-            Item.rare = ItemRarityID.White;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item20;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<CursedBoltProjectile>();
@@ -88,13 +88,8 @@ namespace Eternia.Content.Items.Weapons.Magic
             return false;
         }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe()
-                .AddIngredient(ItemID.Book)
-                .AddIngredient(ItemID.FallenStar)
-                .AddTile(TileID.WorkBenches)
-                .Register();
-        }
+        // No recipe on purpose: this is the Cursed Mage's PROMOTION reward, and
+        // promotion only happens in hardmode. It used to be craftable from a Book +
+        // Fallen Star, which handed you a hardmode-tier weapon in the first minutes.
     }
 }

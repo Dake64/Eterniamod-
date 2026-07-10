@@ -21,7 +21,7 @@ namespace Eternia.Content.Items.Weapons.Magic
         {
             Item.width = 40;
             Item.height = 40;
-            Item.damage = 12;
+            Item.damage = 34;
             Item.DamageType = DamageClass.Magic;
             Item.mana = 5;
             Item.useTime = 20;
@@ -29,8 +29,8 @@ namespace Eternia.Content.Items.Weapons.Magic
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.knockBack = 3f;
             Item.noMelee = true;
-            Item.value = Item.buyPrice(silver: 50);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item20;
             Item.shoot = ModContent.ProjectileType<FireBoltProjectile>();
             Item.shootSpeed = 10f;

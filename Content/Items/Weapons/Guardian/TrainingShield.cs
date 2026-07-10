@@ -12,7 +12,7 @@ namespace Eternia.Content.Items.Weapons.Guardian
         {
             Item.width = 40;
             Item.height = 40;
-            Item.damage = 9;
+            Item.damage = 40;
             Item.DamageType = DamageClass.Melee;
             Item.knockBack = 6f;
             Item.useTime = 25;
@@ -21,8 +21,8 @@ namespace Eternia.Content.Items.Weapons.Guardian
             Item.autoReuse = true;
             Item.noMelee = false;
             Item.noUseGraphic = false;
-            Item.value = Item.buyPrice(silver: 60);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
         }
 

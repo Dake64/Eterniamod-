@@ -1,26 +1,47 @@
-﻿using Terraria;
+using Terraria;
 using Terraria.ModLoader;
 using Eternia.Content.Players;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
+
 namespace Eternia.Content.NPCs
 {
+    // Single-level, fixed-damage bleed DoT. The applying Warrior is tracked so the
+    // damage can scale with their Bleed affinity, and so the DoT stops the instant
+    // they stop being an active Warrior. Kept independent of any subclass so future
+    // Warrior subclasses can reuse bleed without touching this file.
     public class BleedGlobalNPC : GlobalNPC
     {
         public override bool InstancePerEntity => true;
-        
 
-        // =================================================
-        // BLEED
-        // =================================================
+        // Fixed base bleed damage per tick (before Bleed affinity).
+        private const int BaseBleedDamage = 6;
 
-        public int BleedStacks = 0;
+        // Bleed used to flatline at 20 Bleed affinity, which a Warrior reaches after
+        // only ~5 nodes -- the entire back half of the Bleed branch then did nothing
+        // for bleed. It now keeps scaling across the WHOLE branch: full value up to
+        // 20, then a third of a point per affinity up to 90 (a fully invested Bleed
+        // branch grants ~86 affinity, so no invested point is wasted).
+        private const int SoftCapAffinity = 20;
+        private const int HardCapAffinity = 90;
 
-        public int BleedTimer = 0;
+        public static int GetBleedDamage(int bleedAffinity)
+        {
+            int full =
+                System.Math.Min(bleedAffinity, SoftCapAffinity);
 
-        // =================================================
-        // RESET
-        // =================================================
+            int extra =
+                System.Math.Max(
+                    0,
+                    System.Math.Min(bleedAffinity, HardCapAffinity) - SoftCapAffinity);
+
+            return BaseBleedDamage + full + extra / 3;
+        }
+
+        public int BleedTimer;
+
+        // whoAmI of the Warrior who applied the bleed (-1 = none / fall back).
+        public int BleedOwner = -1;
 
         public override void ResetEffects(NPC npc)
         {
@@ -30,91 +51,91 @@ namespace Eternia.Content.NPCs
             }
             else
             {
-                BleedStacks = 0;
+                BleedOwner = -1;
             }
         }
 
-        // =================================================
-        // UPDATE LIFE REGEN
-        // =================================================
-
-        public override void UpdateLifeRegen(
-            NPC npc,
-            ref int damage)
+        public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (BleedStacks > 0)
+            if (BleedTimer <= 0)
             {
-                int affinity = 0;
+                return;
+            }
 
-                if (!TryGetBleedOwner(npc, out Player owner))
-                {
-                    BleedStacks = 0;
-                    return;
-                }
+            if (!TryGetActiveWarriorOwner(npc, out Player owner))
+            {
+                BleedTimer = 0;
+                BleedOwner = -1;
+                return;
+            }
 
-                if (owner.active)
-                {
-                    var swordsmanPlayer =
-                        owner.GetModPlayer<SwordsmanPlayer>();
+            var stats =
+                owner.GetModPlayer<EterniaStatsPlayer>();
 
-                    // =============================================
-                    // ONLY SWORDSMAN
-                    // =============================================
+            var soulPlayer =
+                owner.GetModPlayer<EterniaPlayer>();
 
-                    if (!swordsmanPlayer.IsActiveSwordsman())
-                    {
-                        BleedStacks = 0;
+            int bleedDamage =
+                GetBleedDamage(stats.BleedAffinity);
 
-                        return;
-                    }
+            // Rupture deepens the wound: a flat DoT bump from the Bleed tree.
+            if (stats.HasActivePassive(soulPlayer.ActiveSoul, "Rupture"))
+            {
+                bleedDamage += 5;
+            }
 
-                    affinity =
-                        owner.GetModPlayer<EterniaStatsPlayer>()
-                            .BleedAffinity;
-                }
+            if (npc.lifeRegen > 0)
+            {
+                npc.lifeRegen = 0;
+            }
 
-                int bleedDamage =
-                    (BleedStacks * 2)
-                    + affinity;
+            npc.lifeRegen -= bleedDamage * 2;
 
-                npc.lifeRegen -= bleedDamage * 2;
+            if (damage < bleedDamage)
+            {
+                damage = bleedDamage;
+            }
 
-                if (damage < bleedDamage)
-                {
-                    damage = bleedDamage;
-                }
-                // =============================================
-// BLEED DUST
-// =============================================
+            // =============================================
+            // BLEED DUST
+            // =============================================
 
-                if (Main.rand.NextBool(3))
-                {
-                    Dust.NewDust(
-                        npc.position,
-                        npc.width,
-                        npc.height,
-                        DustID.Blood
-                    );
-                }
+            if (Main.rand.NextBool(3))
+            {
+                Dust.NewDust(
+                    npc.position,
+                    npc.width,
+                    npc.height,
+                    DustID.Blood);
             }
         }
 
-        private static bool TryGetBleedOwner(
-            NPC npc,
-            out Player owner)
+        private bool TryGetActiveWarriorOwner(NPC npc, out Player owner)
         {
             owner = null;
 
-            if (npc.lastInteraction < 0 ||
-                npc.lastInteraction >= Main.maxPlayers)
+            int index = BleedOwner;
+
+            if (index < 0 || index >= Main.maxPlayers)
+            {
+                // Fall back to the last player who interacted with the NPC.
+                if (npc.lastInteraction < 0 ||
+                    npc.lastInteraction >= Main.maxPlayers)
+                {
+                    return false;
+                }
+
+                index = npc.lastInteraction;
+            }
+
+            owner = Main.player[index];
+
+            if (owner == null || !owner.active)
             {
                 return false;
             }
 
-            owner = Main.player[npc.lastInteraction];
-
-            return owner != null &&
-                owner.active;
+            return owner.GetModPlayer<WarriorBleedPlayer>().IsActiveWarrior();
         }
     }
 }

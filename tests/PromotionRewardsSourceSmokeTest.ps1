@@ -76,7 +76,7 @@ if ($lockedItem -notmatch "ModifyTooltips" -or
     throw "SubclassLockedItem should add the required-promotion tooltip."
 }
 
-if ($shield -notmatch "Item\.damage\s*=\s*9") {
+if ($shield -notmatch "Item\.damage\s*=\s*[1-9][0-9]*") {
     throw "TrainingShield should have non-zero damage so Guardian can test it."
 }
 

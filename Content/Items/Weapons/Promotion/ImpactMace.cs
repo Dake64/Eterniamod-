@@ -15,14 +15,14 @@ namespace Eternia.Content.Items.Weapons.Promotion
         {
             Item.width = 42;
             Item.height = 42;
-            Item.damage = 13;
+            Item.damage = 50;
             Item.DamageType = DamageClass.Melee;
             Item.useTime = 28;
             Item.useAnimation = 28;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.knockBack = 8f;
-            Item.value = Item.buyPrice(silver: 65);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.buyPrice(gold: 2);
+            Item.rare = ItemRarityID.LightRed;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
         }
