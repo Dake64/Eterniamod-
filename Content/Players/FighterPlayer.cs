@@ -1,257 +1,230 @@
-﻿using Terraria;
-using Terraria.ModLoader;
-using Eternia.Content.Souls;
 using Microsoft.Xna.Framework;
+
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
+
+using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
+    // The Peleador's Combo.
+    //
+    // PRE-HARDMODE: any Warrior using a fist weapon builds Combo, but it is ONLY a
+    // counter -- it modifies no stat. Its whole job is to teach the "keep the chain
+    // going" playstyle before the subclass exists.
+    //
+    // HARDMODE (promoted Peleador): the SAME Combo starts interacting with the Combo
+    // passive branch (damage/attack-speed/move per point, bigger cap, longer window,
+    // faster generation, retention on hurt, Frenzy at max) -- nothing new to learn,
+    // it just "wakes up".
+    //
+    // Building a hit grants Combo and refreshes the window; if you stop swinging it
+    // decays to 0. (For a promoted Peleador, taking a hit also halves it unless a
+    // passive conserves it.)
     public class FighterPlayer : ModPlayer
     {
-        // =================================================
-        // COMBO
-        // =================================================
-
         public int Combo;
 
         public int ComboTimer;
 
-        public bool MaxComboReached;
+        private const int BaseMaxCombo = 20;
 
-        // =================================================
-        // CONSTANTS
-        // =================================================
+        private const int BaseComboDuration = 150; // 2.5s at 60fps
 
-        private const int MaxCombo = 50;
+        // Passive modifiers only apply to a promoted Peleador; pre-hardmode the cap
+        // and window are the fixed base values.
+        public int EffectiveMaxCombo =>
+            BaseMaxCombo +
+            (IsActiveFighter() && HasActivePassive("Unbroken Chain") ? 10 : 0);
 
-        private const int ComboDuration = 120;
+        private int EffectiveComboDuration =>
+            BaseComboDuration +
+            (IsActiveFighter() && HasActivePassive("Adrenaline Rush") ? 90 : 0);
 
-        // =================================================
-        // RESET
-        // =================================================
+        public bool AtMaxCombo => Combo >= EffectiveMaxCombo;
 
         public override void ResetEffects()
         {
-            // =============================================
-            // ONLY FIGHTER
-            // =============================================
-
-            if (!IsActiveFighter())
+            // The Combo counter exists for any Warrior; only a promotion turns it into
+            // stats, so it is cleared only when you are no longer a Warrior.
+            if (!IsActiveWarrior())
             {
                 Combo = 0;
-
                 ComboTimer = 0;
-
-                MaxComboReached = false;
             }
         }
 
-        // =================================================
-        // POST UPDATE
-        // =================================================
-
         public override void PostUpdate()
         {
-            if (!IsActiveFighter())
+            if (!IsActiveWarrior())
             {
                 return;
             }
 
-            // =============================================
-            // COMBO TIMER
-            // =============================================
-
+            // Decay the whole Combo if you stop swinging (counter behaviour, always).
             if (Combo > 0)
             {
                 ComboTimer--;
 
-                // =========================================
-                // COMBO DECAY
-                // =========================================
-
                 if (ComboTimer <= 0)
                 {
                     Combo = 0;
-
                     ComboTimer = 0;
-
-                    MaxComboReached = false;
                 }
             }
 
-            // =================================================
-            // FLOW SYSTEM
-            // =================================================
-
-            // =============================================
-            // MOVE SPEED
-            // =============================================
-
-            Player.moveSpeed +=
-                Combo * 0.003f;
-
-            // =============================================
-            // MELEE SPEED
-            // =============================================
-
-            Player.GetAttackSpeed(
-                DamageClass.Melee)
-                += Combo * 0.002f;
-
-            // =============================================
-            // AFTERIMAGE EFFECT
-            // =============================================
-
-            if (Combo >= 15)
-            {
-                Dust.NewDust(
-                    Player.position,
-                    Player.width,
-                    Player.height,
-                    Terraria.ID.DustID.Torch
-                );
-            }
-
-            // =============================================
-            // HIGH COMBO VISUAL
-            // =============================================
-
-            if (Combo >= 30
-                && Main.rand.NextBool(5))
-            {
-                Dust.NewDust(
-                    Player.position,
-                    Player.width,
-                    Player.height,
-                    Terraria.ID.DustID.GoldFlame
-                );
-            }
-
-            // =============================================
-            // MAX COMBO AURA
-            // =============================================
-
-            if (MaxComboReached)
-            {
-                if (Main.rand.NextBool(2))
-                {
-                    Dust.NewDust(
-                        Player.position,
-                        Player.width,
-                        Player.height,
-                        Terraria.ID.DustID.GoldFlame
-                    );
-                }
-
-                Lighting.AddLight(
-                    Player.Center,
-                    1f,
-                    0.8f,
-                    0.2f
-                );
-            }
-        }
-
-        // =================================================
-        // ADD COMBO
-        // =================================================
-
-        public void AddCombo()
-        {
-            if (!IsActiveFighter())
+            // Everything below is the SUBCLASS payoff: only a promoted Peleador gets
+            // any effect from the Combo.
+            if (!IsActiveFighter() || Combo <= 0)
             {
                 return;
             }
 
-            // =============================================
-            // MAX COMBO
-            // =============================================
-
-            if (Combo < MaxCombo)
+            // --- Passive-driven per-Combo effects (nothing without passives) ---
+            if (HasActivePassive("Flow State"))
             {
-                Combo++;
+                Player.GetAttackSpeed(DamageClass.Melee) += Combo * 0.006f;
             }
 
-            // =============================================
-            // REFRESH TIMER
-            // =============================================
-
-            ComboTimer = HasActivePassive("Adrenaline Rush")
-                ? ComboDuration + 60
-                : ComboDuration;
-
-            // =============================================
-            // MAX COMBO EFFECT
-            // =============================================
-
-            if (Combo >= MaxCombo
-                && !MaxComboReached)
+            if (HasActivePassive("Perfect Rhythm"))
             {
-                MaxComboReached = true;
+                Player.moveSpeed += Combo * 0.005f;
+            }
 
-                // =========================================
-                // DUST BURST
-                // =========================================
+            // --- Frenzy: a strong buff WHILE you hold max Combo (keystone) ---
+            if (AtMaxCombo && HasActivePassive("Perpetual Motion"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.15f;
+                Player.GetAttackSpeed(DamageClass.Melee) += 0.10f;
+                Player.endurance += 0.08f;
 
-                for (int i = 0; i < 40; i++)
+                if (Main.rand.NextBool(2))
                 {
                     Dust.NewDust(
-                        Player.position,
-                        Player.width,
-                        Player.height,
-                        Terraria.ID.DustID.GoldFlame
-                    );
+                        Player.position, Player.width, Player.height,
+                        DustID.GoldFlame);
                 }
 
-                // =========================================
-                // SMALL BOOST FEEL
-                // =========================================
+                Lighting.AddLight(Player.Center, 1f, 0.8f, 0.2f);
+            }
 
-                Player.velocity *= 1.05f;
+            // Ambient flow dust once the chain is going.
+            if (Combo >= EffectiveMaxCombo / 2 && Main.rand.NextBool(4))
+            {
+                Dust.NewDust(
+                    Player.position, Player.width, Player.height, DustID.Torch);
             }
         }
 
-        // =================================================
-        // DAMAGE MULTIPLIER
-        // =================================================
+        // How much Combo a hit grants. Pre-hardmode this is always 1; the promoted
+        // Peleador's generation passives can add more.
+        public int ComboGainForHit(bool crit, bool pointBlank)
+        {
+            int gain = 1;
 
+            if (IsActiveFighter() &&
+                HasActivePassive("Rapid Blows") && (crit || pointBlank))
+            {
+                gain += 1;
+            }
+
+            return gain;
+        }
+
+        public void AddCombo(int amount)
+        {
+            if (!IsActiveWarrior() || amount <= 0)
+            {
+                return;
+            }
+
+            int max = EffectiveMaxCombo;
+            bool wasMax = Combo >= max;
+
+            Combo += amount;
+
+            if (Combo > max)
+            {
+                Combo = max;
+            }
+
+            ComboTimer = EffectiveComboDuration;
+
+            // Celebrate first reaching max Combo (only meaningful once promoted).
+            if (IsActiveFighter() && !wasMax && Combo >= max)
+            {
+                for (int i = 0; i < 30; i++)
+                {
+                    Dust.NewDust(
+                        Player.position, Player.width, Player.height,
+                        DustID.GoldFlame);
+                }
+            }
+        }
+
+        // Damage multiplier from Combo -- ONLY for a promoted Peleador, and only from
+        // unlocked damage passives. Pre-hardmode this is always 1 (Combo does nothing).
         public float GetComboMultiplier()
         {
-            if (!IsActiveFighter())
+            if (!IsActiveFighter() || Combo <= 0)
             {
                 return 1f;
             }
 
-            float multiplier =
-                1f + (Combo * 0.02f);
+            float perCombo = 0f;
+
+            if (HasActivePassive("Combo Instinct"))
+            {
+                perCombo += 0.01f;
+            }
 
             if (HasActivePassive("Limit Breaker"))
             {
-                multiplier += Combo * 0.003f;
+                perCombo += 0.01f;
             }
 
-            return multiplier;
+            return 1f + Combo * perCombo;
+        }
+
+        // Only the promoted Peleador risks Combo on getting hit. Conservation keeps it.
+        public override void OnHurt(Player.HurtInfo info)
+        {
+            if (!IsActiveFighter() || Combo <= 0)
+            {
+                return;
+            }
+
+            if (HasActivePassive("Thousand Cuts"))
+            {
+                return; // Conservation: keep the Combo.
+            }
+
+            Combo /= 2;
         }
 
         private bool HasActivePassive(string passiveName)
         {
-            var soul =
-                Player.GetModPlayer<EterniaPlayer>();
+            var soul = Player.GetModPlayer<EterniaPlayer>();
 
             return Player.GetModPlayer<EterniaStatsPlayer>()
-                .HasActivePassive(
-                    soul.ActiveSoul,
-                    passiveName);
+                .HasActivePassive(soul.ActiveSoul, passiveName);
         }
 
-        public bool IsActiveFighter()
+        // Any active Warrior (base class or a Warrior subclass) can build the Combo.
+        public bool IsActiveWarrior()
         {
-            var soul =
-                Player.GetModPlayer<EterniaPlayer>();
+            var soul = Player.GetModPlayer<EterniaPlayer>();
 
             return soul.HasClassSoul &&
-                soul.ActiveSoul == SoulId.Warrior &&
-                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
-                    "Fighter";
+                soul.ActiveSoul == SoulId.Warrior;
+        }
+
+        // Only the promoted Peleador (Fighter) turns the Combo into stats.
+        public bool IsActiveFighter()
+        {
+            return IsActiveWarrior() &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass == "Fighter";
         }
     }
 }

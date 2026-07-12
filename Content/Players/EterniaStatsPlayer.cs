@@ -198,12 +198,9 @@ namespace Eternia.Content.Players
                 Player.GetArmorPenetration(DamageClass.Melee) += 3;
             }
 
-            // Combo Instinct
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Combo Instinct"))
-            {
-                Player.GetAttackSpeed(DamageClass.Melee) += 0.05f;
-            }
+            // Combo-branch nodes (Combo Instinct, Flow State, Perfect Rhythm, Rapid
+            // Blows, Unbroken Chain, Thousand Cuts) no longer grant flat stats here;
+            // they modify the Peleador's Combo instead (see FighterPlayer).
 
             // Shield Training
 
@@ -272,16 +269,6 @@ namespace Eternia.Content.Players
                 Player.GetCritChance(DamageClass.Melee) += 10f;
             }
 
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Flow State"))
-            {
-                Player.GetAttackSpeed(DamageClass.Melee) += 0.06f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Perfect Rhythm"))
-            {
-                Player.GetDamage(DamageClass.Melee) += 0.10f;
-            }
-
             if (HasActivePassive(soulPlayer.ActiveSoul, "Bulwark"))
             {
                 Player.statDefense += 8;
@@ -320,21 +307,6 @@ namespace Eternia.Content.Players
             if (HasActivePassive(soulPlayer.ActiveSoul, "Overwhelming Force"))
             {
                 Player.GetKnockback(DamageClass.Melee) += 2f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Rapid Blows"))
-            {
-                Player.GetAttackSpeed(DamageClass.Melee) += 0.06f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Unbroken Chain"))
-            {
-                Player.GetDamage(DamageClass.Melee) += 0.08f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Thousand Cuts"))
-            {
-                Player.GetCritChance(DamageClass.Melee) += 8f;
             }
 
             if (HasActivePassive(soulPlayer.ActiveSoul, "Aegis"))

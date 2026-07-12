@@ -158,13 +158,6 @@ if ($berserkerSkill -notmatch "GetModPlayer<BerserkerPlayer>\(\)\.IsActiveBerser
 
 foreach ($check in @(
     @{
-        Name="FighterPlayer"
-        Content=$fighter
-        Helper="IsActiveFighter"
-        Soul="Warrior"
-        Methods=@("ResetEffects", "PostUpdate", "AddCombo", "GetComboMultiplier")
-    },
-    @{
         Name="GuardianPlayer"
         Content=$guardian
         Helper="IsActiveGuardian"
@@ -233,9 +226,49 @@ foreach ($check in @(
     }
 }
 
+# FighterPlayer: the Combo COUNTER is Warrior-wide (it builds pre-hardmode so the
+# player learns the playstyle), so its counter methods gate on IsActiveWarrior; only
+# the subclass PAYOFF (damage multiplier) gates on IsActiveFighter. IsActiveWarrior
+# carries the equipped-Warrior-Soul requirement.
+$fighterWarriorBody = [regex]::Match(
+    $fighter,
+    "public bool IsActiveWarrior\([\s\S]+?\n\s*}",
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($fighterWarriorBody -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
+    $fighterWarriorBody -notmatch "HasClassSoul" -or
+    $fighterWarriorBody -notmatch "ActiveSoul == SoulId\.Warrior") {
+    throw "FighterPlayer.IsActiveWarrior should require an equipped Warrior class Soul."
+}
+
+if ($fighter -notmatch 'public bool IsActiveFighter\(' -or
+    $fighter -notmatch 'CurrentSubclass ==\s*"Fighter"') {
+    throw "FighterPlayer.IsActiveFighter should add the Fighter subclass on top of IsActiveWarrior."
+}
+
+foreach ($m in @("ResetEffects", "PostUpdate", "AddCombo")) {
+    $body = [regex]::Match(
+        $fighter,
+        "(override .* $m|public .* $m)\([\s\S]+?\n\s*}",
+        [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+    if ($body -notmatch "!IsActiveWarrior\(\)") {
+        throw "FighterPlayer.$m (Combo counter) should gate on IsActiveWarrior (it builds pre-hardmode)."
+    }
+}
+
+$comboMult = [regex]::Match(
+    $fighter,
+    "public .* GetComboMultiplier\([\s\S]+?\n\s*}",
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($comboMult -notmatch "!IsActiveFighter\(\)") {
+    throw "FighterPlayer.GetComboMultiplier (subclass payoff) should gate on IsActiveFighter."
+}
+
 if ($fighterProjectile -notmatch "GetModPlayer<FighterPlayer>\(\)" -or
-    $fighterProjectile -notmatch "fighterPlayer\.IsActiveFighter\(\)") {
-    throw "FighterPunchProjectile should gate projectile combo logic with FighterPlayer.IsActiveFighter()."
+    $fighterProjectile -notmatch "fighterPlayer\.IsActiveWarrior\(\)") {
+    throw "FighterPunchProjectile should gate its punch/combo logic with FighterPlayer.IsActiveWarrior() (works pre-hardmode)."
 }
 
 if ($subclassLockHelper -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or

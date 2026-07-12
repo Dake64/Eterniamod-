@@ -63,8 +63,8 @@ namespace Eternia.Content.Players
                     Player.GetAttackSpeed(DamageClass.Melee) -= 0.10f;
                     break;
                 case "Combo":
-                    Player.GetAttackSpeed(DamageClass.Melee) += 0.25f;
-                    Player.GetDamage(DamageClass.Melee) -= 0.12f;
+                    // FRENZY: handled by FighterPlayer (a conditional buff while the
+                    // Peleador holds max Combo), not a flat always-on keystone.
                     break;
                 case "Defense":
                     Player.endurance += 0.15f;

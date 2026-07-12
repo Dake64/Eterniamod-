@@ -16,7 +16,8 @@ $stats = Get-Content -Raw $statsPath
 $newNodes = @(
     # Warrior
     "Hemorrhage", "Crimson Reaper",
-    "Flow State", "Perfect Rhythm",
+    # (Flow State / Perfect Rhythm are Combo-branch nodes: their runtime effect is
+    #  in FighterPlayer now, not EterniaStatsPlayer -- see FighterComboSourceSmokeTest.)
     "Bulwark", "Unbreakable",
     "Keen Edge", "Lethal Precision",
     "Berserk Momentum", "Undying Wrath",

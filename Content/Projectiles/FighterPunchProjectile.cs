@@ -2,6 +2,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Items;
 using Eternia.Content.Players;
 
 namespace Eternia.Content.Projectiles
@@ -89,11 +90,10 @@ namespace Eternia.Content.Projectiles
             var fighterPlayer =
                 player.GetModPlayer<FighterPlayer>();
 
-            // =============================================
-            // ONLY FIGHTER
-            // =============================================
-
-            if (!fighterPlayer.IsActiveFighter())
+            // The distance mechanic is a Warrior-wide fist-weapon trait (works
+            // pre-hardmode too). The Combo damage multiplier inside is 1 until you are
+            // a promoted Peleador, so this stays a pure counter before then.
+            if (!fighterPlayer.IsActiveWarrior())
             {
                 return;
             }
@@ -112,30 +112,26 @@ namespace Eternia.Content.Projectiles
             // DAMAGE MULTIPLIER
             // =============================================
 
-            float multiplier = 1f;
+            // The Peleador does full damage practically hugging the enemy, and much
+            // less at the end of the punch's reach -- rewarding the risk of staying
+            // point-blank. (Close-range bonuses above 100% come from passives.)
+            float multiplier;
 
-            // Muy cerca
-            if (distance <= 60f)
-            {
-                multiplier = 1.5f;
-            }
-
-            // Cerca
-            else if (distance <= 120f)
-            {
-                multiplier = 1.2f;
-            }
-
-            // Medio
-            else if (distance <= 220f)
+            if (distance <= 60f)        // point-blank
             {
                 multiplier = 1f;
             }
-
-            // Lejos
-            else
+            else if (distance <= 120f)  // close
             {
-                multiplier = 0.7f;
+                multiplier = 0.8f;
+            }
+            else if (distance <= 220f)  // mid
+            {
+                multiplier = 0.65f;
+            }
+            else                         // end of reach
+            {
+                multiplier = 0.5f;
             }
 
             // =============================================
@@ -164,20 +160,33 @@ namespace Eternia.Content.Projectiles
             var fighterPlayer =
                 player.GetModPlayer<FighterPlayer>();
 
-            // =============================================
-            // ONLY FIGHTER
-            // =============================================
-
-            if (!fighterPlayer.IsActiveFighter())
+            // Any Warrior with a fist weapon builds the Combo counter.
+            if (!fighterPlayer.IsActiveWarrior())
             {
                 return;
             }
 
             // =============================================
-            // ADD COMBO
+            // ADD COMBO (crit / point-blank build extra via passives)
             // =============================================
 
-            fighterPlayer.AddCombo();
+            bool pointBlank =
+                Vector2.Distance(startPosition, Projectile.Center) <= 60f;
+
+            fighterPlayer.AddCombo(
+                fighterPlayer.ComboGainForHit(hit.Crit, pointBlank));
+
+            // =============================================
+            // WEAPON SECONDARY EFFECT (poison / fire / defense-down / lifesteal)
+            // =============================================
+
+            // The effect belongs to the weapon, not the punch. It never touches the
+            // Combo -- weapons evolve in damage/speed/effects, the subclass powers the
+            // Combo. Works pre-hardmode too (it is a weapon trait, not a subclass one).
+            if (player.HeldItem?.ModItem is IFistWeapon fist)
+            {
+                fist.OnPunchHit(player, target);
+            }
 
             // =============================================
             // HIT EFFECTS
