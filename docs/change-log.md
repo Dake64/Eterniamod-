@@ -15,6 +15,149 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-10 - Mago Elemental: arsenal de 15 armas magicas elementales
+
+- Objetivo (spec): armas asociadas a un elemento desde que se obtienen. Pre-HM funcionan
+  como armas elementales normales; en HM la Afinidad Elemental las modifica. El mismo
+  arsenal juega distinto por afinidad.
+- Arquitectura: UN proyectil `Content/Projectiles/ElementalArsenalBolt.cs` parametrizado
+  por elemento en ai[0] (aplica el efecto base -quemar/ralentizar/electrificar/pierce/
+  burst- a cualquier lanzador, asi que sirve pre-HM). Clase base
+  `Content/Items/Weapons/Magic/ElementalStaff.cs` que dispara ese bolt; las armas de
+  "afinidad/ciclo" (Element = -1) disparan el elemento ACTIVO del Elementalist (o uno
+  aleatorio si no esta promovido). La capa de Afinidad Elemental (globales previos)
+  superpone el efecto de la afinidad activa en HM sobre CUALQUIER arma magica -> el
+  mismo arma se juega distinto por elemento.
+- PRE-HARDMODE (7): Ember Spark (18, Fuego, craft) -> Boreal Staff (25, Hielo, cofres de
+  hielo) -> Spark Rod (29, Rayo, Rey Slime) -> Gale Scepter (34, Viento, craft) ->
+  Granite Core (40, Tierra, bioma granito) -> Magma Tome (47, Fuego, craft hellstone) ->
+  Elemental Sage Scepter (56, ciclo, Skeletron; mejor arma magica pre-HM).
+- HARDMODE (8): Phoenix Staff (72, Fuego, craft) -> Glacial Scepter (80, Hielo, craft) ->
+  Storm Orb (88, Rayo, craft) -> Hurricane Staff (96, Viento, Piratas) -> Seismic
+  Scepter (104, Tierra, Golem) -> Grimoire of the Five Elements (118, ciclo, craft desde
+  los 5 bastones HM) -> Cataclysm Staff (135, ciclo, Pilar Nebulosa) -> Heart of Gaia
+  (155, ciclo, post Moon Lord, arma definitiva).
+- Obtencion: `Content/Globals/ElementalDropsGlobalNPC.cs` (King Slime->Spark Rod,
+  Skeletron->Sage Scepter, granito->Granite Core, Piratas->Hurricane, Golem->Seismic,
+  Pilar Nebulosa->Cataclysm) y `Content/Systems/ElementalChestLoot.cs` (Boreal Staff en
+  cofres del bioma de hielo, detectado muestreando bloques de nieve/hielo). Drop-only:
+  Boreal, Spark Rod, Granite Core, Sage Scepter, Hurricane, Seismic, Cataclysm.
+- No subclass-locked (son armas magicas; cualquier Mago las usa). Placeholder de textura:
+  todas reusan ElementalApprenticeStaff; el bolt reusa FireBoltProjectile (tintado por
+  elemento via GetAlpha/dust).
+- Tests: `ElementalArsenalSourceSmokeTest` (15 armas: extienden ElementalStaff, elemento
+  correcto, dano monotono exacto, crafteo vs drop-only; el bolt Magic keyed por ai[0]
+  con efecto base; drops + cofre de hielo). +hjson. Suite PASS=87.
+- Verificacion: build 0/0; suite PASS=87. SIN probar in-game.
+- Con esto el Mago Elemental esta completo (mecanica + arbol 5 sub-ramas + Maestria HM +
+  arsenal). Pendiente global: balance in-game; arte real.
+
+## 2026-07-10 - Mago Elemental: nodos HM de Maestria (cambio rapido + surge al cambiar)
+
+- Objetivo (spec/usuario): nodos exclusivos de Hardmode para cambiar de afinidad mas
+  rapido y ganar bonos temporales al cambiar.
+- Mecanica (ElementalistPlayer): el cambio de elemento ahora tiene un cooldown base de
+  45 ticks (0.75s) -- `SwitchTimer`, ticked en PostUpdate, gatea ChangeNote. Al cambiar,
+  si tienes Momentum Shift se enciende un `SurgeTimer` (surge) que da +daño magico
+  temporal en PostUpdateEquips.
+- Sub-rama nueva "Elemental Mastery" (AffinityType "Elemental", 3 nodos, transversal a
+  los elementos; rutea a ElementalAffinity como el resto):
+  - Elemental Flux: -20 ticks al cooldown de cambio.
+  - Momentum Shift: al cambiar, surge de +15% daño magico por 3s.
+  - Grand Attunement: -15 ticks mas (min 8), y el surge sube a +25% por 5s.
+  Leidos via `ElementalistPlayer.HasElementNode(...)` (solo importan promovido = HM).
+- Tests: ElementalBranches ampliado (3 nodos Mastery + SwitchTimer/SurgeTimer). Ajustes:
+  PassiveTreeDepth (Mage 39->42), PassiveRuntimeCoverage (acepta HasElementNode como
+  wrapper de HasActivePassive). Suite PASS=86.
+- Verificacion: build 0/0; suite PASS=86. SIN probar in-game.
+- Nota: el cambio de elemento paso de instantaneo a 0.75s de cooldown base (evita spam y
+  da sentido a los nodos de velocidad). Pendiente: arsenal de armas magicas del
+  Elementalist; balance in-game.
+
+## 2026-07-10 - Mago Elemental: el ramo de pasivas en 5 sub-ramas elementales
+
+- Objetivo (spec): la rama "Elemental" se especializa por elemento. Cada sub-rama mejora
+  un elemento; en HM tambien potencian la afinidad activa.
+- Estructura: se reemplazo la cadena unica de 8 nodos genericos (Elemental Control...
+  Storm Caller) por 5 sub-ramas (AffinityType Fire/Ice/Lightning/Wind/Earth), cada una
+  una cadena de 3 nodos (15 en total). Cada elemento es su propia espiga en el arbol
+  radial (5 sub-ramas visibles).
+- Promocion intacta: `ProgressionService.AddAffinity` rutea las 5 afinidades
+  elementales a `ElementalAffinity`, asi que invertir en CUALQUIER elemento sigue
+  promoviendo a Elementalist (no se toco ClassPromotionRules ni el snapshot).
+- Nodos (efecto pre-HM en EterniaStatsPlayer + sinergia HM en los globales):
+  - Fuego: Kindling (+6% mag), Ember Fury (+8%; HM quemadura mas larga 240->360),
+    Pyromancer (+10%; HM bono vs quemados 1.15->1.30).
+  - Hielo: Frost Touch (+6%), Deep Freeze (+10% crit), Absolute Zero (+8%; HM congela
+    mas seguido 1/8 -> 1/4).
+  - Rayo: Static Charge (+6%), Chain Master (+8%; HM arco en cada golpe), Tempest
+    (+8% dmg/+8% crit; HM un arco extra).
+  - Viento: Zephyr (+5% dmg, -5% mana), Gale Force (-10% mana; HM +2 pierce), Tempest
+    Winds (+12%; HM proyectiles aun mas rapidos 1.25->1.4).
+  - Tierra: Stone Skin (+5 def), Tremor (+8%; HM burst mayor), Tectonic (+8 def, +10%;
+    HM explosiones aun mayores).
+- UI: PassiveUI colorea las 5 afinidades (Fire/Ice/Lightning/Wind/Earth); la lista
+  blanca v1 las incluye (mas "Elemental" para el medidor de la barra). El medidor
+  lateral sigue siendo un unico "Elemental" (afinidad total hacia la promocion).
+- Sinergias HM leidas via `ElementalistPlayer.HasElementNode(nodo)` en los globales.
+- Tests: `ElementalBranchesSourceSmokeTest` (5 sub-ramas, ruteo a ElementalAffinity,
+  sinergias HM). Ajustados PassiveTreeDepth (Mage 32->39; sin los 2 nodos viejos),
+  PassiveRuntimeEffects (15 nodos nuevos), v1 visibility (+5 elementos). Suite PASS=86.
+- Verificacion: build 0/0; suite PASS=86. SIN probar in-game.
+- Pendiente: nodos exclusivos de HM adicionales (cambio de afinidad mas rapido, bonos
+  al cambiar), arsenal de armas magicas del Elementalist, balance in-game.
+
+## 2026-07-10 - Mago Elemental: Afinidad Elemental (5 elementos que remodelan la magia)
+
+- Objetivo (spec del usuario): el Elementalist domina 5 elementos. En hardmode (ya
+  promovido) puede cambiar libremente de afinidad; la afinidad activa modifica el
+  comportamiento de PRACTICAMENTE TODAS las armas magicas. Pre-hardmode: sin afinidad,
+  solo se especializa via arbol (pendiente el rediseño del ramo elemental).
+- Base existente extendida: `ElementalistPlayer` pasa de 3 a **5 elementos** (se añaden
+  Viento y Tierra): WindAffinity/EarthAffinity + niveles + Save/Load + colores +
+  ultimates (CYCLONE empuja enemigos, EARTHQUAKE golpea en area). Se conserva toda la
+  API previa (carga, GainAffinity, ultimates con teclas R/Z).
+- Efectos de stat de la afinidad activa (`ElementalistPlayer.PostUpdateEquips`, gated a
+  Elementalist): Fuego +12% daño magico; Viento -15% mana + 15% vel. de lanzamiento;
+  Tierra +12 defensa y sin retroceso mientras empuña magia. (Hielo/Rayo son on-hit.)
+- NUEVO nucleo (el spec): la afinidad remodela TODAS las armas magicas via globales:
+  - `Content/Globals/ElementalAffinityGlobalProjectile.cs` (solo magia de un Elementalist
+    activo): OnHit -> Fuego Quemadura; Hielo Escarcha+Chilled+chance Congelar; Rayo
+    Electrified + arco a un enemigo cercano (ChainLightning); Tierra explosion en area
+    (EarthBurst). ModifyHitNPC -> Fuego +15% vs enemigos quemados. OnSpawn -> Viento +1
+    penetracion.
+  - `Content/Globals/ElementalAffinityGlobalItem.cs`: Rayo/Viento -> proyectiles +25%
+    mas rapidos (ModifyShootStats).
+- UI: ElementalistUI muestra los 5 pills (Viento/Tierra añadidos, panel mas alto); el
+  SoulUI ya mostraba elemento+carga; especialidad actualizada.
+- Tests: `ElementalAffinitySourceSmokeTest` (5 elementos, Save, stats por afinidad,
+  globales de magia con on-hit por elemento + fuego/viento + velocidad). Suite PASS=85.
+- Verificacion: build 0/0; suite PASS=85. SIN probar in-game.
+- Pendiente (proximas pasadas): rediseñar el ramo de pasivas "Elemental" en 5
+  sub-ramas (Fuego/Hielo/Rayo/Viento/Tierra) + nodos exclusivos de hardmode; arsenal de
+  armas magicas del Elementalist; balance in-game.
+
+## 2026-07-10 - Alcance v1: ocultar en el arbol de pasivas las subclases no-v1
+
+- Objetivo (usuario): para la v1, mostrar solo 3 subclases por clase base en el arbol
+  de pasivas. Guerrero: Sangrado/Combo/Defensa (Espadachin/Peleador/Escudero). Mago,
+  Rango e Invocador: 3 de cada, ocultar el resto. NO borrar codigo: solo esconder.
+- Implementacion (`Content/UI/PassiveUI.cs`): lista blanca unica `V1VisibleAffinities`
+  (12 afinidades) + helper `IsAffinityVisible`. Se filtra en:
+  - `GroupPassivesByAffinity` -> las ramas radiales del arbol.
+  - `GetAffinities` -> los medidores de afinidad de la barra lateral.
+  Como las ramas ocultas no se dibujan, no se pueden invertir puntos en ellas -> no se
+  gana su afinidad -> no se puede promover a esas subclases (el gating de la v1 sale
+  gratis). Nada del registro/mecanicas/armas de las subclases ocultas se toca.
+- Visibles v1: Guerrero {Bleed, Combo, Defense}; Mago {Elemental, Curse, Infinity};
+  Rango {Energy, Bow, Gun}; Invocador {Beast, Tech, Shadow}.
+- Ocultas: Precision (Yoyo), Rage (Berserker), Control (Stunner), Arcane (Arcane Bard),
+  Music (Virtuoso), Fusion (Advanced Summoner). Re-activar una = añadir su afinidad a
+  la lista blanca.
+- Tests: `PassiveTreeV1VisibilitySourceSmokeTest` fija la lista blanca (12 visibles, 6
+  ocultas) y que ambos draws filtran por IsAffinityVisible. Suite PASS=84.
+- Verificacion: build 0/0; suite PASS=84. SIN probar in-game.
+
 ## 2026-07-10 - Escudos: linea de hardmode + obtencion + escudo de promocion al aura
 
 - Objetivo (usuario): meter "todo lo demas" del Escudero salvo el recurso de

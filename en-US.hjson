@@ -88,6 +88,93 @@ Mods: {
 				Tooltip: ""
 			}
 
+			EmberSpark: {
+				DisplayName: Ember Spark
+				Tooltip: Fire. Hurls a burning fireball. As an Elementalist, your affinity reshapes it.
+			}
+
+			BorealStaff: {
+				DisplayName: Boreal Staff
+				Tooltip: Ice. Fires a chilling crystal that slows foes. Found in Ice-biome chests.
+			}
+
+			SparkRod: {
+				DisplayName: Spark Rod
+				Tooltip: Lightning. A very fast bolt. Dropped by King Slime.
+			}
+
+			GaleScepter: {
+				DisplayName: Gale Scepter
+				Tooltip: Wind. Throws a piercing air blade.
+			}
+
+			GraniteCore: {
+				DisplayName: Granite Core
+				Tooltip: Earth. Fires an explosive rock. Dropped in the Granite biome.
+			}
+
+			MagmaTome: {
+				DisplayName: Magma Tome
+				Tooltip: Fire. Hellforged. The strongest fire staff before Hardmode.
+			}
+
+			ElementalSageScepter: {
+				DisplayName: Elemental Sage Scepter
+				Tooltip:
+					'''
+					The strongest pre-Hardmode magic weapon. Dropped by Skeletron.
+					Cycles through all five elements (or fires your active affinity).
+					'''
+			}
+
+			PhoenixStaff: {
+				DisplayName: Phoenix Staff
+				Tooltip: Fire. Hardmode. Fiery explosions and enhanced burn.
+			}
+
+			GlacialScepter: {
+				DisplayName: Glacial Scepter
+				Tooltip: Ice. Giant crystals with a chance to freeze.
+			}
+
+			StormOrb: {
+				DisplayName: Storm Orb
+				Tooltip: Lightning. Fast bolts that bounce between foes.
+			}
+
+			HurricaneStaff: {
+				DisplayName: Hurricane Staff
+				Tooltip: Wind. Piercing gusts. Dropped during the Pirate Invasion.
+			}
+
+			SeismicScepter: {
+				DisplayName: Seismic Scepter
+				Tooltip: Earth. Rock pillars and bursts. Dropped by Golem.
+			}
+
+			GrimoireOfFiveElements: {
+				DisplayName: Grimoire of the Five Elements
+				Tooltip:
+					'''
+					Forged from the five Hardmode elemental staves.
+					Fires your active Elemental Affinity, or a random element.
+					'''
+			}
+
+			CataclysmStaff: {
+				DisplayName: Cataclysm Staff
+				Tooltip: Its attack changes with your Elemental Affinity. Dropped by the Nebula Pillar.
+			}
+
+			HeartOfGaia: {
+				DisplayName: Heart of Gaia
+				Tooltip:
+					'''
+					The Elemental Mage's ultimate weapon. Its whole playstyle changes
+					with the active affinity: fire, ice, lightning, wind or earth.
+					'''
+			}
+
 			ArcaneFocus: {
 				DisplayName: Arcane Focus
 				Tooltip: ""
@@ -441,6 +528,7 @@ Mods: {
 		Projectiles: {
 			CrimsonSlash.DisplayName: Crimson Slash
 			DefensiveAuraProjectile.DisplayName: Defensive Aura
+			ElementalArsenalBolt.DisplayName: Elemental Bolt
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile
 			FireBoltProjectile.DisplayName: Fire Bolt Projectile
