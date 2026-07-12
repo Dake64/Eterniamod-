@@ -33,7 +33,7 @@ namespace Eternia.Content.UI
                 GetElementColor(elementalist.CurrentElement);
 
             Rectangle panel =
-                EterniaUI.GetTopCenterPanel(306, 178, 92);
+                EterniaUI.GetTopCenterPanel(306, 238, 92);
 
             EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.84f);
 
@@ -77,6 +77,28 @@ namespace Eternia.Content.UI
                 elementalist.CurrentElement == 2,
                 Color.Yellow);
 
+            y += 30;
+
+            DrawElementPill(
+                spriteBatch,
+                new Rectangle(panel.X + 14, y, panel.Width - 28, 24),
+                "Wind",
+                elementalist.WindLevel,
+                elementalist.WindAffinity,
+                elementalist.CurrentElement == 3,
+                Color.PaleGreen);
+
+            y += 30;
+
+            DrawElementPill(
+                spriteBatch,
+                new Rectangle(panel.X + 14, y, panel.Width - 28, 24),
+                "Earth",
+                elementalist.EarthLevel,
+                elementalist.EarthAffinity,
+                elementalist.CurrentElement == 4,
+                Color.SandyBrown);
+
             y += 36;
 
             float progress =
@@ -116,13 +138,7 @@ namespace Eternia.Content.UI
 
         private static Color GetElementColor(int element)
         {
-            return element switch
-            {
-                0 => Color.OrangeRed,
-                1 => Color.Cyan,
-                2 => Color.Yellow,
-                _ => Color.White
-            };
+            return ElementalistPlayer.ElementColor(element);
         }
     }
 }

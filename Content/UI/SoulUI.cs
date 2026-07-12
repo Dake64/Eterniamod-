@@ -325,7 +325,7 @@ namespace Eternia.Content.UI
             "Gunner" => "Hit the sweet spot for Dead Eye",
             "Energy Gunner" => "Build Heat for Overdrive (mind overheat)",
             "Virtuoso" => "Play note melodies for buffs",
-            "Elementalist" => "Swap elements, unleash ultimates",
+            "Elementalist" => "Swap 5 elemental affinities that reshape all magic",
             "Cursed Mage" => "Cursed energy + risky corruption",
             "Infinity Mage" => "Overflow into free-cast Overload",
             "Arcane Bard" => "Keep the Crescendo momentum going",

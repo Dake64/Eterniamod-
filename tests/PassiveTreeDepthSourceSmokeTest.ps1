@@ -28,7 +28,9 @@ $newNodes = @(
     "Hair Trigger", "Bullet Storm",
     "Battle Hymn", "Grand Finale",
     # Mage
-    "Arcane Conductor", "Elemental Overload",
+    # (The Elemental branch was split into 5 element sub-branches -- Fire/Ice/Lightning/
+    #  Wind/Earth -- each a short chain, so it no longer has tier-4/5 nodes here. Its
+    #  runtime effects are covered by PassiveRuntimeEffectsSourceSmokeTest.)
     "Withering Curse", "Doom Bringer",
     "Boundless Mana", "Eternal Flow",
     "Harmonic Field", "Celestial Symphony",
@@ -75,7 +77,9 @@ function Get-ListBody($text, $marker) {
 $expectedCounts = @{
     "List<PassiveNode> WarriorPassives"  = 49
     "List<PassiveNode> RangerPassives"   = 32
-    "List<PassiveNode> MagePassives"     = 32
+    # Mage = Curse(8) + Infinity(8) + Arcane(8) + 5 element sub-branches x 3 (15)
+    #        + Elemental Mastery spoke (3) = 42.
+    "List<PassiveNode> MagePassives"     = 42
     "List<PassiveNode> SummonerPassives" = 32
 }
 

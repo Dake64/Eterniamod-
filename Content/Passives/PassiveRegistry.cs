@@ -1118,95 +1118,115 @@ new List<PassiveNode>()
     new List<PassiveNode>()
 {
     // =================================================
-    // ELEMENTAL
+    // ELEMENTAL - five element sub-branches. Each is its own affinity spoke, but ALL
+    // feed the same Elemental affinity toward the Elementalist promotion (see
+    // ProgressionService.AddAffinity). Pre-Hardmode they give a magic bonus (specialize
+    // your element); once promoted, they also supercharge that element's active
+    // affinity (read in ElementalistPlayer / the affinity globals).
     // =================================================
 
+    // --- Fire ---
     new PassiveNode(
-        "Elemental Control",
-        "+5% magic damage",
-        1,
-        "Elemental",
-        3,
-        "",
-        40,
-        140
-    ),
-
-    new PassiveNode(
-        "Elemental Surge",
-        "+10 mana",
-        1,
-        "Elemental",
-        4,
-        "Elemental Control",
-        40,
-        250
-    ),
-
-    new PassiveNode(
-        "Elemental Mastery",
-        "+15% elemental damage",
-        2,
-        "Elemental",
-        5,
-        "Elemental Surge",
-        40,
-        360
-    ),
-
-    new PassiveNode(
-        "Arcane Conductor",
-        "+8% magic damage",
-        2,
-        "Elemental",
-        6,
-        "Elemental Mastery",
-        40,
-        470
-    ),
-
-    new PassiveNode(
-        "Elemental Overload",
-        "+10% magic crit",
-        3,
-        "Elemental",
-        7,
-        "Arcane Conductor",
-        40,
-        580
-    ),
-
-    new PassiveNode(
-        "Pyroclasm",
-        "+8% magic damage",
-        3,
-        "Elemental",
-        8,
-        "Elemental Overload",
-        40,
-        690
-    ),
-
-    new PassiveNode(
-        "Frost Nova",
-        "+8% magic crit",
-        3,
-        "Elemental",
-        9,
-        "Pyroclasm",
-        40,
-        800
-    ),
-
-    new PassiveNode(
-        "Storm Caller",
+        "Kindling",
         "+6% magic damage",
-        4,
-        "Elemental",
-        10,
-        "Frost Nova",
-        40,
-        910
+        1, "Fire", 3, "", 40, 140
+    ),
+    new PassiveNode(
+        "Ember Fury",
+        "+8% magic damage - Fire affinity: burn lasts longer",
+        2, "Fire", 5, "Kindling", 40, 250
+    ),
+    new PassiveNode(
+        "Pyromancer",
+        "+10% magic damage - Fire affinity: bigger bonus vs burning foes",
+        3, "Fire", 7, "Ember Fury", 40, 360
+    ),
+
+    // --- Ice ---
+    new PassiveNode(
+        "Frost Touch",
+        "+6% magic damage",
+        1, "Ice", 3, "", 120, 140
+    ),
+    new PassiveNode(
+        "Deep Freeze",
+        "+10% magic crit - Ice affinity: slows harder",
+        2, "Ice", 5, "Frost Touch", 120, 250
+    ),
+    new PassiveNode(
+        "Absolute Zero",
+        "+8% magic damage - Ice affinity: freezes far more often",
+        3, "Ice", 7, "Deep Freeze", 120, 360
+    ),
+
+    // --- Lightning ---
+    new PassiveNode(
+        "Static Charge",
+        "+6% magic damage",
+        1, "Lightning", 3, "", 200, 140
+    ),
+    new PassiveNode(
+        "Chain Master",
+        "+8% magic damage - Lightning affinity: arcs on every hit",
+        2, "Lightning", 5, "Static Charge", 200, 250
+    ),
+    new PassiveNode(
+        "Tempest",
+        "+8% magic damage, +8% magic crit - Lightning affinity: an extra arc",
+        3, "Lightning", 7, "Chain Master", 200, 360
+    ),
+
+    // --- Wind ---
+    new PassiveNode(
+        "Zephyr",
+        "+5% magic damage, -5% mana cost",
+        1, "Wind", 3, "", 280, 140
+    ),
+    new PassiveNode(
+        "Gale Force",
+        "-10% mana cost - Wind affinity: extra pierce",
+        2, "Wind", 5, "Zephyr", 280, 250
+    ),
+    new PassiveNode(
+        "Tempest Winds",
+        "+12% magic damage - Wind affinity: even faster projectiles",
+        3, "Wind", 7, "Gale Force", 280, 360
+    ),
+
+    // --- Earth ---
+    new PassiveNode(
+        "Stone Skin",
+        "+5 defense",
+        1, "Earth", 3, "", 360, 140
+    ),
+    new PassiveNode(
+        "Tremor",
+        "+8% magic damage - Earth affinity: bigger rock bursts",
+        2, "Earth", 5, "Stone Skin", 360, 250
+    ),
+    new PassiveNode(
+        "Tectonic",
+        "+8 defense, +10% magic damage - Earth affinity: larger explosions",
+        3, "Earth", 7, "Tremor", 360, 360
+    ),
+
+    // --- Elemental Mastery (Hardmode) - a cross-element spoke that improves the
+    //     affinity-switching mechanic itself. These feed the same Elemental affinity
+    //     and only matter once promoted (switching is a Hardmode ability). ---
+    new PassiveNode(
+        "Elemental Flux",
+        "Hardmode: swap your element much faster",
+        2, "Elemental", 4, "", 440, 140
+    ),
+    new PassiveNode(
+        "Momentum Shift",
+        "Hardmode: swapping element grants a brief magic surge",
+        3, "Elemental", 5, "Elemental Flux", 440, 250
+    ),
+    new PassiveNode(
+        "Grand Attunement",
+        "Hardmode: even faster swaps, and the surge is stronger and lasts longer",
+        4, "Elemental", 6, "Momentum Shift", 440, 360
     ),
 
     // CURSE

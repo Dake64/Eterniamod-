@@ -766,10 +766,35 @@ namespace Eternia.Content.UI
                 0.5f);
         }
 
+        // === v1 subclass gating =====================================================
+        // For the v1 release only these affinity branches are shown in the passive tree
+        // (and their affinity meters). The rest are HIDDEN, not deleted: the passive
+        // data, player mechanics and weapons of the hidden subclasses all stay in the
+        // code -- re-enabling one later is just adding its affinity back to this set.
+        //   Warrior : Bleed (Swordsman), Combo (Fighter), Defense (Guardian/Escudero)
+        //   Mage    : Elemental (5 element sub-branches Fire/Ice/Lightning/Wind/Earth),
+        //             Curse, Infinity   (Arcane / Arcane Bard hidden)
+        //   Ranger  : Energy, Bow, Gun             (Music / Virtuoso hidden)
+        //   Summoner: Beast, Tech, Shadow          (Fusion / Advanced Summoner hidden)
+        private static readonly HashSet<string> V1VisibleAffinities =
+            new HashSet<string>
+            {
+                "Bleed", "Combo", "Defense",
+                // Elemental: the sidebar meter ("Elemental") plus its five element spokes.
+                "Elemental", "Fire", "Ice", "Lightning", "Wind", "Earth",
+                "Curse", "Infinity",
+                "Energy", "Bow", "Gun",
+                "Beast", "Tech", "Shadow"
+            };
+
+        private static bool IsAffinityVisible(string affinity) =>
+            V1VisibleAffinities.Contains(affinity);
+
         private static List<AffinityGroup> GroupPassivesByAffinity(
             List<PassiveNode> passives)
         {
             return passives
+                .Where(passive => IsAffinityVisible(passive.AffinityType))
                 .GroupBy(passive => passive.AffinityType)
                 .Select(group => new AffinityGroup(
                     group.Key,
@@ -1451,7 +1476,7 @@ namespace Eternia.Content.UI
             SoulId soul,
             EterniaStatsPlayer stats)
         {
-            return soul switch
+            AffinityInfo[] all = soul switch
             {
                 SoulId.Warrior => new[]
                 {
@@ -1485,6 +1510,9 @@ namespace Eternia.Content.UI
                 },
                 _ => new AffinityInfo[0]
             };
+
+            // v1: only the shipped subclass branches get an affinity meter.
+            return all.Where(a => IsAffinityVisible(a.Name));
         }
 
         private static Color GetSoulColor(SoulId soul)
@@ -1510,6 +1538,11 @@ namespace Eternia.Content.UI
                 "Rage" => Color.Red,
                 "Control" => Color.Gold,
                 "Elemental" => Color.OrangeRed,
+                "Fire" => Color.OrangeRed,
+                "Ice" => Color.Cyan,
+                "Lightning" => Color.Yellow,
+                "Wind" => Color.PaleGreen,
+                "Earth" => Color.SandyBrown,
                 "Curse" => Color.MediumVioletRed,
                 "Infinity" => Color.DeepSkyBlue,
                 "Arcane" => Color.Plum,

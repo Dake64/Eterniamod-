@@ -537,19 +537,75 @@ namespace Eternia.Content.Players
             // MAGE PASSIVES
             // =====================================================
 
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Control"))
+            // --- Elemental sub-branches (pre-Hardmode magic bonuses; the Hardmode
+            //     affinity synergies live in the affinity globals) ---
+            // Fire
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Kindling"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.06f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Ember Fury"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Pyromancer"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.10f;
+            }
+            // Ice
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Frost Touch"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.06f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Deep Freeze"))
+            {
+                Player.GetCritChance(DamageClass.Magic) += 10f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Absolute Zero"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+            // Lightning
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Static Charge"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.06f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Chain Master"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Tempest"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+                Player.GetCritChance(DamageClass.Magic) += 8f;
+            }
+            // Wind
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Zephyr"))
             {
                 Player.GetDamage(DamageClass.Magic) += 0.05f;
+                Player.manaCost -= 0.05f;
             }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Surge"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Gale Force"))
             {
-                Player.statManaMax2 += 10;
+                Player.manaCost -= 0.10f;
             }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Mastery"))
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Tempest Winds"))
             {
-                Player.GetDamage(DamageClass.Magic) += 0.15f;
+                Player.GetDamage(DamageClass.Magic) += 0.12f;
+            }
+            // Earth
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Stone Skin"))
+            {
+                Player.statDefense += 5;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Tremor"))
+            {
+                Player.GetDamage(DamageClass.Magic) += 0.08f;
+            }
+            if (HasActivePassive(soulPlayer.ActiveSoul, "Tectonic"))
+            {
+                Player.statDefense += 8;
+                Player.GetDamage(DamageClass.Magic) += 0.10f;
             }
 
             if (HasActivePassive(soulPlayer.ActiveSoul, "Dark Ritual"))
@@ -597,16 +653,6 @@ namespace Eternia.Content.Players
                 Player.GetDamage(DamageClass.Magic) += 0.10f;
             }
 
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Arcane Conductor"))
-            {
-                Player.GetDamage(DamageClass.Magic) += 0.08f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Elemental Overload"))
-            {
-                Player.GetCritChance(DamageClass.Magic) += 10f;
-            }
-
             if (HasActivePassive(soulPlayer.ActiveSoul, "Withering Curse"))
             {
                 Player.GetArmorPenetration(DamageClass.Magic) += 5;
@@ -635,21 +681,6 @@ namespace Eternia.Content.Players
             if (HasActivePassive(soulPlayer.ActiveSoul, "Celestial Symphony"))
             {
                 Player.GetDamage(DamageClass.Magic) += 0.10f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Pyroclasm"))
-            {
-                Player.GetDamage(DamageClass.Magic) += 0.08f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Frost Nova"))
-            {
-                Player.GetCritChance(DamageClass.Magic) += 8f;
-            }
-
-            if (HasActivePassive(soulPlayer.ActiveSoul, "Storm Caller"))
-            {
-                Player.GetDamage(DamageClass.Magic) += 0.06f;
             }
 
             if (HasActivePassive(soulPlayer.ActiveSoul, "Soul Rot"))

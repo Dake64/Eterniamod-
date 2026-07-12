@@ -130,6 +130,13 @@ namespace Eternia.Content.Progression
                     stats.MusicAffinity += amount;
                     break;
                 case "Elemental":
+                // The five element sub-branches all feed the same Elemental affinity, so
+                // investing in ANY element promotes toward Elementalist.
+                case "Fire":
+                case "Ice":
+                case "Lightning":
+                case "Wind":
+                case "Earth":
                     stats.ElementalAffinity += amount;
                     break;
                 case "Curse":
