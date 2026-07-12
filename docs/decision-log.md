@@ -22,6 +22,65 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-10 - Los Escudos son una categoria de arma con Aura Defensiva (daño Generic)
+
+- Estado: Aceptada (spec del usuario).
+- Contexto: el usuario definio los "Escudos" como una categoria de arma completamente
+  distinta. No hay golpe cuerpo a cuerpo tradicional: se mantiene clic izquierdo,
+  el escudo se levanta y tras ~0.5s proyecta un Aura Defensiva que hace daño continuo
+  a los enemigos cercanos mientras se sostenga. El "Escudero" (subclase Guardian de
+  afinidad Defensa) es quien saca el maximo, pero CUALQUIER clase puede usar escudos.
+- Decision:
+  - Mecanica base compartida en `IShieldWeapon` + `DefensiveAuraProjectile`
+    (canalizado con `Item.channel`, spin-up de 30 ticks, pulsos de daño manuales por
+    radio pequeño ~2.5-3 tiles, se mata al soltar). Cada escudo define daño, intervalo
+    de pulso, radio, color y un efecto de personalidad (OnAuraHit / OnAuraPulse).
+  - Daño del aura = **DamageClass.Generic** (no Melee): para que "cualquier clase"
+    lo use de verdad y se beneficie por igual. NO subclass-locked. Se decidio Generic
+    sobre Melee precisamente por el requisito "cualquier clase puede utilizar escudos".
+  - Payoff del Escudero (Guardian): `GuardianPlayer.AuraDamageMultiplier()` escala el
+    aura con la Defensa (+1%/5 def) y `AuraRadiusMultiplier()` da +15% de radio, ambos
+    solo si IsActiveGuardian. "Escalado del daño con la Defensa" del spec.
+  - El TrainingShield (premio de promocion Guardian) se dejo INTACTO por ahora (sigue
+    siendo melee LightRed, no-crafteable, subclass-locked) para no romper los tests de
+    balance/promocion; convertirlo al aura es un paso posterior.
+- Consecuencias:
+  - La rama de pasivas de Defensa AUN es de stats planos (def/DR/vida). El spec quiere
+    que las pasivas del Escudero moldeen el aura (daño, radio, efectos, duracion de
+    guardia, boosts temporales) -> pendiente: rediseñar la rama como se hizo con Combo.
+  - Sin recurso de "Resistencia" todavia (el spec lo menciona como futuro: mantener el
+    aura podria consumirlo).
+  - Balance por tunear in-game; nada probado en juego.
+- Archivos relacionados: Content/Items/IShieldWeapon.cs,
+  Content/Projectiles/Guardian/DefensiveAuraProjectile.cs,
+  Content/Items/Weapons/Guardian/{Wooden,Iron,Corrupt,Glacial,Ember,Holy}Shield.cs,
+  Content/Players/GuardianPlayer.cs.
+
+## 2026-07-10 - El Combo del Peleador es pasivo-driven (no da bonos por si solo)
+
+- Estado: Aceptada (spec del usuario).
+- Contexto: el Fighter daba bonos directos por combo (move/atk speed, dano hasta 2x)
+  y sus nodos de pasiva daban stats melee planos. El usuario definio una identidad
+  distinta para el "Peleador".
+- Decision:
+  - El Combo por si mismo NO otorga nada. Es un contador (20 base, 2.5s) que el
+    ARBOL de pasivas convierte en efectos. Esto permite builds distintas sin cambiar
+    la mecanica base.
+  - Los nodos de la rama Combo dejan de dar stats planos (se quitaron de
+    EterniaStatsPlayer) y ahora modifican el Combo (efectos leidos en FighterPlayer
+    con `HasActivePassive("<nodo>")`, que ademas satisface el test de coverage).
+  - El keystone de Combo es un buff CONDICIONAL (Frenesi al maximo), manejado por
+    FighterPlayer, no un bono plano en KeystonePlayer.
+  - Remate = tecnica de la tecla Skill que gasta el combo (paralelo a la Ejecucion
+    del Espadachin). La distancia sigue premiando el cuerpo a cuerpo (100% pegado).
+- Consecuencias:
+  - Un Peleador sin pasivas de Combo no obtiene beneficio del combo -> se espera que
+    invierta la rama (coherente con "el arbol define la build").
+  - Balance por tunear in-game.
+- Archivos: `Content/Players/FighterPlayer.cs`, `FighterSkillPlayer.cs`,
+  `Content/Projectiles/FighterPunchProjectile.cs`, `Content/Passives/PassiveRegistry.cs`,
+  `Content/Players/EterniaStatsPlayer.cs`, `Content/Players/KeystonePlayer.cs`.
+
 ## 2026-07-09 - Un recurso es una mecanica de SUBCLASE, no de clase base
 
 - Estado: Aceptada.

@@ -293,7 +293,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Combo Instinct",
-        "+5% melee speed",
+        "Each Combo point: +1% melee damage",
         1,
         "Combo",
         3,
@@ -304,7 +304,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Adrenaline Rush",
-        "+8% combo duration",
+        "+1.5s to the Combo window",
         1,
         "Combo",
         4,
@@ -315,7 +315,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Limit Breaker",
-        "+15% combo damage",
+        "Each Combo point: +1% melee damage",
         2,
         "Combo",
         5,
@@ -326,7 +326,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Flow State",
-        "+6% melee speed",
+        "Each Combo point: +0.6% attack speed",
         2,
         "Combo",
         6,
@@ -337,7 +337,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Perfect Rhythm",
-        "+10% melee damage",
+        "Each Combo point: +0.5% move speed",
         3,
         "Combo",
         7,
@@ -348,7 +348,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Rapid Blows",
-        "+6% melee speed",
+        "Crit & point-blank hits build +1 Combo",
         3,
         "Combo",
         8,
@@ -359,7 +359,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Unbroken Chain",
-        "+8% melee damage",
+        "+10 to your max Combo",
         3,
         "Combo",
         9,
@@ -370,7 +370,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Thousand Cuts",
-        "+8% melee crit",
+        "Keep your Combo when you take damage",
         4,
         "Combo",
         10,
@@ -385,7 +385,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Shield Training",
-        "+3 defense",
+        "+3 defense - Escudero: +10% Shield Aura radius",
         1,
         "Defense",
         3,
@@ -396,7 +396,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Iron Wall",
-        "+6 defense",
+        "+6 defense - Escudero: +10% Shield Aura damage",
         1,
         "Defense",
         4,
@@ -407,7 +407,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Fortress Body",
-        "+10% damage reduction",
+        "+10% damage reduction - Escudero: +15% Shield Aura damage",
         2,
         "Defense",
         5,
@@ -418,7 +418,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Bulwark",
-        "+8 defense",
+        "+8 defense - Escudero: +15% Shield Aura radius",
         2,
         "Defense",
         6,
@@ -429,7 +429,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Unbreakable",
-        "+8% damage reduction",
+        "+8% damage reduction - Escudero: Shield Aura pulses 15% faster",
         3,
         "Defense",
         7,
@@ -440,7 +440,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Aegis",
-        "+8 defense",
+        "+8 defense - Escudero: +20% Shield Aura damage",
         3,
         "Defense",
         8,
@@ -451,7 +451,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Stonewall",
-        "+6% damage reduction",
+        "+6% damage reduction - Escudero: Shield Aura pulses 15% faster",
         3,
         "Defense",
         9,
@@ -462,7 +462,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Last Bastion",
-        "+20 max life",
+        "+20 max life - Escudero: Shield Aura also heals you each pulse",
         4,
         "Defense",
         10,
@@ -1932,7 +1932,7 @@ new List<PassiveNode>()
             return affinity switch
             {
                 "Bleed" => "KEYSTONE: +20% melee damage, but -10% attack speed.",
-                "Combo" => "KEYSTONE: +25% melee attack speed, but -12% melee damage.",
+                "Combo" => "KEYSTONE - FRENZY: while at max Combo, +15% melee damage, +10% attack speed and +8% damage reduction.",
                 "Defense" => "KEYSTONE: +15% damage reduction, but -25% move speed.",
                 "Precision" => "KEYSTONE: +30% melee crit, but -15% melee damage.",
                 "Rage" => "KEYSTONE: +25% melee damage, but -40 max life.",

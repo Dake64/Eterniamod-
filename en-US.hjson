@@ -213,6 +213,178 @@ Mods: {
 				Tooltip: A heavy hellforged sword. Big hits and lasting wounds.
 			}
 
+			PaddedFists: {
+				DisplayName: Padded Fists
+				Tooltip: Wrapped knuckles. Full damage point-blank; builds Combo.
+			}
+
+			IronKnuckles: {
+				DisplayName: Iron Knuckles
+				Tooltip: Cold iron over the knuckles. Fast, and best up close.
+			}
+
+			ProspectorsGauntlets: {
+				DisplayName: Prospector's Gauntlets
+				Tooltip: Heavy plated fists. Get in their face for full damage.
+			}
+
+			ThornfistGauntlets: {
+				DisplayName: Thornfist Gauntlets
+				Tooltip: Barbed jungle fists. Point-blank hits leave foes Poisoned.
+			}
+
+			MoltenKnuckles: {
+				DisplayName: Molten Knuckles
+				Tooltip: Hellforged brawling fists. Sets foes On Fire! up close.
+			}
+
+			BloodfeastGauntlets: {
+				DisplayName: Bloodfeast Gauntlets
+				Tooltip: The last fists before Hardmode. Some hits sip life back.
+			}
+
+			MythrilBrawlers: {
+				DisplayName: Mythril Brawlers
+				Tooltip: Hardmode-forged fists. Point-blank hits inflict Frostburn.
+			}
+
+			HallowedKnuckles: {
+				DisplayName: Hallowed Knuckles
+				Tooltip: Blessed brawling fists. Sears foes with Cursed Inferno.
+			}
+
+			NightfallGauntlets: {
+				DisplayName: Nightfall Gauntlets
+				Tooltip: Reforged from a Broken Hero Sword. Coats foes in Ichor.
+			}
+
+			PlaguebringerFists: {
+				DisplayName: Plaguebringer Fists
+				Tooltip: Chlorophyte-and-husk fists. Inflict Venom and Cursed Inferno.
+			}
+
+			LuminiteKnuckles: {
+				DisplayName: Luminite Knuckles
+				Tooltip: Radiant fists. Ichor on hit, and some blows steal life.
+			}
+
+			EternalFury: {
+				DisplayName: Eternal Fury
+				Tooltip:
+					'''
+					The Peleador's ultimate fists. Shadowflame, Ichor and lifesteal.
+					The Combo's true power still comes only from the subclass.
+					'''
+			}
+
+			WoodenShield: {
+				DisplayName: Wooden Shield
+				Tooltip:
+					'''
+					Hold to raise the shield and project a Defensive Aura.
+					Damages nearby foes. Stay close. Any class can use it.
+					'''
+			}
+
+			IronShield: {
+				DisplayName: Iron Shield
+				Tooltip:
+					'''
+					Hold to project a stronger Defensive Aura.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			CorruptShield: {
+				DisplayName: Corrupt Shield
+				Tooltip:
+					'''
+					Hold to project a Defensive Aura that weakens foes' defense.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			GlacialShield: {
+				DisplayName: Glacial Shield
+				Tooltip:
+					'''
+					Hold to project a Defensive Aura that slows and chills foes.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			EmberShield: {
+				DisplayName: Ember Shield
+				Tooltip:
+					'''
+					Hold to project a Defensive Aura that sets foes On Fire!
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			HolyShield: {
+				DisplayName: Holy Shield
+				Tooltip:
+					'''
+					Hold to project a blessed Defensive Aura: damages foes and
+					lightly regens you and nearby allies. Any class can use it.
+					'''
+			}
+
+			MythrilBulwark: {
+				DisplayName: Mythril Bulwark
+				Tooltip:
+					'''
+					Hold to project a Hardmode Defensive Aura that inflicts Frostburn.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			HallowedBulwark: {
+				DisplayName: Hallowed Bulwark
+				Tooltip:
+					'''
+					Hold to project a blessed Aura that sears foes with Cursed Inferno.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			NightfallBarrier: {
+				DisplayName: Nightfall Barrier
+				Tooltip:
+					'''
+					Reforged from a Broken Hero Sword. Its Aura coats foes in Ichor.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			PlaguebringerWall: {
+				DisplayName: Plaguebringer Wall
+				Tooltip:
+					'''
+					A living wall. Its Aura inflicts Venom and Cursed Inferno.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			LuminiteBarrier: {
+				DisplayName: Luminite Barrier
+				Tooltip:
+					'''
+					A radiant Aura: Ichor on foes, and light regen for you and allies.
+					Damages nearby foes. Any class can use it.
+					'''
+			}
+
+			EternalAegis: {
+				DisplayName: Eternal Aegis
+				Tooltip:
+					'''
+					The Escudero's ultimate shield. Shadowflame, Ichor and ally regen.
+					The largest, strongest Defensive Aura. Any class can use it.
+					'''
+			}
+
 			QuicksilverFang: {
 				DisplayName: Quicksilver Fang
 				Tooltip: Blinding mythril swings. Soft hits, but it never stops bleeding a foe.
@@ -268,6 +440,7 @@ Mods: {
 
 		Projectiles: {
 			CrimsonSlash.DisplayName: Crimson Slash
+			DefensiveAuraProjectile.DisplayName: Defensive Aura
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile
 			FireBoltProjectile.DisplayName: Fire Bolt Projectile

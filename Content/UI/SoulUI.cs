@@ -316,8 +316,8 @@ namespace Eternia.Content.UI
             "Ranger" => "Not promoted - build affinity to promote",
             "Summoner" => "Not promoted - build affinity to promote",
             "Swordsman" => "Bleed swords + Crimson Execution",
-            "Fighter" => "Combo chains ramp speed & damage",
-            "Guardian" => "Reflect aura + heavy defense",
+            "Fighter" => "Aggressive brawler; passives shape the Combo",
+            "Guardian" => "Shield Defensive Auras + heavy defense",
             "Yoyo Master" => "Precision stacks into True Strike",
             "Berserker" => "Rage builds into an Overrage frenzy",
             "Stunner" => "Charge melee to stun on hit",
@@ -377,9 +377,13 @@ namespace Eternia.Content.UI
                 case "Swordsman":
                     return $"Crimson Trail {player.GetModPlayer<CrimsonTrailPlayer>().CrimsonTrail}/100";
                 case "Fighter":
-                    return $"Combo {player.GetModPlayer<FighterPlayer>().Combo}/50";
+                    var fighter = player.GetModPlayer<FighterPlayer>();
+                    return $"Combo {fighter.Combo}/{fighter.EffectiveMaxCombo}";
                 case "Guardian":
-                    return "Reflect aura (passive)";
+                    bool auraUp = player.ownedProjectileCounts[
+                        ModContent.ProjectileType
+                            <Eternia.Content.Projectiles.Guardian.DefensiveAuraProjectile>()] > 0;
+                    return auraUp ? "Shield Aura: ON" : "Shield Aura: raise a shield";
                 case "Yoyo Master":
                     return $"Precision {player.GetModPlayer<YoyoMasterPlayer>().precisionStacks}/5";
                 case "Berserker":

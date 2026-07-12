@@ -15,6 +15,267 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-10 - Escudos: linea de hardmode + obtencion + escudo de promocion al aura
+
+- Objetivo (usuario): meter "todo lo demas" del Escudero salvo el recurso de
+  Resistencia. Hecho: linea de escudos de hardmode, 2ª pasada de obtencion, y convertir
+  el TrainingShield (premio de promocion) a la mecanica de aura.
+- LINEA HARDMODE (6, crafteables salvo lo indicado, Generic, NO subclass-locked):
+  Mythril Bulwark (60, HM ore, Frostburn) -> Hallowed Bulwark (74, Hallow, Cursed
+  Inferno) -> Nightfall Barrier (88, Eclipse/Broken Hero Sword, Ichor) ->
+  Plaguebringer Wall (104, Chloro+Beetle Husk, Venom+Cursed Inferno) -> Luminite
+  Barrier (128, Luminite, Ichor + regen aliados) -> Eternal Aegis (156, capstone
+  Eternia, Shadowflame+Ichor+regen; se craftea desde Luminite Barrier + 4 fragmentos).
+  DPS de aura ~225 (Mythril) a ~670 (Eternal), x1.8 con el Escudero.
+- OBTENCION 2ª pasada (`Content/Globals/ShieldDropsGlobalNPC.cs`,
+  `Content/Systems/ShieldChestLoot.cs`, `tests/ShieldObtentionSourceSmokeTest.ps1`):
+  - Drop-only (sin receta): Corrupt Shield <- Brain of Cthulhu (1/2) y Eater of Worlds
+    (OnKill 1/2, con guarda de ultimo segmento).
+  - Crafteable + drop bonus: Hallowed Bulwark <- jefes mecanicos (1/4); Nightfall
+    Barrier <- Mothron (1/4); Plaguebringer Wall <- Plantera (1/3).
+  - Cofre bonus: Glacial Shield sembrado en cofres subterraneos (no-Dungeon), sigue
+    crafteable.
+- TrainingShield (premio de promocion Guardian): convertido a IShieldWeapon/aura
+  (Generic, dmg 55, pulse 15, radio 90), sigue LightRed, no-crafteable y locked a
+  Guardian (CanUseItem + tooltip). Es el escudo insignia del Escudero, entra en
+  hardmode. Se beneficia del moldeado del arbol de Defensa. Compatible con los tests
+  de balance/promocion (no verifican DamageType).
+- Tests: ShieldArsenal reescrito -> valida ambas lineas (dano monotono + tope por tier,
+  channel, aura Generic, no-swing, una sola aura, no-lock, efecto de personalidad,
+  drop-only sin receta) + que HM supera a pre-HM; ShieldObtention valida el mapeo
+  jefe->escudo, el cofre y el no-crafteo. Suite PASS=83.
+- Verificacion: build 0/0; suite PASS=83. SIN probar in-game.
+- Pendiente unico pedido fuera: recurso de Resistencia.
+
+## 2026-07-10 - El arbol de Defensa moldea el aura del Escudero
+
+- Objetivo (usuario): mejorar la rama de pasivas de Defensa para el Escudero. Se
+  mantuvo la identidad tanque (todos los nodos siguen dando def/DR/vida plana en
+  EterniaStatsPlayer -- lo exige PassiveTreeDepth y es el fantasy del Guardian) y
+  ADEMAS cada nodo ahora moldea el aura del escudo (gated a Guardian activo).
+- Mapeo (leido en GuardianPlayer via HasDefensePassive, solo si IsActiveGuardian):
+  - Daño de aura: Iron Wall +10%, Fortress Body +15%, Aegis +20% (sobre el +25% base
+    del Escudero + escalado con Defensa).
+  - Radio de aura: Shield Training +10%, Bulwark +15% (sobre el +15% base).
+  - Velocidad de pulso: Unbreakable y Stonewall, cada uno *0.85 (con ambos ~28% mas
+    rapido). Nuevo AuraPulseMultiplier(), usado por el proyectil.
+  - Efecto por pulso: Last Bastion -> el aura tambien te cura un poco cada pulso
+    (ApplyGuardianAuraPulse, solo en el cliente del owner).
+- No se toco el conteo de nodos (WarriorPassives sigue en 49) ni el keystone
+  (Immovable Object queda como tanque puro); solo se enriquecieron descripciones +
+  logica de aura. Los efectos planos permanecen para cualquier Guerrero; el moldeado
+  del aura es exclusivo del Escudero.
+- Tests: ShieldAura verifica que GuardianPlayer lee los 8 nodos de Defensa para el
+  aura y que el proyectil usa AuraPulseMultiplier + ApplyGuardianAuraPulse. Suite
+  PASS=82.
+- Verificacion: build 0/0; suite PASS=82. SIN probar in-game.
+
+## 2026-07-10 - Balance de escudos: viables para matar jefes (DPS + Escudero + guardia)
+
+- Objetivo (usuario): que los jugadores tambien puedan derrotar JEFES con escudos, no
+  solo hacer control de grupos. El cuello de botella era el DPS a un solo objetivo.
+- Radio: subido en dos pasos a peticion del usuario. Ahora Wooden 72 ... Holy 104 px
+  (~4.5 a ~6.5 tiles); el Escudero suma +15% encima.
+- Knockback: los pulsos ahora aplican knockback (Item.knockBack 0->3 por escudo, el
+  pulso usa Projectile.knockBack en vez de 0f). Con el radio grande el empujon no saca
+  al enemigo del aura: queda orbitando en el borde, recibiendo daño sin tocarte. Los
+  jefes son resistentes al knockback (comportamiento vanilla).
+- DPS a un objetivo (daño de aura = daño / intervalo de pulso). Se subio daño y se
+  acelero el pulso, y luego se subio el daño otra vez (~+60%) a peticion del usuario:
+  - Wooden 6->16 (/20t, ~48 DPS); Iron 9->21 (~63); Corrupt 11->27 (/18, ~90,
+    +Ichor); Glacial 12->31 (~103, +Slow); Ember 14->36 (/16, ~135, +fuego); Holy
+    16->44 (~165, +regen). Con el Escudero (arbol completo ~1.8x) el Holy ronda ~300
+    DPS de aura en area. Caps del test subidos a 20/26/32/36/42/50.
+- Payoff del Escudero (GuardianPlayer.AuraDamageMultiplier): ahora +25% PLANO de daño
+  de aura (es su arma) + escalado con Defensa +1%/4 def. Un Escudero a 40 def -> +35%;
+  el Holy Shield en su mano ~= 90*1.35 ~ 121 DPS de aura.
+- Bonus de GUARDIA (nuevo `Content/Players/ShieldPlayer.cs`, cualquier clase): mientras
+  el aura este activa (posee el DefensiveAuraProjectile) -> +10% endurance. Permite
+  tanquear el "abrazo" al jefe. Se prefirio sobre knockback (que empujaria enemigos
+  fuera del radio pequeño).
+- Tests: caps de daño del ShieldArsenal subidos (12/15/18/20/24/28); ShieldAura verifica
+  el +25% plano del Escudero y el guard DR de ShieldPlayer. Suite PASS=82.
+- Verificacion: build 0/0; suite PASS=82. SIN probar in-game (numeros a validar).
+
+## 2026-07-10 - Fix: los escudos (Generic) ya no disparan la penalizacion de Soul
+
+- Sintoma (reportado por el usuario): al usar un escudo (p. ej. Corrupt Shield) el
+  sistema de Soul lo trataba como "arma de otra clase" y aplicaba la penalizacion de
+  muerte (SoulViolation), matando al jugador.
+- Causa: `SoulRules.IsWeaponAllowed` mapea DamageClass -> clase. Un escudo es
+  DamageClass.Generic, que no es Melee/Ranged/Magic/Summon, asi que TODA clase lo
+  rechazaba (isMelee/isMagic/... = false) -> penalizacion. Contradecia el diseño
+  ("cualquier clase puede usar escudos").
+- Arreglo (sin quitar la penalizacion): un arma class-neutral (DamageClass.Generic)
+  no pertenece a ninguna clase, por lo que nunca traiciona a un Soul -> se permite
+  para todos. Se uso igualdad EXACTA (`item.DamageType == DamageClass.Generic`), no
+  CountsAsClass, porque toda clase real deriva de Generic y CountsAsClass(Generic)
+  haria pasar tambien a una espada melee.
+- Nota de compatibilidad: el test de comportamiento compila SoulRules.cs en
+  aislamiento (solo con SoulId.cs), por eso el fix NO referencia IShieldWeapon; usa
+  solo DamageClass.Generic (disponible en esa compilacion).
+- Tests: `SoulRulesBehaviorSmokeTest` amplia con aserciones runtime (Generic permitido
+  por Warrior/Ranger/Mage/Summoner y es combat item). Suite PASS=82; el test de
+  comportamiento compila+ejecuta la logica real y pasa.
+- Archivos: Content/Souls/SoulRules.cs, tests/SoulRulesBehaviorSmokeTest.ps1.
+
+## 2026-07-10 - Subclase Escudero: categoria de arma ESCUDO con Aura Defensiva
+
+- Objetivo (spec del usuario): los Escudos son una categoria de arma distinta. Clic
+  izquierdo mantenido levanta el escudo; tras ~0.5s proyecta un Aura Defensiva que hace
+  daño continuo a enemigos en un radio pequeño mientras se sostenga; al soltar
+  desaparece. No hay golpe melee tradicional. Cualquier clase puede usarlos; el
+  Escudero (Guardian) saca el maximo.
+- Infra nueva: `Content/Items/IShieldWeapon.cs` (interfaz: AuraPulseInterval,
+  AuraRadius, AuraColor, OnAuraHit, OnAuraPulse) y
+  `Content/Projectiles/Guardian/DefensiveAuraProjectile.cs` (proyectil canalizado:
+  spin-up 30 ticks, se pega al owner, pulsos de daño manuales Generic por radio, aplica
+  efecto del escudo, se mata al soltar el canal; solo el owner hace daño para MP).
+- Payoff del Escudero: `GuardianPlayer.AuraDamageMultiplier()` (aura escala con Defensa,
+  +1%/5 def) y `AuraRadiusMultiplier()` (+15% radio), solo si IsActiveGuardian.
+- LINEA DE ESCUDOS pre-hardmode (6, crafteables, NO subclass-locked, Generic):
+  Wooden Shield (6, aura fisica basica) -> Iron Shield (9, mas daño) -> Corrupt Shield
+  (11, Ichor = debilita defensa enemiga) -> Glacial Shield (12, Slow+Frostburn) ->
+  Ember Shield (14, En llamas) -> Holy Shield (16, daña + regen ligera a aliados via
+  OnAuraPulse). Daño de aura monotono creciente.
+- Cada escudo: Item.channel=true, noMelee, useStyle Shoot, dispara UNA aura persistente
+  (guarda ownedProjectileCounts[type]==0), UseSound=null (evita sonido repetido).
+- Tests: `ShieldAuraSourceSmokeTest` (canal, spin-up 30, Kill al soltar, pulsos Generic,
+  lee IShieldWeapon, aplica efectos, payoff Guardian con Defensa) y
+  `ShieldArsenalSourceSmokeTest` (6 escudos: IShieldWeapon, channel, aura Generic,
+  no-swing, una sola aura, crafteo, no-lock, efecto de personalidad, daño monotono).
+- Verificacion: build 0/0; suite PASS=82. SIN probar in-game.
+- Pendientes (proximas pasadas): rediseñar la rama de pasivas de Defensa para que
+  moldee el aura (daño/radio/efectos/duracion de guardia); recurso de Resistencia;
+  linea de escudos de hardmode; 2ª pasada de obtencion (drops/cofres); convertir el
+  TrainingShield (premio de promocion) al aura; UI/HUD del aura; arte real.
+
+## 2026-07-10 - Obtencion 2ª pasada del arsenal de puños (drops de jefe/evento/cofre)
+
+- Objetivo (spec del usuario): igual que el Espadachin, atar las armas de puños al
+  jefe/zona/evento que les corresponde en vez de un simple gate de materiales.
+- Archivos nuevos: `Content/Globals/FighterDropsGlobalNPC.cs` (drops via ModifyNPCLoot
+  + OnKill), `Content/Systems/FighterChestLoot.cs` (semilla en cofres subterraneos),
+  `tests/FighterObtentionSourceSmokeTest.ps1`. Sin receta ahora: ProspectorsGauntlets
+  y BloodfeastGauntlets (se les quito AddRecipes).
+- DROP-ONLY (sin receta):
+  - Bloodfeast Gauntlets (final pre-WoF) -> jefe del mal: Brain of Cthulhu (1/2 via
+    ModifyNPCLoot) y Eater of Worlds (1/2 via OnKill, con guarda de ultimo segmento
+    para que un gusano no lo suelte por cada cabeza). Espeja a DreadReaver.
+  - Prospector's Gauntlets (oro) -> cofres subterraneos (no-Dungeon, ~1/4 de hasta 3
+    cofres en PostWorldGen) + goteo de Undead Miner (1/8, tematico minero). Espeja a
+    BonewardenSabre (cofre + goteo).
+- CRAFTEABLE + drop bonus (doble via):
+  - Thornfist Gauntlets -> Queen Bee (1/3).
+  - Nightfall Gauntlets -> Mothron / Eclipse Solar (1/4).
+  - Plaguebringer Fists -> Plantera (1/3).
+- Reserva de espacio: FighterChestLoot excluye el Dungeon (ese espacio es del
+  Bonewarden Sabre del Espadachin).
+- Tests: FistArsenal ahora marca DropOnly (Prospector's/Bloodfeast) y verifica que NO
+  son crafteables; FighterObtention valida el mapeo jefe->arma, el cofre y el
+  no-crafteo. Suite PASS=80.
+- Verificacion: build 0/0; suite PASS=80. SIN probar in-game.
+
+## 2026-07-10 - Arsenal completo de puños del Peleador (pre + hardmode) con efectos
+
+- Objetivo (spec del usuario): las armas del Peleador representan presion constante a
+  corto alcance, NO golpe unico devastador. Todas comparten mecanicas base; solo
+  cambian stats, tier y un efecto secundario. Regla central: **un arma NUNCA toca el
+  Combo** -- el Combo lo potencia solo la subclase; las armas evolucionan en
+  dano/velocidad/efecto.
+- Mecanicas base compartidas (todas): lanzan `FighterPunchProjectile` (+1 Combo por
+  golpe, mecanica de distancia 100%->50%), Melee, useTime bajo (rapidas), knockback
+  muy bajo (<=3), crafteables, NO subclass-locked.
+- Infra nueva: `Content/Items/IFistWeapon.cs` (interfaz marcadora con
+  `OnPunchHit(owner, target)` de cuerpo vacio por defecto). El puñetazo, al golpear,
+  lee el arma equipada (`HeldItem.ModItem is IFistWeapon`) y ejecuta su efecto
+  secundario -- que jamas modifica el Combo.
+- LINEA PRE-HARDMODE (6): Padded Fists (8, inicio, sin efecto) -> Iron Knuckles (11,
+  mineral) -> Prospector's Gauntlets (15, oro) -> Thornfist Gauntlets (17, jungla,
+  Envenenado) -> Molten Knuckles (20, inframundo, En llamas) -> Bloodfeast Gauntlets
+  (24, final pre-WoF, robo de vida ligero).
+- LINEA HARDMODE (6): Mythril Brawlers (42, mineral HM, Quemadura Helada) -> Hallowed
+  Knuckles (54, bioma/Hallow, Fuego Maldito) -> Nightfall Gauntlets (64,
+  evento/Eclipse via Broken Hero Sword, Icor) -> Plaguebringer Fists (78, jefe/Chloro
+  +Beetle Husk, Veneno+Fuego Maldito) -> Luminite Knuckles (98, Luminite, Icor + robo
+  de vida) -> Eternal Fury (116, capstone Eternia, Shadowflame+Icor+robo de vida;
+  se craftea desde Luminite Knuckles + 4 fragmentos).
+- Cableo: `FighterPunchProjectile.OnHitNPC` invoca `IFistWeapon.OnPunchHit` tras
+  sumar Combo. Efectos por AddBuff (OnFire/Poisoned/Frostburn/CursedInferno/Ichor/
+  Venom/ShadowFlame) o lifesteal (statLife+HealEffect con probabilidad).
+- Tests: `FistArsenalSourceSmokeTest` reescrito -> valida ambas lineas (dano
+  monotono + tope por tier, useTime<=15, kb<=3, crafteo, no subclass-lock, efecto via
+  IFistWeapon.OnPunchHit, y que NINGUN arma manipula el Combo en codigo) + que el
+  puñetazo cablea OnPunchHit.
+- Verificacion: build 0/0; suite PASS=79. SIN probar in-game.
+- Pendientes: numeros/efectos a tunear; arte real de cada arma (todas reusan el
+  placeholder TrainingGauntlet); drops de jefe/evento y cofres (2ª pasada de
+  obtencion, como se hizo con el Espadachin) aun no hechos -- por ahora todo es
+  crafteo.
+
+## 2026-07-10 - Peleador pre-hardmode: Combo como CONTADOR + armas de puños
+
+- Objetivo (spec del usuario): en pre-hardmode el jugador ya usa armas de puños y
+  aprende el Combo, pero el Combo NO da nada (solo contador). Al promover a Peleador
+  (post Muro de Carne) el MISMO combo empieza a interactuar con las pasivas -> la
+  progresion se siente natural, no un sistema nuevo en hardmode.
+- Arquitectura (paralela al sangrado): el Combo es una mecanica de clase WARRIOR (lo
+  construye cualquier Guerrero con puños), y el payoff es de SUBCLASE (Peleador).
+- Archivos: `Content/Players/FighterPlayer.cs` (contador Warrior-wide, efectos
+  Fighter-gated), `Content/Projectiles/FighterPunchProjectile.cs` (gate ->
+  IsActiveWarrior; la distancia funciona pre-hardmode), armas nuevas
+  `Weapons/Fighter/{PaddedFists,IronKnuckles,ProspectorsGauntlets,MoltenKnuckles}.cs`;
+  `tests/FistArsenalSourceSmokeTest.ps1` (nuevo), `FighterComboSourceSmokeTest` y
+  `SubclassRuntimeGatingSourceSmokeTest` ajustados. +hjson.
+- Cambios:
+  - `FighterPlayer`: el contador (build/decay, cap 20, ventana 2.5s) corre para
+    cualquier Guerrero (IsActiveWarrior). TODO el payoff (dano/vel/move por combo,
+    generacion, cap+/duracion+ por pasivas, Frenesi, perdida al recibir dano) esta
+    gated a IsActiveFighter -> pre-hardmode el combo no modifica ningun stat.
+  - `FighterPunchProjectile`: gate a IsActiveWarrior. La mecanica de distancia
+    (100% pegado -> 50% al final del alcance) aplica desde pre-hardmode y no cambia
+    en hardmode. El multiplicador de combo es 1 hasta promover.
+  - LINEA DE PUÑOS pre-hardmode (crafteable, NO subclass-locked): Padded Fists (8,
+    inicio) -> Iron Knuckles (11) -> Prospector's Gauntlets (15) -> Molten Knuckles
+    (20, inframundo). Todas lanzan el puñetazo. El Training Gauntlet sigue siendo el
+    premio de promocion Fighter-locked (hardmode).
+- Verificacion: build 0/0; suite PASS=79. SIN probar in-game.
+- Pendientes: numeros a tunear; FighterComboUI aun con valores viejos (cosmetico);
+  arte real de puños.
+
+## 2026-07-10 - Rediseno del Peleador (Fighter): Combo pasivo-driven + Frenesi + Remate
+
+- Objetivo (spec del usuario): el Peleador es un brawler agresivo cuyo Combo NO da
+  bonos por si solo; TODO el arbol de pasivas define que hace el Combo. Base 20
+  acumulaciones / 2.5s (antes 50 / 2s).
+- Archivos: `Content/Players/FighterPlayer.cs` (reescrito),
+  `Content/Players/FighterSkillPlayer.cs` (nuevo, Remate),
+  `Content/Projectiles/FighterPunchProjectile.cs`, `Content/Passives/PassiveRegistry.cs`
+  (descripciones rama Combo + keystone), `Content/Players/EterniaStatsPlayer.cs`
+  (se quitaron los efectos planos de los nodos Combo), `Content/Players/KeystonePlayer.cs`
+  (caso Combo -> lo maneja FighterPlayer), `Content/UI/SoulUI.cs` (Combo x/max dinamico);
+  `tests/FighterComboSourceSmokeTest.ps1` (nuevo) + PassiveTreeDepth ajustado.
+- Cambios:
+  - Combo pasivo-driven: por si solo no hace nada. Cada nodo de la rama Combo cambia
+    su comportamiento (leidos en FighterPlayer): Combo Instinct / Limit Breaker =
+    +1% dano melee por acumulacion c/u; Flow State = +0.6% vel ataque por acum.;
+    Perfect Rhythm = +0.5% move por acum.; Adrenaline Rush = +1.5s ventana; Unbroken
+    Chain = +10 al cap; Rapid Blows = crit/pegado dan +1 combo; Thousand Cuts =
+    conservas el combo al recibir dano (baseline lo parte a la mitad).
+  - Keystone Perpetual Motion -> FRENESI: mientras mantengas el combo maximo,
+    +15% dano / +10% vel ataque / +8% reduccion de dano.
+  - REMATE (nuevo FighterSkillPlayer): tecla Skill gasta TODO el combo en un golpe
+    AoE a bocajarro escalado por el combo (30 + combo*10), con cooldown compartido.
+  - Distancia recalibrada: bocajarro 100% (los bonos >100% vienen de pasivas),
+    lejos 50% -> obliga a pelear pegado.
+- Verificacion: build 0/0; suite PASS=78. SIN probar in-game.
+- Pendientes/riesgos: (a) numeros a tunear in-game (por-combo, frenesi, remate,
+  penalizacion al recibir dano). (b) FighterComboUI muestra el combo pero sus
+  umbrales de color y la barra de timer usan valores viejos (50/120) -> cosmetico.
+  (c) el Peleador sigue con UNA sola arma (Training Gauntlet); linea de guanteletes
+  pendiente. (d) un Guerrero no-Peleador que compre el keystone Combo ya no recibe
+  su viejo bono plano.
+
 ## 2026-07-09 - Tajo custom (CrimsonSlash) unico por espada
 
 - Objetivo (peticion del usuario): personalizar el proyectil (era el EnchantedBeam
