@@ -132,6 +132,7 @@ Item magicWeapon = MakeItem(10, DamageClass.Magic);
 Item summonWeapon = MakeItem(10, DamageClass.Summon);
 Item whipWeapon = MakeItem(10, DamageClass.SummonMeleeSpeed);
 Item yoyoWeapon = MakeItem(10, DamageClass.MeleeNoSpeed);
+Item shieldWeapon = MakeItem(10, DamageClass.Generic);
 
 AssertTrue(SoulRules.IsCombatItem(meleeWeapon), "damaging melee item is combat");
 AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Warrior, meleeWeapon), "warrior allows melee");
@@ -144,6 +145,14 @@ AssertFalse(SoulRules.IsWeaponAllowed(SoulId.Mage, summonWeapon), "mage rejects 
 AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Summoner, summonWeapon), "summoner allows summon");
 AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Summoner, whipWeapon), "summoner allows whips");
 AssertFalse(SoulRules.IsWeaponAllowed(SoulId.Summoner, meleeWeapon), "summoner rejects melee");
+
+// Shields are DamageClass.Generic (class-neutral): usable by EVERY Soul without
+// triggering the wrong-weapon penalty.
+AssertTrue(SoulRules.IsCombatItem(shieldWeapon), "generic shield is a combat item");
+AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Warrior, shieldWeapon), "warrior allows generic shield");
+AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Ranger, shieldWeapon), "ranger allows generic shield");
+AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Mage, shieldWeapon), "mage allows generic shield");
+AssertTrue(SoulRules.IsWeaponAllowed(SoulId.Summoner, shieldWeapon), "summoner allows generic shield");
 
 Item tool = MakeItem(4, DamageClass.Melee);
 tool.pick = 35;

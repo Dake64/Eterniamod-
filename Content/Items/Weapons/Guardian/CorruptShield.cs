@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -6,26 +5,28 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 using Eternia.Content.Items;
-using Eternia.Content.Items.Weapons.Promotion;
 
 namespace Eternia.Content.Items.Weapons.Guardian
 {
-    // The Guardian (Escudero) promotion reward: the signature shield that channels a
-    // strong Defensive Aura. Unlike the open shield line, this one is locked to the
-    // Guardian subclass (it is the promotion reward), and it benefits fully from the
-    // Escudero's Defense-tree aura shaping.
-    public class TrainingShield : ModItem, IShieldWeapon
+    // Evil-biome tier: the aura weakens the enemies it touches (Ichor -> less defense),
+    // so they take more damage from everyone. Not subclass-locked.
+    // Obtention (2nd pass): NOT craftable -- a drop from the evil-biome boss (Brain of
+    // Cthulhu / Eater of Worlds), see ShieldDropsGlobalNPC.
+    // Reuses the TrainingShield texture until real art exists.
+    public class CorruptShield : ModItem, IShieldWeapon
     {
-        // --- Aura identity (hardmode-entry tier) ---
-        public int AuraPulseInterval => 15;
-        public float AuraRadius => 90f;
-        public Color AuraColor => new Color(210, 200, 150);
+        public override string Texture =>
+            "ETERNIA/Content/Items/Weapons/Guardian/TrainingShield";
+
+        public int AuraPulseInterval => 18;
+        public float AuraRadius => 84f;
+        public Color AuraColor => new Color(150, 90, 170);
 
         public override void SetDefaults()
         {
-            Item.width = 40;
-            Item.height = 40;
-            Item.damage = 55;
+            Item.width = 36;
+            Item.height = 36;
+            Item.damage = 27;
             Item.DamageType = DamageClass.Generic;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -35,17 +36,18 @@ namespace Eternia.Content.Items.Weapons.Guardian
             Item.noUseGraphic = false;
             Item.autoReuse = false;
             Item.knockBack = 3f;
-            Item.value = Item.buyPrice(gold: 2);
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = Item.buyPrice(silver: 80);
+            Item.rare = ItemRarityID.Green;
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType
                 <Eternia.Content.Projectiles.Guardian.DefensiveAuraProjectile>();
             Item.shootSpeed = 0f;
         }
 
-        public override bool CanUseItem(Player player)
+        // Personality: weaken foes' defense (a real NPC-side "Weakness").
+        public void OnAuraHit(Player owner, NPC target)
         {
-            return SubclassLockHelper.PlayerHasSubclass(player, "Guardian");
+            target.AddBuff(BuffID.Ichor, 240); // 4s
         }
 
         public override bool Shoot(
@@ -67,13 +69,6 @@ namespace Eternia.Content.Items.Weapons.Guardian
             return false;
         }
 
-        public override void ModifyTooltips(
-            List<TooltipLine> tooltips)
-        {
-            SubclassLockHelper.AddTooltip(
-                Mod,
-                tooltips,
-                "Guardian");
-        }
+        // No recipe: dropped by the evil-biome boss (see ShieldDropsGlobalNPC).
     }
 }

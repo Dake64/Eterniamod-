@@ -137,6 +137,89 @@ namespace Eternia.Content.Players
             }
         }
 
+        // =================================================
+        // SHIELD AURA PAYOFF (Escudero)
+        // =================================================
+
+        // Any class can wield a shield and project its Defensive Aura; the Guardian is
+        // the one who gets the most out of it. Payoff = a flat +25% aura damage (it is
+        // the Escudero's own weapon), the aura scaling with Defense ("Escalado del daño
+        // con la Defensa", +1% per 4 defense), AND the Defense passive tree shaping the
+        // aura (damage/radius/pulse-speed/effects). All aura bonuses are Guardian-only.
+        public float AuraDamageMultiplier()
+        {
+            if (!IsActiveGuardian())
+            {
+                return 1f;
+            }
+
+            float mult = 1.25f + (Player.statDefense * 0.01f / 4f);
+
+            if (HasDefensePassive("Iron Wall")) mult += 0.10f;
+            if (HasDefensePassive("Fortress Body")) mult += 0.15f;
+            if (HasDefensePassive("Aegis")) mult += 0.20f;
+
+            return mult;
+        }
+
+        // The Guardian projects a larger aura; the Defense tree widens it further.
+        public float AuraRadiusMultiplier()
+        {
+            if (!IsActiveGuardian())
+            {
+                return 1f;
+            }
+
+            float mult = 1.15f;
+
+            if (HasDefensePassive("Shield Training")) mult += 0.10f;
+            if (HasDefensePassive("Bulwark")) mult += 0.15f;
+
+            return mult;
+        }
+
+        // The Defense tree makes the Guardian's aura pulse faster (<1 = shorter gap).
+        public float AuraPulseMultiplier()
+        {
+            if (!IsActiveGuardian())
+            {
+                return 1f;
+            }
+
+            float mult = 1f;
+
+            if (HasDefensePassive("Unbreakable")) mult *= 0.85f;
+            if (HasDefensePassive("Stonewall")) mult *= 0.85f;
+
+            return mult;
+        }
+
+        // Per-pulse Guardian passive effects: Last Bastion sustains the wielder while
+        // guarding. Called by the aura on the owner's client only.
+        public void ApplyGuardianAuraPulse(Player owner)
+        {
+            if (!IsActiveGuardian())
+            {
+                return;
+            }
+
+            if (HasDefensePassive("Last Bastion") &&
+                owner.statLife < owner.statLifeMax2 &&
+                Main.rand.NextBool(2))
+            {
+                owner.statLife += 2;
+                owner.HealEffect(2);
+            }
+        }
+
+        private bool HasDefensePassive(string node)
+        {
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+
+            return stats.HasActivePassive(soul.ActiveSoul, node);
+        }
+
         public bool IsActiveGuardian()
         {
             var soul =

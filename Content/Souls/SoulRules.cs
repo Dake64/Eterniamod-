@@ -45,6 +45,16 @@ namespace Eternia.Content.Souls
                 return true;
             }
 
+            // A class-neutral (Generic) weapon belongs to NO class, so it can never
+            // betray a Soul. This is how the Shield category (DamageClass.Generic) stays
+            // usable by EVERY class without weakening the wrong-weapon penalty for real
+            // class weapons. Exact equality on purpose: every real class derives from
+            // Generic, so CountsAsClass(Generic) would wrongly match a melee sword too.
+            if (item.DamageType == DamageClass.Generic)
+            {
+                return true;
+            }
+
             bool isMelee =
                 IsDamageClass(item, DamageClass.Melee) ||
                 IsDamageClass(item, DamageClass.MeleeNoSpeed);

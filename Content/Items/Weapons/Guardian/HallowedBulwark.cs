@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -6,26 +5,25 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 using Eternia.Content.Items;
-using Eternia.Content.Items.Weapons.Promotion;
 
 namespace Eternia.Content.Items.Weapons.Guardian
 {
-    // The Guardian (Escudero) promotion reward: the signature shield that channels a
-    // strong Defensive Aura. Unlike the open shield line, this one is locked to the
-    // Guardian subclass (it is the promotion reward), and it benefits fully from the
-    // Escudero's Defense-tree aura shaping.
-    public class TrainingShield : ModItem, IShieldWeapon
+    // Hardmode biome tier (Hallow, post-mech). Aura inflicts Cursed Inferno. Not
+    // subclass-locked. Reuses the TrainingShield texture until real art exists.
+    public class HallowedBulwark : ModItem, IShieldWeapon
     {
-        // --- Aura identity (hardmode-entry tier) ---
-        public int AuraPulseInterval => 15;
+        public override string Texture =>
+            "ETERNIA/Content/Items/Weapons/Guardian/TrainingShield";
+
+        public int AuraPulseInterval => 16;
         public float AuraRadius => 90f;
-        public Color AuraColor => new Color(210, 200, 150);
+        public Color AuraColor => new Color(240, 220, 120);
 
         public override void SetDefaults()
         {
             Item.width = 40;
             Item.height = 40;
-            Item.damage = 55;
+            Item.damage = 74;
             Item.DamageType = DamageClass.Generic;
             Item.useTime = 20;
             Item.useAnimation = 20;
@@ -35,17 +33,17 @@ namespace Eternia.Content.Items.Weapons.Guardian
             Item.noUseGraphic = false;
             Item.autoReuse = false;
             Item.knockBack = 3f;
-            Item.value = Item.buyPrice(gold: 2);
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = Item.sellPrice(gold: 6);
+            Item.rare = ItemRarityID.Lime;
             Item.UseSound = null;
             Item.shoot = ModContent.ProjectileType
                 <Eternia.Content.Projectiles.Guardian.DefensiveAuraProjectile>();
             Item.shootSpeed = 0f;
         }
 
-        public override bool CanUseItem(Player player)
+        public void OnAuraHit(Player owner, NPC target)
         {
-            return SubclassLockHelper.PlayerHasSubclass(player, "Guardian");
+            target.AddBuff(BuffID.CursedInferno, 240);
         }
 
         public override bool Shoot(
@@ -67,13 +65,13 @@ namespace Eternia.Content.Items.Weapons.Guardian
             return false;
         }
 
-        public override void ModifyTooltips(
-            List<TooltipLine> tooltips)
+        public override void AddRecipes()
         {
-            SubclassLockHelper.AddTooltip(
-                Mod,
-                tooltips,
-                "Guardian");
+            CreateRecipe()
+                .AddIngredient(ItemID.HallowedBar, 14)
+                .AddIngredient(ItemID.SoulofLight, 8)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
     }
 }
