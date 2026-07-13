@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
+using Eternia.Content.Necromancy;
 using Eternia.Content.Projectiles.Necromancer;
 using Eternia.Content.Souls;
 
@@ -18,6 +19,9 @@ namespace Eternia.Content.Players
         // Fraction of max life currently reserved by active undead (0..0.9).
         public float ReservedLifeFraction;
 
+        // The equipped (held / last-held) Grimoire that reshapes the whole army.
+        public ISpecializedGrimoire ActiveGrimoire;
+
         public override void PostUpdateEquips()
         {
             ActiveNecroSummons = 0;
@@ -28,6 +32,16 @@ namespace Eternia.Content.Players
             {
                 return;
             }
+
+            // The held Grimoire is the "main weapon": it reshapes the whole army. Keep the
+            // last one active so switching to a spell weapon does not reset your style.
+            if (Player.HeldItem?.ModItem is ISpecializedGrimoire held)
+            {
+                ActiveGrimoire = held;
+            }
+
+            float reserveMult = ActiveGrimoire?.ReserveMult ?? 1f;
+            float manaMult = ActiveGrimoire?.ManaMult ?? 1f;
 
             float reserve = 0f;
 
@@ -45,6 +59,10 @@ namespace Eternia.Content.Players
                     reserve += minion.ReservePercent / 100f;
                 }
             }
+
+            // The Grimoire scales the mana toll and the Necromancer's defense.
+            ManaDrainPerSecond = (int)(ManaDrainPerSecond * manaMult);
+            Player.statDefense += ActiveGrimoire?.DefenseDelta ?? 0;
 
             // Shadow affinity, Bone Conduit and milestones all EASE the life toll, so a
             // deeper Necromancer fields more undead for the same reserved life.
@@ -66,7 +84,7 @@ namespace Eternia.Content.Players
                 0.3f,
                 Player.GetModPlayer<MilestonePlayer>().Milestones * 0.03f);
 
-            reserve *= ease;
+            reserve *= ease * reserveMult;
 
             ReservedLifeFraction = System.Math.Min(0.9f, reserve);
 

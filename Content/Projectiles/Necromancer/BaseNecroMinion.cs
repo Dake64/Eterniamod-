@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
+using Eternia.Content.Necromancy;
 using Eternia.Content.Players;
 
 namespace Eternia.Content.Projectiles.Necromancer
@@ -20,6 +21,14 @@ namespace Eternia.Content.Projectiles.Necromancer
         public virtual int ReservePercent => 15;
 
         public virtual float MoveSpeed => 6f;
+
+        // Boss echoes (Guardian Slime, Eye Spirit...) are boosted/nerfed separately by
+        // the Dead King grimoire.
+        public virtual bool IsBossEcho => false;
+
+        protected ISpecializedGrimoire Grimoire =>
+            Main.player[Projectile.owner]
+                .GetModPlayer<NecromancerPlayer>().ActiveGrimoire;
 
         public override void SetDefaults()
         {
@@ -58,11 +67,16 @@ namespace Eternia.Content.Projectiles.Necromancer
             Projectile.timeLeft = 18000;
             Projectile.alpha = player.statMana <= 0 ? 120 : 0;
 
+            // The equipped Grimoire resizes the undead.
+            Projectile.scale = Grimoire?.SizeMult ?? 1f;
+
             Move(player);
         }
 
         private void Move(Player player)
         {
+            float speed = MoveSpeed * (Grimoire?.MoveSpeedMult ?? 1f);
+
             Vector2 idle = player.Center + new Vector2(-50f, -40f);
 
             if (Vector2.Distance(Projectile.Center, idle) > 1400f)
@@ -80,7 +94,7 @@ namespace Eternia.Content.Projectiles.Necromancer
                     dir.Normalize();
                 }
 
-                Projectile.velocity = dir * MoveSpeed;
+                Projectile.velocity = dir * speed;
             }
             else
             {
@@ -89,12 +103,53 @@ namespace Eternia.Content.Projectiles.Necromancer
                 if (dir.Length() > 20f)
                 {
                     dir.Normalize();
-                    Projectile.velocity = dir * (MoveSpeed * 0.7f);
+                    Projectile.velocity = dir * (speed * 0.7f);
                 }
                 else
                 {
                     Projectile.velocity *= 0.9f;
                 }
+            }
+        }
+
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
+        {
+            ISpecializedGrimoire g = Grimoire;
+
+            if (g == null)
+            {
+                return;
+            }
+
+            // The Grimoire scales undead damage; the Dead King splits it between boss
+            // echoes and common undead.
+            modifiers.SourceDamage *=
+                g.SummonDamageMult * (IsBossEcho ? g.BossEchoMult : g.CommonMult);
+        }
+
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            ISpecializedGrimoire g = Grimoire;
+
+            if (g == null)
+            {
+                return;
+            }
+
+            if (g.OnHitDebuff >= 0)
+            {
+                target.AddBuff(g.OnHitDebuff, 180);
+            }
+
+            Player owner = Main.player[Projectile.owner];
+
+            if (g.Lifesteal &&
+                owner.whoAmI == Main.myPlayer &&
+                owner.statLife < owner.statLifeMax2 &&
+                Main.rand.NextBool(3))
+            {
+                owner.statLife += 2;
+                owner.HealEffect(2);
             }
         }
 

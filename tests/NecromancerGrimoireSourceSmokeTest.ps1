@@ -13,7 +13,7 @@ $collection = Get-Content -Raw (Join-Path $c "Players\NecromancerCollectionPlaye
 $condition = Get-Content -Raw (Join-Path $c "Necromancy\SoulDropCondition.cs")
 $killNpc = Get-Content -Raw (Join-Path $c "Globals\NecromancerKillGlobalNPC.cs")
 $soul = Get-Content -Raw (Join-Path $c "Items\Souls\EnemySoul.cs")
-$grimoire = Get-Content -Raw (Join-Path $c "Items\Weapons\Summoner\GrimoireOfDeath.cs")
+$grimoire = Get-Content -Raw (Join-Path $c "Items\Weapons\Summoner\SpecializedGrimoire.cs")
 
 # --- Registry: creatures with a source, a threshold, a soul and a minion ------
 foreach ($id in @("Skeleton", "Zombie", "DemonEye")) {

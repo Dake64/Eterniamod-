@@ -10,7 +10,7 @@ $c = Join-Path $repoRoot "Content"
 $rank = Get-Content -Raw (Join-Path $c "Necromancy\GrimoireRank.cs")
 $registry = Get-Content -Raw (Join-Path $c "Necromancy\GrimoireRegistry.cs")
 $collection = Get-Content -Raw (Join-Path $c "Players\NecromancerCollectionPlayer.cs")
-$grimoire = Get-Content -Raw (Join-Path $c "Items\Weapons\Summoner\GrimoireOfDeath.cs")
+$grimoire = Get-Content -Raw (Join-Path $c "Items\Weapons\Summoner\SpecializedGrimoire.cs")
 
 # --- Rank tracks progression, pages scale 3/5/7/10 ---------------------------
 if ($rank -notmatch "NPC\.downedMoonlord" -or

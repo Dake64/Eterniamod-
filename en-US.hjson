@@ -319,6 +319,56 @@ Mods: {
 				Tooltip: ""
 			}
 
+			WarGrimoire: {
+				DisplayName: War Grimoire
+				Tooltip: ""
+			}
+
+			SacrificeGrimoire: {
+				DisplayName: Grimoire of Sacrifice
+				Tooltip: ""
+			}
+
+			ArcaneGrimoire: {
+				DisplayName: Arcane Grimoire
+				Tooltip: ""
+			}
+
+			CommanderGrimoire: {
+				DisplayName: Commander's Grimoire
+				Tooltip: ""
+			}
+
+			LichGrimoire: {
+				DisplayName: Lich Grimoire
+				Tooltip: ""
+			}
+
+			PlagueGrimoire: {
+				DisplayName: Plague Grimoire
+				Tooltip: ""
+			}
+
+			SwarmGrimoire: {
+				DisplayName: Swarm Grimoire
+				Tooltip: ""
+			}
+
+			TitanGrimoire: {
+				DisplayName: Titan Grimoire
+				Tooltip: ""
+			}
+
+			VoidGrimoire: {
+				DisplayName: Void Grimoire
+				Tooltip: ""
+			}
+
+			DeadKingGrimoire: {
+				DisplayName: Dead King's Grimoire
+				Tooltip: ""
+			}
+
 			ZombieSoul: {
 				DisplayName: Zombie Soul
 				Tooltip: ""
@@ -595,6 +645,193 @@ Mods: {
 				DisplayName: Exsanguinator
 				Tooltip: The capstone bleeder. Luminite-fast - the wound never closes.
 			}
+
+			EnergeticFragment: {
+				DisplayName: Energetic Fragment
+				Tooltip: A shard of raw energy. Common tech material.
+			}
+
+			DamagedCircuit: {
+				DisplayName: Damaged Circuit
+				Tooltip: Salvaged wiring. Tech material from Dungeon foes.
+			}
+
+			EnergyCrystal: {
+				DisplayName: Energy Crystal
+				Tooltip: A charged crystal. Rarer tech material.
+			}
+
+			PlasmaCore: {
+				DisplayName: Plasma Core
+				Tooltip: Contained plasma. A scarce, high-tier tech material.
+			}
+
+			AncientBattery: {
+				DisplayName: Ancient Battery
+				Tooltip: Still charged after ages. The rarest tech material.
+			}
+
+			CoilPistol: {
+				DisplayName: Coil Pistol
+				Tooltip: Early prototype. Uses bullets, no Temperature.
+			}
+
+			SparkCarbine: {
+				DisplayName: Spark Carbine
+				Tooltip: Early prototype. Light and fast. No Temperature.
+			}
+
+			ElectromagneticRifle: {
+				DisplayName: Electromagnetic Rifle
+				Tooltip: Early prototype. Hard-hitting, very fast shots. No Temperature.
+			}
+
+			ExperimentalPlasmaShotgun: {
+				DisplayName: Experimental Plasma Shotgun
+				Tooltip: Mid prototype. Fires a spread of bullets. No Temperature.
+			}
+
+			TeslaRepeater: {
+				DisplayName: Tesla Repeater
+				Tooltip: Mid prototype. Rapid-fire. No Temperature.
+			}
+
+			PulseLauncher: {
+				DisplayName: Pulse Launcher
+				Tooltip: Mid prototype. Lobs two energized rounds per shot. No Temperature.
+			}
+
+			UnstablePlasmaCannon: {
+				DisplayName: Unstable Plasma Cannon
+				Tooltip: Late prototype. Slow, heavy, big knockback. No Temperature.
+			}
+
+			ExperimentalPhotonRifle: {
+				DisplayName: Experimental Photon Rifle
+				Tooltip: Late prototype. Fast, accurate photon shots. No Temperature.
+			}
+
+			RailgunPrototype: {
+				DisplayName: Railgun Prototype
+				Tooltip: Late prototype. Slow, brutal precision shots. No Temperature.
+			}
+
+			LaserRifle: {
+				DisplayName: Laser Rifle
+				Tooltip:
+					'''
+					Start of Hardmode. Your first energy weapon. Firing builds Temperature; run
+					hot for bonus damage, fire rate and crit - but do not overheat.
+					'''
+			}
+
+			PlasmaCarbine: {
+				DisplayName: Plasma Carbine
+				Tooltip: Start of Hardmode. Very fast, very low heat per shot.
+			}
+
+			BeamPistol: {
+				DisplayName: Beam Pistol
+				Tooltip: Start of Hardmode. A short piercing beam.
+			}
+
+			PulseSMG: {
+				DisplayName: Pulse SMG
+				Tooltip: Start of Hardmode. The fastest-firing early energy weapon.
+			}
+
+			RailgunMkII: {
+				DisplayName: Railgun Mk II
+				Tooltip: Post-mechs. Slow, brutal piercing precision. Spikes heat hard.
+			}
+
+			TeslaCannon: {
+				DisplayName: Tesla Cannon
+				Tooltip: Post-mechs. Chain lightning between enemies. Fast, low heat.
+			}
+
+			IonRifle: {
+				DisplayName: Ion Rifle
+				Tooltip: Post-mechs. Guided ion bolts that curve into enemies.
+			}
+
+			PlasmaShotgun: {
+				DisplayName: Plasma Shotgun
+				Tooltip: Post-mechs. Five plasma bolts that detonate on impact.
+			}
+
+			PhotonBlaster: {
+				DisplayName: Photon Blaster
+				Tooltip: Post-Plantera. Heavy photon bolts with real knockback.
+			}
+
+			PulseAccelerator: {
+				DisplayName: Pulse Accelerator
+				Tooltip: Post-Plantera. Blistering fire rate; holds the critical zone.
+			}
+
+			ArcCannon: {
+				DisplayName: Arc Cannon
+				Tooltip: Post-Plantera. Powerful bolts that chain lightning between foes.
+			}
+
+			QuantumRifle: {
+				DisplayName: Quantum Rifle
+				Tooltip: Post-Plantera. Guided bolts that pierce as they track.
+			}
+
+			NovaCannon: {
+				DisplayName: Nova Cannon
+				Tooltip: Post-Golem. A huge plasma nova that detonates on impact.
+			}
+
+			FusionRifle: {
+				DisplayName: Fusion Rifle
+				Tooltip: Post-Golem. Fast, piercing, high-damage bolts. Runs hot.
+			}
+
+			NeutronLauncher: {
+				DisplayName: Neutron Launcher
+				Tooltip: Post-Golem. Large guided neutron bolts. Heavy hitter, heavy heat.
+			}
+
+			HyperBeam: {
+				DisplayName: Hyper Beam
+				Tooltip: Post-Golem. A near-continuous, deeply piercing beam.
+			}
+
+			AntimatterCannon: {
+				DisplayName: Antimatter Cannon
+				Tooltip: Post-Moon Lord. Large plasma detonations. Very high damage and heat.
+			}
+
+			SingularityRifle: {
+				DisplayName: Singularity Rifle
+				Tooltip:
+					'''
+					Post-Moon Lord. A colossal singularity bolt that tears straight through
+					everything. Built to be ridden in the critical zone.
+					'''
+			}
+
+			StellarRailgun: {
+				DisplayName: Stellar Railgun
+				Tooltip: Post-Moon Lord. The ultimate precision weapon. Staggering single shots.
+			}
+
+			CelestialBeam: {
+				DisplayName: Celestial Beam
+				Tooltip: Post-Moon Lord. A relentless, deeply piercing continuous beam.
+			}
+
+			EterniaReactorCannon: {
+				DisplayName: Eternia Reactor Cannon
+				Tooltip:
+					'''
+					Post-Moon Lord. The Energy Gunner's signature: twin plasma detonations.
+					Colossal heat, colossal reward.
+					'''
+			}
 		}
 
 		NPCs: {
@@ -619,6 +856,7 @@ Mods: {
 			DefensiveAuraProjectile.DisplayName: Defensive Aura
 			ElementalArsenalBolt.DisplayName: Elemental Bolt
 			CurseBolt.DisplayName: Curse Bolt
+			EnergyBolt.DisplayName: Energy Bolt
 			CurseOrb.DisplayName: Doom Orb
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile

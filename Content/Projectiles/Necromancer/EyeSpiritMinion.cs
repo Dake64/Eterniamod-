@@ -12,6 +12,7 @@ namespace Eternia.Content.Projectiles.Necromancer
         public override int ManaDrain => 6;
         public override int ReservePercent => 20;
         public override float MoveSpeed => 9f;
+        public override bool IsBossEcho => true;
 
         public override void SetStaticDefaults()
         {
