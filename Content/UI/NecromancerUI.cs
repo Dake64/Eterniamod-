@@ -34,7 +34,7 @@ namespace Eternia.Content.UI
                 Color.MediumPurple;
 
             Rectangle panel =
-                EterniaUI.GetTopCenterPanel(306, 136, 92);
+                EterniaUI.GetTopCenterPanel(306, 164, 92);
 
             EterniaUI.DrawPanel(spriteBatch, panel, accent, 0.84f);
 
@@ -48,11 +48,9 @@ namespace Eternia.Content.UI
             EterniaUI.DrawProgressBar(
                 spriteBatch,
                 new Rectangle(panel.X + 14, panel.Y + 44, panel.Width - 28, 22),
-                necro.MaxNecroSlots <= 0
-                    ? 0f
-                    : necro.UsedNecroSlots / (float)necro.MaxNecroSlots,
+                necro.ReservedLifeFraction,
                 accent,
-                $"Slots {necro.UsedNecroSlots}/{necro.MaxNecroSlots}");
+                $"Reserved life {(int)(necro.ReservedLifeFraction * 100)}%  ({necro.ActiveNecroSummons} undead)");
 
             EterniaUI.DrawProgressBar(
                 spriteBatch,
@@ -63,12 +61,30 @@ namespace Eternia.Content.UI
                 Color.DeepSkyBlue,
                 $"Mana {player.statMana}/{player.statManaMax2}");
 
+            var col = player.GetModPlayer<Eternia.Content.Players.NecromancerCollectionPlayer>();
+            int rank = Eternia.Content.Necromancy.GrimoireRank.Current();
+
             EterniaUI.DrawPill(
                 spriteBatch,
                 new Rectangle(panel.X + 14, panel.Y + 108, panel.Width - 28, 20),
-                $"Drain {necro.ManaDrainPerSecond}/s",
+                $"Grimoire {Eternia.Content.Necromancy.GrimoireRank.Name(rank)}  -  Pages {col.ActivePages.Count}/{Eternia.Content.Necromancy.GrimoireRank.MaxActivePages()}  -  Drain {necro.ManaDrainPerSecond}/s",
                 Color.Cyan,
-                0.48f);
+                0.44f);
+
+            // Collection progress: how much of the Grimoire is filled, and the next Soul
+            // to chase.
+            var next = col.NextTarget();
+
+            string collection = next != null
+                ? $"Dominated {col.DominatedCount()}/{col.TotalCount()}  -  Next: {next.DisplayName} {col.KillsForEntry(next)}/{next.KillThreshold} kills"
+                : $"Dominated {col.DominatedCount()}/{col.TotalCount()}  -  All in reach dominated";
+
+            EterniaUI.DrawPill(
+                spriteBatch,
+                new Rectangle(panel.X + 14, panel.Y + 132, panel.Width - 28, 20),
+                collection,
+                accent,
+                0.44f);
         }
     }
 }

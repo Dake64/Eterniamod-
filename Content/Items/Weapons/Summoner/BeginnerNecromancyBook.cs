@@ -42,7 +42,9 @@ namespace Eternia.Content.Items.Weapons.Summoner
             var necro =
                 player.GetModPlayer<NecromancerPlayer>();
 
-            return necro.UsedNecroSlots < necro.MaxNecroSlots;
+            // No slot cap: you can raise more undead as long as there is still life left
+            // to reserve.
+            return necro.ReservedLifeFraction < 0.9f;
         }
 
         public override void ModifyTooltips(
@@ -66,7 +68,7 @@ namespace Eternia.Content.Items.Weapons.Summoner
             var necro =
                 player.GetModPlayer<NecromancerPlayer>();
 
-            if (necro.UsedNecroSlots >= necro.MaxNecroSlots)
+            if (necro.ReservedLifeFraction >= 0.9f)
             {
                 return false;
             }

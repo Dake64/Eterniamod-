@@ -2,16 +2,16 @@ using Terraria;
 
 namespace Eternia.Content.Projectiles.Necromancer
 {
-    // The starter undead: a balanced melee skeleton. Unlocked by default in the
-    // Grimoire. Reuses the shared BaseNecroMinion AI.
-    public class SkeletonMinion : BaseNecroMinion
+    // A fast, flighty demon eye: cheap on life but flits around quickly. Reuses the
+    // Skeleton texture until real art exists.
+    public class DemonEyeMinion : BaseNecroMinion
     {
         public override string Texture =>
             "ETERNIA/Content/Projectiles/Necromancer/SkeletonMinion";
 
-        public override int ManaDrain => 5;
-        public override int ReservePercent => 15;
-        public override float MoveSpeed => 6f;
+        public override int ManaDrain => 3;
+        public override int ReservePercent => 10;
+        public override float MoveSpeed => 8f;
 
         public override void SetStaticDefaults()
         {
@@ -21,8 +21,8 @@ namespace Eternia.Content.Projectiles.Necromancer
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Projectile.width = 32;
-            Projectile.height = 40;
+            Projectile.width = 28;
+            Projectile.height = 28;
         }
     }
 }

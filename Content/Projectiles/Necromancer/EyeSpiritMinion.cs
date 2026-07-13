@@ -2,16 +2,16 @@ using Terraria;
 
 namespace Eternia.Content.Projectiles.Necromancer
 {
-    // The starter undead: a balanced melee skeleton. Unlocked by default in the
-    // Grimoire. Reuses the shared BaseNecroMinion AI.
-    public class SkeletonMinion : BaseNecroMinion
+    // A lesser echo of the Eye of Cthulhu: fast, flighty, moderate cost. Reuses the
+    // Skeleton texture until real art exists.
+    public class EyeSpiritMinion : BaseNecroMinion
     {
         public override string Texture =>
             "ETERNIA/Content/Projectiles/Necromancer/SkeletonMinion";
 
-        public override int ManaDrain => 5;
-        public override int ReservePercent => 15;
-        public override float MoveSpeed => 6f;
+        public override int ManaDrain => 6;
+        public override int ReservePercent => 20;
+        public override float MoveSpeed => 9f;
 
         public override void SetStaticDefaults()
         {
@@ -21,8 +21,8 @@ namespace Eternia.Content.Projectiles.Necromancer
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Projectile.width = 32;
-            Projectile.height = 40;
+            Projectile.width = 36;
+            Projectile.height = 36;
         }
     }
 }

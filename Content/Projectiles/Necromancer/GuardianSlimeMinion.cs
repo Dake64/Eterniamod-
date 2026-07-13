@@ -2,16 +2,16 @@ using Terraria;
 
 namespace Eternia.Content.Projectiles.Necromancer
 {
-    // The starter undead: a balanced melee skeleton. Unlocked by default in the
-    // Grimoire. Reuses the shared BaseNecroMinion AI.
-    public class SkeletonMinion : BaseNecroMinion
+    // A lesser echo of King Slime: tanky, slow, reserves a lot of life. Reuses the
+    // Skeleton texture until real art exists.
+    public class GuardianSlimeMinion : BaseNecroMinion
     {
         public override string Texture =>
             "ETERNIA/Content/Projectiles/Necromancer/SkeletonMinion";
 
-        public override int ManaDrain => 5;
-        public override int ReservePercent => 15;
-        public override float MoveSpeed => 6f;
+        public override int ManaDrain => 8;
+        public override int ReservePercent => 30;
+        public override float MoveSpeed => 5f;
 
         public override void SetStaticDefaults()
         {
@@ -21,8 +21,8 @@ namespace Eternia.Content.Projectiles.Necromancer
         public override void SetDefaults()
         {
             base.SetDefaults();
-            Projectile.width = 32;
-            Projectile.height = 40;
+            Projectile.width = 44;
+            Projectile.height = 44;
         }
     }
 }

@@ -83,6 +83,70 @@ Mods: {
 				Tooltip: ""
 			}
 
+			InitiatesGrimoire: {
+				DisplayName: Initiate's Grimoire
+				Tooltip: Runs on Cursed Energy. Cheap, and refunds a little Energy on hit.
+			}
+
+			VoidRod: {
+				DisplayName: Void Rod
+				Tooltip: Piercing bolts. Each foe pierced refunds Cursed Energy.
+			}
+
+			ForbiddenTome: {
+				DisplayName: Forbidden Tome
+				Tooltip: Area blast. Returns Cursed Energy for every foe it catches.
+			}
+
+			EclipseStaff: {
+				DisplayName: Eclipse Staff
+				Tooltip: A rapid stream that drains Cursed Energy while you hold it.
+			}
+
+			AbyssalCodex: {
+				DisplayName: Abyssal Codex
+				Tooltip: High damage, very high Cursed Energy cost. A taste of Hardmode.
+			}
+
+			GrimoireOfSin: {
+				DisplayName: Grimoire of Sin
+				Tooltip: Early Hardmode. Little Corruption, refunds Energy on hit.
+			}
+
+			CursedStaff: {
+				DisplayName: Cursed Staff
+				Tooltip: Deals more damage once your Corruption passes 50.
+			}
+
+			TomeOfTheAbyss: {
+				DisplayName: Tome of the Abyss
+				Tooltip: Area attacks, moderate Corruption. Great against groups.
+			}
+
+			DoomOrb: {
+				DisplayName: Doom Orb
+				Tooltip: Summons a homing orb that raises Corruption and scales with it.
+			}
+
+			BookOfCollapse: {
+				DisplayName: Book of Collapse
+				Tooltip: Very high damage, with a big spike once Corruption passes 150.
+			}
+
+			ScepterOfTheEnd: {
+				DisplayName: Scepter of the End
+				Tooltip: Generates huge Corruption; its bolts strengthen near the limit.
+			}
+
+			NecronomiconOfEternia: {
+				DisplayName: Necronomicon of Eternia
+				Tooltip:
+					'''
+					Scales directly with your Corruption and greatly amplifies Cursed
+					Burst. The peak of the Cursed Mage's risk and reward.
+					'''
+			}
+
 			ElementalApprenticeStaff: {
 				DisplayName: Elemental Apprentice Staff
 				Tooltip: ""
@@ -247,6 +311,31 @@ Mods: {
 
 			BeginnerNecromancyBook: {
 				DisplayName: Beginner Necromancy Book
+				Tooltip: ""
+			}
+
+			GrimoireOfDeath: {
+				DisplayName: Grimoire of Death
+				Tooltip: ""
+			}
+
+			ZombieSoul: {
+				DisplayName: Zombie Soul
+				Tooltip: ""
+			}
+
+			DemonEyeSoul: {
+				DisplayName: Demon Eye Soul
+				Tooltip: ""
+			}
+
+			KingSlimeSoul: {
+				DisplayName: King Slime Soul
+				Tooltip: ""
+			}
+
+			EyeOfCthulhuSoul: {
+				DisplayName: Eye of Cthulhu Soul
 				Tooltip: ""
 			}
 
@@ -529,12 +618,18 @@ Mods: {
 			CrimsonSlash.DisplayName: Crimson Slash
 			DefensiveAuraProjectile.DisplayName: Defensive Aura
 			ElementalArsenalBolt.DisplayName: Elemental Bolt
+			CurseBolt.DisplayName: Curse Bolt
+			CurseOrb.DisplayName: Doom Orb
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile
 			FireBoltProjectile.DisplayName: Fire Bolt Projectile
 			IceBoltProjectile.DisplayName: Ice Bolt Projectile
 			LightningBoltProjectile.DisplayName: Lightning Bolt Projectile
 			SkeletonMinion.DisplayName: Skeleton Minion
+			ZombieMinion.DisplayName: Zombie Minion
+			DemonEyeMinion.DisplayName: Demon Eye Minion
+			GuardianSlimeMinion.DisplayName: Guardian Slime
+			EyeSpiritMinion.DisplayName: Eye Spirit
 			PracticeYoyoProjectile.DisplayName: Practice Yoyo Projectile
 			BeastWhipProjectile.DisplayName: Beast Whip Projectile
 			FusionWhipProjectile.DisplayName: Fusion Whip Projectile

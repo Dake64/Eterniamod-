@@ -22,6 +22,55 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-10 - El Nigromante usa Vida Reservada + drenaje de mana (NO minion slots)
+
+- Estado: Aceptada (spec del usuario). Reemplaza al Mago del Infinito en la v1 (el
+  Nigromante ya era subclase de Invocador/Shadow; el Infinito queda sin construir).
+- Contexto: el Nigromante previo era un summoner de slots. El usuario redefinio la
+  identidad: NO usa minion slots.
+- Decision (Fase 1 - nucleo):
+  - Cada invocacion RESERVA un % de la vida maxima (baja statLifeMax2 mientras exista) y
+    DRENA mana por segundo. Sin cap de cantidad: el limite es cuanta vida/mana puedes
+    sostener (tope de reserva 90%).
+  - Si el mana se agota, se despawnea la invocacion MAS DEBIL primero (menor
+    ReservePercent = menor importancia).
+  - ShadowAffinity (-hasta 40%), Bone Conduit (-20%) y milestones (-hasta 30%) alivian
+    la reserva (un nigromante profundo mantiene mas no-muertos).
+  - BaseNecroMinion: SlotCost -> ReservePercent; ya no se auto-mata sin mana (lo gestiona
+    el player); solo hace fade visual.
+- Consecuencias:
+  - El libro de invocacion ya no chequea slots; permite invocar mientras
+    ReservedLifeFraction < 0.9.
+  - Fases pendientes (spec completo): Grimorio de la Muerte (coleccion permanente),
+    sistema de Almas (matar N enemigos -> drop de <Enemy> Soul -> usar en el Grimorio
+    -> desbloquea la criatura), mas criaturas + almas de jefe (versiones menores).
+- Archivos: Content/Players/NecromancerPlayer.cs,
+  Content/Projectiles/Necromancer/BaseNecroMinion.cs + SkeletonMinion,
+  Content/Items/Weapons/Summoner/BeginnerNecromancyBook.cs, UI (Necromancer/SoulUI).
+
+## 2026-07-10 - El Mago de Maldiciones es un sistema de dos fases (energia -> corrupcion)
+
+- Estado: Aceptada (spec del usuario).
+- Contexto: la mecanica previa gateaba TODO (energia, corrupcion, burst) al Cursed Mage
+  promovido, y el Burst era un buff sostenido. El usuario redefinio la identidad en dos
+  fases con un Burst distinto.
+- Decision:
+  - PRE-HARDMODE: la Energia Maldita existe para cualquier Mago con regen FIJA; las armas
+    de maldicion la gastan (no subclass-locked). No hay Corrupcion ni Burst. Es
+    entrenamiento del recurso (paralelo al contador de Combo del Peleador pre-HM).
+  - HARDMODE (Cursed Mage): la Corrupcion (0-200) pasa a ser el eje riesgo/recompensa
+    CONTINUO -> mas regen + mas daño/vel magica, a cambio de -def/-vida/+daño recibido, y
+    Colapso Maldito arriba. `TotalCorruption` = 0 fuera del Cursed Mage promovido.
+  - Cursed Burst = descarga: gasta TODA la corrupcion en una explosion escalada, la
+    resetea y refunde energia (antes: buff sostenido + backlash).
+- Consecuencias:
+  - La regen de energia ya no depende de la corrupcion pre-HM (regen fija).
+  - Los accesorios de maldicion (BloodCurse/WeakCurse) siguen sumando BaseCorruption pero
+    solo cuenta en HM (TotalCorruption gated); su coste de vida se mantiene.
+  - Pendiente: rama Curse que moldee la mecanica; arsenal de maldicion; UI de energia
+    pre-HM. Balance por tunear in-game.
+- Archivos: Content/Players/CursedMagePlayer.cs, Content/UI/CursedMageUI.cs.
+
 ## 2026-07-10 - Los Escudos son una categoria de arma con Aura Defensiva (daño Generic)
 
 - Estado: Aceptada (spec del usuario).

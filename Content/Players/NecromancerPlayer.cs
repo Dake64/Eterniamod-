@@ -1,37 +1,39 @@
-using Eternia.Content.Projectiles.Necromancer;
-using Eternia.Content.Souls;
 using Terraria;
 using Terraria.ModLoader;
 
+using Eternia.Content.Projectiles.Necromancer;
+using Eternia.Content.Souls;
+
 namespace Eternia.Content.Players
 {
+    // The Necromancer does NOT use minion slots. Instead each undead RESERVES a slice of
+    // the player's maximum life (temporarily lowering it while the summon lives) and
+    // DRAINS mana every second. If mana runs dry the weakest undead crumble first. This
+    // trades the usual "summon count" cap for a life + mana juggling act.
     public class NecromancerPlayer : ModPlayer
     {
         public int ActiveNecroSummons;
         public int ManaDrainPerSecond;
-        public int MaxNecroSlots = 1;
-        public int UsedNecroSlots;
 
-        public override void PostUpdate()
+        // Fraction of max life currently reserved by active undead (0..0.9).
+        public float ReservedLifeFraction;
+
+        public override void PostUpdateEquips()
         {
-            UsedNecroSlots = 0;
-            ManaDrainPerSecond = 0;
             ActiveNecroSummons = 0;
+            ManaDrainPerSecond = 0;
+            ReservedLifeFraction = 0f;
 
             if (!IsActiveNecromancer())
             {
-                MaxNecroSlots = 0;
                 return;
             }
 
+            float reserve = 0f;
+
             foreach (Projectile proj in Main.projectile)
             {
-                if (!proj.active)
-                {
-                    continue;
-                }
-
-                if (proj.owner != Player.whoAmI)
+                if (!proj.active || proj.owner != Player.whoAmI)
                 {
                     continue;
                 }
@@ -39,34 +41,83 @@ namespace Eternia.Content.Players
                 if (proj.ModProjectile is BaseNecroMinion minion)
                 {
                     ActiveNecroSummons++;
-                    UsedNecroSlots += minion.SlotCost;
                     ManaDrainPerSecond += minion.ManaDrain;
+                    reserve += minion.ReservePercent / 100f;
                 }
             }
 
-            var stats =
-                Player.GetModPlayer<EterniaStatsPlayer>();
+            // Shadow affinity, Bone Conduit and milestones all EASE the life toll, so a
+            // deeper Necromancer fields more undead for the same reserved life.
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
 
-            MaxNecroSlots = 1 + stats.ShadowAffinity / 5;
+            float ease = 1f;
 
-            var soul =
-                Player.GetModPlayer<EterniaPlayer>();
-
-            if (stats.HasActivePassive(
-                soul.ActiveSoul,
-                "Bone Conduit"))
+            if (stats.HasActivePassive(soul.ActiveSoul, "Bone Conduit"))
             {
-                MaxNecroSlots += 1;
+                ease *= 0.8f;
             }
 
-            // Milestones deepen the mechanic: an extra minion slot every 2.
-            MaxNecroSlots +=
-                Player.GetModPlayer<MilestonePlayer>().Milestones / 2;
+            // Up to -40% reserve at 100 Shadow affinity.
+            ease *= 1f - System.Math.Min(0.4f, stats.ShadowAffinity * 0.004f);
 
-            if (Main.GameUpdateCount % 60 == 0)
+            // Up to -30% reserve from milestones.
+            ease *= 1f - System.Math.Min(
+                0.3f,
+                Player.GetModPlayer<MilestonePlayer>().Milestones * 0.03f);
+
+            reserve *= ease;
+
+            ReservedLifeFraction = System.Math.Min(0.9f, reserve);
+
+            // Reserve the life: lower the effective maximum while the undead live.
+            Player.statLifeMax2 -=
+                (int)(Player.statLifeMax2 * ReservedLifeFraction);
+        }
+
+        public override void PostUpdate()
+        {
+            if (!IsActiveNecromancer())
             {
-                DrainMana();
+                return;
             }
+
+            // Every second the undead drink mana; run dry and the weakest crumble.
+            if (Main.GameUpdateCount % 60 == 0 && ManaDrainPerSecond > 0)
+            {
+                Player.statMana -= ManaDrainPerSecond;
+
+                if (Player.statMana < 0)
+                {
+                    Player.statMana = 0;
+                    DespawnWeakest();
+                }
+            }
+        }
+
+        // Kill the least-important undead (lowest reserve = weakest) so stronger ones
+        // survive the mana shortage.
+        private void DespawnWeakest()
+        {
+            Projectile weakest = null;
+            int lowest = int.MaxValue;
+
+            foreach (Projectile proj in Main.projectile)
+            {
+                if (!proj.active || proj.owner != Player.whoAmI)
+                {
+                    continue;
+                }
+
+                if (proj.ModProjectile is BaseNecroMinion minion &&
+                    minion.ReservePercent < lowest)
+                {
+                    lowest = minion.ReservePercent;
+                    weakest = proj;
+                }
+            }
+
+            weakest?.Kill();
         }
 
         public bool IsActiveNecromancer()
@@ -78,21 +129,6 @@ namespace Eternia.Content.Players
                 soul.ActiveSoul == SoulId.Summoner &&
                 Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
                     "Necromancer";
-        }
-
-        private void DrainMana()
-        {
-            if (ManaDrainPerSecond <= 0)
-            {
-                return;
-            }
-
-            Player.statMana -= ManaDrainPerSecond;
-
-            if (Player.statMana < 0)
-            {
-                Player.statMana = 0;
-            }
         }
     }
 }

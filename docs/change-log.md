@@ -15,6 +15,189 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-10 - Nigromante: visibilidad de la coleccion en el HUD
+
+- Objetivo: cerrar el bucle de coleccion con feedback -> el jugador ve cuanto lleva del
+  Grimorio y a que alma apuntar.
+- `NecromancerCollectionPlayer`: DominatedCount/TotalCount + NextTarget() (la criatura
+  no-dominada elegible por rango mas cercana a desbloquearse, por ratio de muertes).
+- `NecromancerUI`: panel mas alto + linea de coleccion -> "Dominated X/Y - Next: <Zombie>
+  70/100 kills" (o "All in reach dominated"). Complementa la linea de rango/paginas/
+  drenaje ya existente.
+- Tests: sin nuevos (helpers cubiertos indirectamente). Suite PASS=92.
+- Verificacion: build 0/0; suite PASS=92. SIN probar in-game.
+- Con esto el Nigromante queda con feedback completo del bucle. Pendiente (contenido/
+  polish): mas criaturas + almas de jefe (añadir al registro); panel interactivo del
+  Grimorio para gestionar el loadout manualmente; balance in-game.
+
+## 2026-07-10 - Nigromante Fase 3: Rangos del Grimorio + Paginas Activas + almas de jefe
+
+- Objetivo (spec): el Grimorio evoluciona con la progresion. Su RANGO gatea que
+  categorias de criaturas puedes dominar/invocar, y un limite de PAGINAS ACTIVAS obliga
+  a preparar un loadout.
+- Sistemas nuevos:
+  - `Content/Necromancy/GrimoireRank.cs`: rango I..IV segun progreso (Pre-HM / post-WoF /
+    post-Plantera / post-Moon Lord) y paginas activas 3/5/7/10. Nombres:
+    Apprentice/Adept/Master/Supreme Lich.
+  - `GrimoireEntry.RequiredRank` (1..4): las criaturas de categorias altas exigen mas
+    rango. `EligibleEntries()` filtra por rango: solo puedes ciclar/invocar lo que tu
+    rango permite.
+  - PAGINAS ACTIVAS (`NecromancerCollectionPlayer.ActivePages`, persistente): invocar una
+    criatura la vuelve pagina activa; si el loadout esta lleno se expulsa la mas antigua
+    y sus no-muertos crumblean (EnsureActive + DespawnCreature). Asi no puedes tener
+    todas las invocaciones a la vez -> estrategia.
+  - ALMAS DE JEFE (categoria "Boss"): matar al jefe N veces -> su Boss Soul -> registrar
+    -> version menor. Fase 3: King Slime -> Guardian Slime, Eye of Cthulhu -> Eye Spirit
+    (almas KingSlimeSoul/EyeOfCthulhuSoul + minions GuardianSlimeMinion/EyeSpiritMinion).
+- UI: NecromancerUI muestra el rango del Grimorio + paginas activas (X/Max) + drenaje.
+- Tests: `NecromancerRankSourceSmokeTest` (rango por progreso, paginas 3/5/7/10,
+  RequiredRank, boss echoes, ActivePages con eviction + persistencia + elegibilidad por
+  rango; el Grimorio usa elegibles y activa al invocar). Suite PASS=92. +hjson.
+- Verificacion: build 0/0; suite PASS=92. SIN probar in-game.
+- Con esto el Nigromante tiene su bucle completo (nucleo + coleccion + rangos/paginas +
+  jefes). Pendiente: mas criaturas/almas de jefe (contenido que se añade al registro);
+  UI del Grimorio (coleccion visible / gestion de loadout); balance in-game.
+
+## 2026-07-10 - Nigromante Fase 2: Grimorio de la Muerte + sistema de Almas
+
+- Objetivo (spec): el Nigromante progresa coleccionando almas, no armas. Dominar una
+  criatura = matar N enemigos -> obtener su <Enemy> Soul -> registrarla en el Grimorio.
+- Sistema (data-driven):
+  - `Content/Necromancy/GrimoireRegistry.cs`: lista de criaturas (Id, enemigos fuente,
+    umbral de muertes, alma, minion, categoria). Fase 2 comunes: Skeleton (default
+    desbloqueado), Zombie (100 muertes), Demon Eye (75).
+  - `Content/Players/NecromancerCollectionPlayer.cs`: Kills (dict NPC->muertes) +
+    Unlocked (criaturas dominadas) + SelectedIndex, persistente (Save/Load).
+  - `Content/Globals/NecromancerKillGlobalNPC.cs`: OnKill cuenta muertes; ModifyNPCLoot
+    añade el drop del alma via `SoulDropCondition` (1/5 una vez alcanzado el umbral y si
+    no la has dominado aun).
+  - Almas: `Content/Items/Souls/{EnemySoul(base),ZombieSoul,DemonEyeSoul}.cs`. Usar el
+    alma como Nigromante desbloquea la criatura (consumible).
+  - `Content/Items/Weapons/Summoner/GrimoireOfDeath.cs`: clic izq invoca la criatura
+    seleccionada (si ReservedLifeFraction<0.9), clic der cicla la seleccion. Crafteable
+    (Book + 15 Bone).
+- Refactor: la IA de los no-muertos (follow/chase + validez + fade de mana) se movio a
+  BaseNecroMinion (subclases solo definen stats). Nuevos minions ZombieMinion (reserva
+  20%, lento) y DemonEyeMinion (reserva 10%, rapido).
+- Tests: `NecromancerGrimoire` (registry, coleccion persistente, condicion de drop,
+  GlobalNPC, alma desbloquea+consume, grimorio invoca/cicla). NecromancerMinionAI
+  actualizado al refactor. Suite PASS=91. +hjson.
+- Verificacion: build 0/0; suite PASS=91. SIN probar in-game.
+- PENDIENTE (Fase 3): mas criaturas (Skeleton Archer/Mage, Spectral Knight, Abomination,
+  corruptas, inframundo) + almas de JEFE (versiones menores: King Slime->Guardian Slime,
+  etc.); UI del Grimorio (coleccion visible); balance.
+
+## 2026-07-10 - Nigromante Fase 1: Vida Reservada + drenaje de mana (rediseño del nucleo)
+
+- Objetivo (spec del usuario, reemplaza al Mago del Infinito en la v1): el Nigromante NO
+  usa minion slots. Cada no-muerto reserva vida maxima y drena mana; sin mana crumblean
+  los mas debiles primero.
+- Rediseño del nucleo (Fase 1):
+  - `NecromancerPlayer`: quita MaxNecroSlots/UsedNecroSlots. Cuenta no-muertos ->
+    ReservedLifeFraction (suma de ReservePercent, tope 90%) -> baja statLifeMax2. Suma
+    ManaDrain; cada segundo drena mana y si llega a 0 despawnea el mas debil
+    (DespawnWeakest por menor ReservePercent). ShadowAffinity/Bone Conduit/milestones
+    alivian la reserva.
+  - `BaseNecroMinion`: SlotCost -> ReservePercent; ya no se auto-mata sin mana (solo
+    fade); el player gestiona los despawns.
+  - SkeletonMinion: ReservePercent 15. BeginnerNecromancyBook: invoca mientras
+    ReservedLifeFraction < 0.9 (sin slots). UI (Necromancer/SoulUI) muestran "Reserved
+    life %" + nº de no-muertos.
+- Tests: `NecromancerReservedLife` (nuevo: sin slots, reserva vida, despawn del mas
+  debil, base no se auto-mata); NecromancerFlow y PassiveRuntimeEffects (Bone Conduit)
+  actualizados al nuevo diseño. Suite PASS=89.
+- Verificacion: build 0/0; suite PASS=89. SIN probar in-game.
+- PENDIENTE (fases del spec): Fase 2 = Grimorio de la Muerte + sistema de Almas (matar N
+  -> drop de <Enemy> Soul -> registrar en el Grimorio -> desbloquea la criatura);
+  Fase 3 = mas criaturas + almas de jefe (versiones menores). Balance in-game.
+
+## 2026-07-10 - Mago de Maldiciones: la rama Curse moldea la mecanica de Corrupcion
+
+- Objetivo: que la rama de pasivas Curse moldee la mecanica (energia/corrupcion/burst),
+  como Defensa->aura y Elemental->afinidad. Se mantuvieron los 8 nombres de nodo y sus
+  stats magicos planos en EterniaStatsPlayer (lo exigen los tests) y se AÑADIO el
+  moldeado en CursedMagePlayer (leido via nuevo helper HasCurse).
+- Mapeo (efecto plano + rol de mecanica, gated a Cursed Mage promovido):
+  - Dark Ritual: +3% curse power - +1 regen de Energia Maldita.
+  - Cursed Blood: +15% cursed dmg - la Corrupcion da mas daño magico (+0.125%/pt).
+  - Doom Bringer: +12% magic dmg - la Corrupcion da mas vel. lanzamiento (+0.05%/pt).
+  - Withering Curse: +5 pen - reduce a la MITAD la perdida de defensa por Corrupcion.
+  - Soul Rot: +5 pen - menos perdida de vida max por Corrupcion (c/8 en vez de c/5).
+  - Blight: +8% magic dmg - +50% a la explosion del Cursed Burst.
+  - Malediction: +8% crit - el Burst refunde mas Energia (70) y el Colapso empieza mas
+    tarde (190 en vez de 175).
+  - Forbidden Hex: +10% duracion de debuff (rol de maldicion, sin cambios).
+- Consecuencia de diseño: invertir en Curse te deja empujar mas la Corrupcion (menos
+  castigo) y sacarle mas provecho (mas daño/regen/burst) -> profundiza el riesgo/
+  recompensa. Sin tocar el conteo de nodos ni EterniaStatsPlayer.
+- Tests: CursedMageMechanic ampliado (HasCurse + los 7 nodos que moldean). Suite PASS=89.
+- Verificacion: build 0/0; suite PASS=89. SIN probar in-game.
+- Con esto el Mago de Maldiciones esta COMPLETO (mecanica 2 fases + arsenal 12 + rama
+  Curse que la moldea). Pendiente global: balance in-game; arte real.
+
+## 2026-07-10 - Mago de Maldiciones: arsenal de 12 armas (Energia + Corrupcion)
+
+- Objetivo (spec): armas que giran en torno a administrar recursos, no solo daño.
+  Pre-HM enseñan a manejar Energia Maldita; HM añaden Corrupcion (riesgo/recompensa).
+- Arquitectura: interfaz `Content/Items/ICurseWeapon.cs` (EnergyCost + BurstMultiplier),
+  clase base `Content/Items/Weapons/Magic/CurseWeapon.cs` (CanUseItem gatea por energia;
+  Shoot consume energia y en HM suma CorruptionPerCast; ModifyWeaponDamage escala con
+  corrupcion), y 2 proyectiles compartidos: `CurseBolt` (refund de energia + AoE
+  opcional, ai[0]=refund/ai[1]=AoE) y `CurseOrb` (orbe perseguidor que sube corrupcion
+  al golpear y escala con ella). No subclass-locked (el Soul + el gate de energia ya los
+  mantienen solo-Mago).
+- PRE-HARDMODE (5, solo Energia): Initiate's Grimoire (14, refund) -> Void Rod (20,
+  perfora+refund) -> Forbidden Tome (24, AoE+refund por grupo) -> Eclipse Staff (10,
+  rapido/drena) -> Abyssal Codex (40, alto coste).
+- HARDMODE (7, +Corrupcion): Grimoire of Sin (60, poca corrupcion+refund) -> Cursed
+  Staff (68, x1.3 si corrupcion>50) -> Tome of the Abyss (78, AoE) -> Doom Orb (50, orbe
+  perseguidor que sube corrupcion y escala con ella) -> Book of Collapse (95, x1.5 si
+  corrupcion>150) -> Scepter of the End (115, mucha corrupcion, +0.3%/pt) -> Necronomicon
+  of Eternia (140, +0.4%/pt, BurstMultiplier x1.5; se craftea desde el Scepter).
+- Wire: `CursedMagePlayer.ActivateBurst` lee el BurstMultiplier del arma sostenida (el
+  Necronomicon amplifica la explosion). `CursedMageUI` ahora muestra un mini-panel de
+  Energia pre-HM cuando sostienes un ICurseWeapon (feedback del recurso en la fase de
+  entrenamiento).
+- Tests: `CurseArsenalSourceSmokeTest` (12 armas extienden CurseWeapon, EnergyCost,
+  crafteo, no-lock, daño exacto, HM genera corrupcion; base consume energia + corrupcion
+  gated a Cursed Mage + escala; escalados de Cursed Staff/Book of Collapse/Necronomicon).
+  Suite PASS=89. +hjson.
+- Verificacion: build 0/0; suite PASS=89. SIN probar in-game.
+- Con esto el Mago de Maldiciones tiene mecanica + arsenal. Pendiente: rama de pasivas
+  Curse que moldee la mecanica (reducir castigos, mas regen, potenciar el Burst); balance
+  in-game.
+
+## 2026-07-10 - Mago de Maldiciones: rediseño de la mecanica en dos fases (spec usuario)
+
+- Objetivo (spec del usuario): dos fases claras. PRE-HARDMODE (cualquier Mago): solo
+  Energia Maldita con regen FIJA; sin Corrupcion ni Burst (entrenamiento del recurso).
+  HARDMODE (Cursed Mage promovido): se desbloquea todo.
+- Cambio de mecanica (autorizado por el spec) en `CursedMagePlayer`:
+  - Gate nuevo `IsActiveMage()` (energia existe para cualquier Mago) vs
+    `IsActiveCursedMage()` (corrupcion/burst). `ConsumeEnergy` ahora permite gastar a
+    cualquier Mago (armas de maldicion funcionan pre-HM).
+  - `TotalCorruption` = 0 salvo Cursed Mage promovido -> pre-HM sin corrupcion aunque
+    lleves accesorios de maldicion.
+  - Regen de energia: FIJA pre-HM (PreHardmodeRegen=3); en HM escala con Corrupcion
+    (1..12) + milestones.
+  - Corrupcion = riesgo/recompensa continuo (antes casi todo era via Burst):
+    RECOMPENSA +0.25%/pt daño magico y +0.1%/pt vel. lanzamiento; RIESGO -def (/20),
+    -vida max (/5), +daño recibido (endurance -0.15%/pt); COLAPSO: DoT fuerte >=175.
+  - Cursed Burst REDISEÑADO: de buff sostenido (+40% 10s + backlash) a EXPLOSION
+    instantanea que gasta TODA la corrupcion: dano = 40 + corrupcion*4 en area
+    (radio 220+corrupcion), resetea la corrupcion temporal a 0 y refunde 40 de energia.
+    Escala con la corrupcion gastada.
+- UI: CursedMageUI ajustada (se quito el estado de burst sostenido; muestra "Press V for
+  Cursed Burst" a partir de BurstMinCorruption).
+- Tests: `CursedMageBootstrap` actualizado (regen fija pre-HM + baseline HM; ConsumeEnergy
+  para cualquier Mago); nuevo `CursedMageMechanicSourceSmokeTest` (2 gates, corrupcion
+  gated, fase pre-HM sale temprano, recompensa+riesgo+colapso, burst-explosion escalado
+  + reset + refund). Suite PASS=88.
+- Verificacion: build 0/0; suite PASS=88. SIN probar in-game.
+- Pendiente: rama de pasivas Curse que moldee la mecanica (reducir castigos, mas regen,
+  potenciar el Burst, debuffs al golpear); arsenal de maldicion pre-HM (armas que gastan
+  Energia, no subclass-locked) + HM; UI de energia pre-HM (marcador de arma de maldicion).
+
 ## 2026-07-10 - Mago Elemental: arsenal de 15 armas magicas elementales
 
 - Objetivo (spec): armas asociadas a un elemento desde que se obtienen. Pre-HM funcionan

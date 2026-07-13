@@ -69,11 +69,11 @@ foreach ($passive in $expectedPassives) {
 }
 
 if ($necro -notmatch 'HasActivePassive\(\s*soul\.ActiveSoul,\s*"Bone Conduit"\s*\)') {
-    throw "NecromancerPlayer should make Bone Conduit affect necromancer slot scaling."
+    throw "NecromancerPlayer should make Bone Conduit affect the reserved-life mechanic."
 }
 
-if ($necro -notmatch 'MaxNecroSlots\s*\+=\s*1') {
-    throw "Bone Conduit should increase MaxNecroSlots."
+if ($necro -notmatch 'ease \*= 0\.8f') {
+    throw "Bone Conduit should ease the Necromancer's reserved-life toll."
 }
 
 Write-Host "Passive runtime effects source smoke test passed."

@@ -416,7 +416,7 @@ namespace Eternia.Content.UI
 
                 case "Necromancer":
                     var necro = player.GetModPlayer<NecromancerPlayer>();
-                    return $"Necro slots {necro.UsedNecroSlots}/{necro.MaxNecroSlots}";
+                    return $"Reserved life {(int)(necro.ReservedLifeFraction * 100)}% ({necro.ActiveNecroSummons} undead)";
                 case "Beast Tamer":
                     return $"Ferocity {(int)player.GetModPlayer<BeastTamerPlayer>().Ferocity}/100";
                 case "Advanced Summoner":
