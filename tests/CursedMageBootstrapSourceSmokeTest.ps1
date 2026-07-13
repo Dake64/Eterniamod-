@@ -17,12 +17,15 @@ if ($player -notmatch "public bool IsActiveCursedMage\(") {
     throw "CursedMagePlayer should expose IsActiveCursedMage for delayed projectiles and energy spending."
 }
 
-if ($player -notmatch "TotalCorruption\s*<=\s*0[\s\S]*CursedEnergy\s*<\s*MinimumCastEnergy[\s\S]*regen\s*=\s*1") {
-    throw "CursedMagePlayer should regenerate up to MinimumCastEnergy without corruption so a promoted Cursed Mage can start using the tome."
+# Energy always bootstraps: a FIXED pre-hardmode regen, and a >=1 hardmode baseline even
+# at zero corruption, so casting is never soft-locked.
+if ($player -notmatch "PreHardmodeRegen" -or $player -notmatch "c >= 26 \? 2 :") {
+    throw "CursedMagePlayer should bootstrap energy (fixed pre-hardmode regen + hardmode baseline)."
 }
 
-if ($player -notmatch "ConsumeEnergy\(int amount\)[\s\S]*if \(!IsActiveCursedMage\(\)\)") {
-    throw "CursedMagePlayer.ConsumeEnergy should reject spending outside active Cursed Mage."
+# Any Mage can spend Cursed Energy so curse weapons work pre-hardmode too.
+if ($player -notmatch "ConsumeEnergy\(int amount\)[\s\S]*if \(!IsActiveMage\(\)") {
+    throw "CursedMagePlayer.ConsumeEnergy should let any Mage spend energy (pre-hardmode curse weapons)."
 }
 
 if ($tome -notmatch "CursedMagePlayer\.MinimumCastEnergy" -or

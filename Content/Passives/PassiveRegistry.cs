@@ -1233,7 +1233,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Dark Ritual",
-        "+3% curse power",
+        "+3% curse power - Cursed Mage: +1 Cursed Energy regen",
         1,
         "Curse",
         3,
@@ -1255,7 +1255,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Cursed Blood",
-        "+15% cursed damage",
+        "+15% cursed damage - Cursed Mage: Corruption gives more magic damage",
         2,
         "Curse",
         5,
@@ -1266,7 +1266,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Withering Curse",
-        "+5 magic armor penetration",
+        "+5 magic armor penetration - Cursed Mage: halves Corruption's defense loss",
         2,
         "Curse",
         6,
@@ -1277,7 +1277,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Doom Bringer",
-        "+12% magic damage",
+        "+12% magic damage - Cursed Mage: Corruption gives more cast speed",
         3,
         "Curse",
         7,
@@ -1288,7 +1288,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Soul Rot",
-        "+5 magic armor penetration",
+        "+5 magic armor penetration - Cursed Mage: less max-life loss from Corruption",
         3,
         "Curse",
         8,
@@ -1299,7 +1299,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Blight",
-        "+8% magic damage",
+        "+8% magic damage - Cursed Mage: +50% Cursed Burst explosion",
         3,
         "Curse",
         9,
@@ -1310,7 +1310,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Malediction",
-        "+8% magic crit",
+        "+8% magic crit - Cursed Mage: Burst refunds more Energy, Collapse starts later",
         4,
         "Curse",
         10,
