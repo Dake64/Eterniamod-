@@ -127,7 +127,8 @@ namespace Eternia.Content.Players
                     Player.GetDamage(DamageClass.Summon) += m * 0.02f;
                     break;
                 case "Necromancer":
-                    Player.GetDamage(DamageClass.Summon) += m * 0.04f;
+                    // A Mage subclass: its undead scale with magic damage.
+                    Player.GetDamage(DamageClass.Magic) += m * 0.04f;
                     break;
 
                 // ---- Not promoted yet: a generic class bonus ----
@@ -161,7 +162,7 @@ namespace Eternia.Content.Players
                 "Beast Tamer" => "summon damage",
                 "Advanced Summoner" => "summon speed",
                 "Tech Summoner" => "summon crit",
-                "Necromancer" => "necro + minion slots",
+                "Necromancer" => "magic + the undead",
                 _ => "class power"
             };
         }

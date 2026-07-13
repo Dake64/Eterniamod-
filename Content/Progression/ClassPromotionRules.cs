@@ -103,7 +103,7 @@ namespace Eternia.Content.Progression
                     promotion == "Stunner",
                 SoulId.Mage => promotion == "Elementalist" ||
                     promotion == "Cursed Mage" ||
-                    promotion == "Infinity Mage" ||
+                    promotion == "Necromancer" ||
                     promotion == "Arcane Bard",
                 SoulId.Ranger => promotion == "Energy Gunner" ||
                     promotion == "Archer" ||
@@ -111,8 +111,7 @@ namespace Eternia.Content.Progression
                     promotion == "Virtuoso",
                 SoulId.Summoner => promotion == "Beast Tamer" ||
                     promotion == "Advanced Summoner" ||
-                    promotion == "Tech Summoner" ||
-                    promotion == "Necromancer",
+                    promotion == "Tech Summoner",
                 _ => false
             };
         }
@@ -296,9 +295,10 @@ namespace Eternia.Content.Progression
                 return "Cursed Mage";
             }
 
+            // The Infinity path now leads to the Necromancer (a Mage subclass).
             if (highest == affinities.InfinityAffinity)
             {
-                return "Infinity Mage";
+                return "Necromancer";
             }
 
             return "Arcane Bard";
@@ -317,11 +317,6 @@ namespace Eternia.Content.Progression
             if (highest <= 0)
             {
                 return fallback;
-            }
-
-            if (highest == affinities.ShadowAffinity)
-            {
-                return "Necromancer";
             }
 
             if (highest == affinities.BeastAffinity)

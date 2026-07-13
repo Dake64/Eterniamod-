@@ -773,9 +773,11 @@ namespace Eternia.Content.UI
         // code -- re-enabling one later is just adding its affinity back to this set.
         //   Warrior : Bleed (Swordsman), Combo (Fighter), Defense (Guardian/Escudero)
         //   Mage    : Elemental (5 element sub-branches Fire/Ice/Lightning/Wind/Earth),
-        //             Curse, Infinity   (Arcane / Arcane Bard hidden)
+        //             Curse, Infinity (the Infinity path promotes to the NECROMANCER)
+        //             (Arcane / Arcane Bard hidden)
         //   Ranger  : Energy, Bow, Gun             (Music / Virtuoso hidden)
-        //   Summoner: Beast, Tech, Shadow          (Fusion / Advanced Summoner hidden)
+        //   Summoner: Beast, Fusion, Tech          (Shadow hidden -- the Necromancer
+        //             moved to the Mage tree)
         private static readonly HashSet<string> V1VisibleAffinities =
             new HashSet<string>
             {
@@ -784,7 +786,7 @@ namespace Eternia.Content.UI
                 "Elemental", "Fire", "Ice", "Lightning", "Wind", "Earth",
                 "Curse", "Infinity",
                 "Energy", "Bow", "Gun",
-                "Beast", "Tech", "Shadow"
+                "Beast", "Fusion", "Tech"
             };
 
         private static bool IsAffinityVisible(string affinity) =>

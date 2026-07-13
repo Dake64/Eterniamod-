@@ -175,7 +175,7 @@ foreach ($check in @(
         Name="NecromancerPlayer"
         Content=$necromancer
         Helper="IsActiveNecromancer"
-        Soul="Summoner"
+        Soul="Mage"
         Methods=@("PostUpdate")
     },
     @{
@@ -312,7 +312,7 @@ foreach ($promotion in @(
     @{ Soul="Mage"; Subclass="Cursed Mage" },
     @{ Soul="Mage"; Subclass="Infinity Mage" },
     @{ Soul="Mage"; Subclass="Arcane Bard" },
-    @{ Soul="Summoner"; Subclass="Necromancer" },
+    @{ Soul="Mage"; Subclass="Necromancer" },
     @{ Soul="Summoner"; Subclass="Beast Tamer" },
     @{ Soul="Summoner"; Subclass="Advanced Summoner" },
     @{ Soul="Summoner"; Subclass="Tech Summoner" })) {

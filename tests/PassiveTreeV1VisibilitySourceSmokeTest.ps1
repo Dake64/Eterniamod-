@@ -43,15 +43,15 @@ $visible = @(
     "Bleed", "Combo", "Defense",       # Warrior: Swordsman / Fighter / Guardian
     "Elemental",                       # Mage: Elementalist affinity meter...
     "Fire", "Ice", "Lightning", "Wind", "Earth",  # ...and its 5 element sub-branches
-    "Curse", "Infinity",               # Mage: Cursed Mage / Infinity Mage
+    "Curse", "Infinity",               # Mage: Cursed Mage / Necromancer (Infinity path)
     "Energy", "Bow", "Gun",            # Ranger
-    "Beast", "Tech", "Shadow"          # Summoner
+    "Beast", "Fusion", "Tech"          # Summoner: Beast Tamer / Advanced / Tech
 )
 $hidden = @(
     "Precision", "Rage", "Control",    # Warrior: Yoyo / Berserker / Stunner
     "Arcane",                          # Mage: Arcane Bard
     "Music",                           # Ranger: Virtuoso
-    "Fusion"                           # Summoner: Advanced Summoner
+    "Shadow"                           # Summoner: Shadow (Necromancer moved to Mage)
 )
 
 foreach ($a in $visible) {

@@ -23,7 +23,7 @@ namespace Eternia.Content.Items.Weapons.Summoner
             Item.width = 32;
             Item.height = 32;
             Item.damage = 26;
-            Item.DamageType = DamageClass.Summon;
+            Item.DamageType = DamageClass.Magic; // the Necromancer is a Mage subclass
             Item.useTime = 26;
             Item.useAnimation = 26;
             Item.useStyle = ItemUseStyleID.HoldUp;
@@ -96,12 +96,14 @@ namespace Eternia.Content.Items.Weapons.Summoner
 
             if (player.whoAmI == Main.myPlayer)
             {
+                // Spawn with the fully-modified magic damage so the undead scale with the
+                // Necromancer's magic bonuses.
                 Projectile.NewProjectile(
                     player.GetSource_ItemUse(Item),
                     player.Center,
                     Vector2.Zero,
                     entry.MinionType(),
-                    Item.damage,
+                    player.GetWeaponDamage(Item),
                     Item.knockBack,
                     player.whoAmI);
             }

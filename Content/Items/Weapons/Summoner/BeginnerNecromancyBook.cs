@@ -17,7 +17,7 @@ namespace Eternia.Content.Items.Weapons.Summoner
             Item.width = 32;
             Item.height = 32;
             Item.damage = 26;
-            Item.DamageType = DamageClass.Summon;
+            Item.DamageType = DamageClass.Magic; // the Necromancer is a Mage subclass
             Item.useTime = 30;
             Item.useAnimation = 30;
             Item.useStyle = ItemUseStyleID.HoldUp;

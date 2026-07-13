@@ -187,12 +187,14 @@ namespace Eternia.Content.Players
             // NECROMANCER
             // =============================================
 
-            else if (IsActiveSubclass(SoulId.Summoner, "Necromancer"))
+            // The Necromancer is a MAGE subclass: dark magic + a bigger mana pool to
+            // sustain the reserved-life, mana-hungry undead.
+            else if (IsActiveSubclass(SoulId.Mage, "Necromancer"))
             {
-                Player.maxMinions += 2;
-
-                Player.GetDamage(DamageClass.Summon)
+                Player.GetDamage(DamageClass.Magic)
                     += 0.10f;
+
+                Player.statManaMax2 += 20;
             }
 
             // =============================================

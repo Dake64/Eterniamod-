@@ -15,6 +15,31 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-10 - El Nigromante pasa a ser subclase de MAGO (no Invocador)
+
+- Correccion (usuario): la clase base del Nigromante es Mago. Reemplaza al Mago del
+  Infinito en la v1 (via la afinidad Infinity). Encaja mejor: el drenaje de mana es una
+  mecanica muy de Mago.
+- Cambios:
+  - `NecromancerPlayer.IsActiveNecromancer` -> gate en SoulId.Mage.
+  - `ClassPromotionRules`: Necromancer pasa de Summoner a Mage. Afinidad Infinity ->
+    "Necromancer" (antes Infinity Mage, que queda sin construir/oculto). Se quita
+    Necromancer de las promociones de Summoner; la afinidad Shadow del Summoner queda
+    sin subclase (cae al fallback).
+  - Clase de daño MAGIC (para que un Mago no dispare la penalizacion de Soul con el
+    Grimorio, y para que los no-muertos escalen con la magia): GrimoireOfDeath,
+    BeginnerNecromancyBook y BaseNecroMinion pasan de Summon a Magic.
+  - `SubclassEffectsPlayer`: Necromancer bajo Mago (+10% magia, +20 mana max para
+    sostener el ejercito que drena mana).
+  - Presentacion: SoulUI (especialidad/bono) y MilestonePlayer (milestone -> daño magico)
+    actualizados; se quitan los bonos de invocador (minion slots/summon) obsoletos.
+  - Visibilidad v1: Mago mantiene Elemental/Curse/Infinity (Infinity = ruta Necromancer);
+    Summoner cambia Shadow -> Fusion (Beast/Fusion/Tech).
+- Tests actualizados: PromotionRules (Infinity->Necromancer; Shadow ya no promueve),
+  SubclassRuntimeGating (Necromancer requiere alma de Mago), v1 visibility (Shadow<->
+  Fusion). Suite PASS=92.
+- Verificacion: build 0/0; suite PASS=92. SIN probar in-game.
+
 ## 2026-07-10 - Nigromante: visibilidad de la coleccion en el HUD
 
 - Objetivo: cerrar el bucle de coleccion con feedback -> el jugador ve cuanto lleva del

@@ -81,21 +81,22 @@ AssertEqual(
         none with { BowAffinity = 2 }),
     "ranger bow promotion");
 
+// The Necromancer is now a MAGE subclass reached via the Infinity path.
 AssertEqual(
     "Necromancer",
     ClassPromotionRules.ResolveSubclass(
-        SoulId.Summoner,
+        SoulId.Mage,
         hardMode: true,
-        none with { ShadowAffinity = 5 }),
-    "summoner shadow promotion");
+        none with { InfinityAffinity = 5 }),
+    "mage infinity promotion (Necromancer)");
 
 AssertEqual(
-    "Necromancer",
+    "Beast Tamer",
     ClassPromotionRules.ResolveSubclass(
         SoulId.Summoner,
         hardMode: true,
         none with { BeastAffinity = 5, ShadowAffinity = 5 }),
-    "summoner shadow tie promotion");
+    "summoner beast wins the tie (Shadow no longer promotes)");
 
 AssertEqual(
     "Shadow",

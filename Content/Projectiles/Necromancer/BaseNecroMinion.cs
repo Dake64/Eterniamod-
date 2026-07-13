@@ -27,7 +27,8 @@ namespace Eternia.Content.Projectiles.Necromancer
             Projectile.height = 40;
             Projectile.friendly = true;
             Projectile.minion = true;
-            Projectile.DamageType = Terraria.ModLoader.DamageClass.Summon;
+            // Necromancy is dark MAGIC: the undead scale with the Mage's magic damage.
+            Projectile.DamageType = Terraria.ModLoader.DamageClass.Magic;
             Projectile.penetrate = -1;
             Projectile.timeLeft = 18000;
             Projectile.tileCollide = false;
