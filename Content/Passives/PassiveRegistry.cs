@@ -758,7 +758,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Energy Core",
-        "+5% ranged damage",
+        "+5% ranged damage - Energy Gunner: -30% heat per shot (Cooling)",
         1,
         "Energy",
         3,
@@ -769,7 +769,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Overcharge",
-        "+8% crit chance",
+        "+8% crit chance - Energy Gunner: more damage the hotter you run (Unstable Core)",
         1,
         "Energy",
         4,
@@ -780,7 +780,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Plasma Reactor",
-        "+12% energy damage",
+        "+12% energy damage - Energy Gunner: critical-zone shots pierce & burn (Plasma Conductors)",
         2,
         "Energy",
         5,
@@ -791,7 +791,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Ion Surge",
-        "+8% ranged damage",
+        "+8% ranged damage - Energy Gunner: +50% cooling speed (Heat Sinks)",
         2,
         "Energy",
         6,
@@ -802,7 +802,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Fusion Cannon",
-        "+10% ranged crit",
+        "+10% ranged crit - Energy Gunner: halves overheat self-damage (Refractory Plating)",
         3,
         "Energy",
         7,
@@ -813,7 +813,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Overload",
-        "+8% ranged damage",
+        "+8% ranged damage - Energy Gunner: overheat blasts nearby foes (Emergency Reactor)",
         3,
         "Energy",
         8,
@@ -824,7 +824,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Particle Beam",
-        "+10% ranged crit",
+        "+10% ranged crit - Energy Gunner: +8% crit in the critical zone",
         3,
         "Energy",
         9,
@@ -835,7 +835,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Reactor Core",
-        "+6% ranged speed",
+        "+6% ranged speed - Energy Gunner: +30 max temperature (Upgraded Reactor)",
         4,
         "Energy",
         10,

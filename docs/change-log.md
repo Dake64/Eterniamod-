@@ -15,6 +15,114 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-13 - Energy Gunner (Ranger): mecanica de TEMPERATURA por zonas
+
+- Objetivo (spec): el Energy Gunner premia mantener sus armas en la zona 70-99% de
+  temperatura. Rediseño del viejo Heat lineal + Overdrive a un sistema de zonas 0-100%.
+- Archivos principales:
+  - `Content/Players/EnergyShooterPlayer.cs` (reescrito): `Heat`, `Overheated`, `MaxHeat`
+    (100 + 30 con Reactor Core), `HeatPercent`, `Zone` (0 stable / 1 hot / 2 critical).
+  - `Content/Globals/EnergyGunnerGlobalProjectile.cs` (nuevo): Conductores de Plasma.
+  - `Content/UI/EnergyHeatUI.cs`: barra por zonas (cyan/naranja/rojo), marcas 40%/70%,
+    etiqueta STABLE/HOT/CRITICAL/OVERHEAT + %.
+  - `Content/UI/SoulUI.cs`: specialty y linea de estado del Energy Gunner en % + zona.
+  - `Content/Passives/PassiveRegistry.cs`: 8 nodos Energy re-describen su rol termico.
+- Mecanica:
+  - Disparar sube calor (`CanUseItem`). Zonas: 0-40 sin bonus; 40-70 +10% daño/cadencia;
+    70-99 +20% daño/cadencia +10% crit; 100 = OVERHEAT.
+  - Overheat: bloquea el arma, true damage al jugador (30, o 15 con Fusion Cannon),
+    Burning, y sigue bloqueada hasta enfriar a <=30% de MaxHeat.
+  - Passive shaping: Reactor Core (+techo), Energy Core (-calor/disparo), Ion Surge
+    (enfria mas rapido), Fusion Cannon (menos true damage), Overload (explosion de
+    emergencia al fundirse), Overcharge (daño escala con calor), Particle Beam (+crit en
+    critico), Plasma Reactor (Conductores de Plasma: perfora+quema+crece en critico).
+- Verificacion: build 0/0; suite PASS=95 (nuevo
+  `tests/EnergyGunnerTemperatureSourceSmokeTest.ps1`).
+- Pendientes/riesgos: SIN probar en juego. Sin commit aun.
+
+## 2026-07-13 - Energy Gunner Pass 2: arsenal completo (spec ampliado) + obtencion
+
+- Objetivo (spec ampliado del usuario): 9 prototipos pre-HM (SIN temperatura) + 21 armas de
+  energia HM (CON temperatura) en 5 tramos de progresion, y el requisito clave de que "cada
+  arma genere una cantidad distinta de calor" y se SIENTA diferente (cadena, guiado,
+  perforacion, plasma/AoE, precision, haz).
+- Marcador `Content/Items/Weapons/Ranger/IEnergyWeapon.cs` (ahora declara `HeatPerShot`):
+  SOLO las armas que lo implementan generan calor. `EnergyShooterPlayer` exige
+  `IsEnergyWeapon(item)` en sus 4 hooks de item y lee el `HeatPerShot` del arma equipada ->
+  cada arma sube el calor distinto; prototipos y armas vanilla quedan FRIAS (honra el spec).
+- Base `EnergyWeapon.cs` (: ModItem, IEnergyWeapon): sin municion (reactor integrado) +
+  knobs virtuales (HeatPerShot, EnergyProjectile, Pierce, ShotCount, SpreadDegrees, ProjScale)
+  con un `Shoot` compartido, para que cada arma se configure con pocas lineas.
+- Proyectiles (`Content/Projectiles/Ranger/`, todos ranged, reusan textura
+  LightningBoltProjectile con tintes): `EnergyBolt` (recto), `EnergyPlasmaBolt` (explota/AoE),
+  `EnergyChainBolt` (cadena a enemigos cercanos), `EnergyHomingBolt` (guiado).
+- Materiales (5, `Content/Items/Materials/`): EnergeticFragment, DamagedCircuit,
+  EnergyCrystal, PlasmaCore, AncientBattery (base `TechMaterial`).
+- Prototipos pre-HM (9, balas, NO IEnergyWeapon): Early = CoilPistol, SparkCarbine,
+  ElectromagneticRifle; Mid = ExperimentalPlasmaShotgun, TeslaRepeater, PulseLauncher;
+  Late = UnstablePlasmaCannon, ExperimentalPhotonRifle, RailgunPrototype.
+- Arsenal energia HM (21, IEnergyWeapon, calor y rareza escalan por tramo):
+  - Inicio HM (calor 3-5): LaserRifle, PlasmaCarbine, BeamPistol, PulseSMG.
+  - Post-mechs (5-8): RailgunMkII, TeslaCannon(cadena), IonRifle(guiado), PlasmaShotgun(AoE x5).
+  - Post-Plantera (6-9): PhotonBlaster, PulseAccelerator, ArcCannon(cadena), QuantumRifle(guiado).
+  - Post-Golem (11-14): NovaCannon(AoE), FusionRifle(perfora), NeutronLauncher(guiado), HyperBeam(haz).
+  - Post-Moon Lord (16-22): AntimatterCannon(AoE), SingularityRifle, StellarRailgun(precision),
+    CelestialBeam(haz), EterniaReactorCannon (firma, doble plasma).
+- Obtencion: `Content/Globals/EnergyDropsGlobalNPC.cs` (materiales de Meteor Heads / Dungeon /
+  Martian Madness; PhotonBlaster de Martian Saucer; EterniaReactorCannon de Moon Lord) +
+  `Content/Systems/EnergyChestLoot.cs` (AncientBattery en cofres del Dungeon). El resto se
+  craftea (Anvil pre-HM, MythrilAnvil HM, LunarCraftingStation en el tramo Moon Lord).
+- Localizacion: 35 items + EnergyBolt en en-US.hjson (multi-linea; parsea con Hjson.dll).
+- Verificacion: build 0/0; suite PASS=95; hjson parsea OK. Test ampliado cubre calor
+  por-arma (HeatPerShot), los 9 prototipos y que ninguno implemente IEnergyWeapon.
+- Desbloqueo: NO se usa un item "Energy Soul" (el usuario confirmo que fue error del spec).
+  La subclase se activa como todas: tras el Muro de Carne, el Ranger se promueve a la
+  subclase con la afinidad de pasivas mas alta. Ya cubierto por ClassPromotionRules.
+- Pendientes/riesgos: SIN probar en juego (balance de daño/calor/recetas sin tunear en vivo;
+  "haz continuo" es EMULADO con bolts rapidos muy perforantes, no un rayo sostenido real).
+  Sin commit aun.
+
+## 2026-07-10 - Fix: en-US.hjson malformado (el mod no cargaba) + test de parseo
+
+- Sintoma (usuario): "The localization file en-US.hjson is malformed and failed to load /
+  Name is not closed" -> los mods se desactivan al arrancar.
+- Causa: los 10 Grimorios se añadieron en formato inline de una linea
+  (`WarGrimoire: { DisplayName: X, Tooltip: "" }`). Hjson lee los strings SIN comillas
+  hasta el fin de linea, asi que la coma y el resto se tragaban en el valor y rompian el
+  parseo (las llaves dejaban de cuadrar).
+- Fix: reescritos los 10 en formato multilinea (DisplayName/Tooltip en lineas propias),
+  como el resto del archivo.
+- Regresion: nuevo `tests/LocalizationParsesSourceSmokeTest.ps1` que PARSEA en-US.hjson
+  con la libreria Hjson real de tModLoader (no solo grep de claves) -> este tipo de error
+  ahora falla en la suite, no al cargar el mod. (Skippea si no encuentra la instalacion.)
+- Verificacion: hjson parsea OK; build 0/0; suite PASS=94.
+
+## 2026-07-10 - Nigromante Fase 4: Grimorios Especializados (el "arma principal")
+
+- Objetivo (spec): las criaturas dominadas deciden QUE invocas; el Grimorio equipado
+  decide COMO se comporta TODO el ejercito. Misma coleccion, estilos totalmente distintos.
+- Sistema: `Content/Necromancy/ISpecializedGrimoire.cs` (modificadores: SummonDamageMult,
+  ReserveMult, ManaMult, MoveSpeedMult, SizeMult, DefenseDelta, Lifesteal, OnHitDebuff,
+  BossEchoMult, CommonMult) + base `Content/Items/Weapons/Summoner/SpecializedGrimoire.cs`
+  (logica de invocar/ciclar movida aqui desde GrimoireOfDeath + virtuals neutrales).
+- Cableo: `NecromancerPlayer` rastrea el Grimorio activo (el sostenido, o el ultimo) y
+  aplica ReserveMult (vida reservada), ManaMult (drenaje) y DefenseDelta. `BaseNecroMinion`
+  lo lee: ModifyHitNPC escala el daño (con split BossEcho/Common para el Rey Muerto),
+  OnHitNPC aplica lifesteal + debuff, y en AI aplica SizeMult (escala) y MoveSpeedMult.
+  Ecos de jefe marcados con IsBossEcho.
+- 10 GRIMORIOS (crafteables, uno equipado a la vez):
+  Pre-HM: Basic (neutral), War (+25% daño, -8 def), Sacrifice (-40% vida reservada, +50%
+  mana), Arcane (-40% mana, -15% daño), Commander (+40% velocidad, -10% daño).
+  HM: Lich (lifesteal, +30% reserva), Plague (Venom on-hit, -10% daño), Swarm (-50%
+  reserva, mas pequeños/debiles), Titan (+60% reserva/tamaño/daño), Void (+20% daño +
+  Shadowflame, +50% mana), Dead King (ecos de jefe +100%, comunes -50%).
+- Tests: `NecromancerGrimoireVariantsSourceSmokeTest` (contrato, base, 10 grimorios con su
+  modificador firma + crafteo, player aplica reserva/mana/def, minion aplica daño/lifesteal/
+  debuff/boss). Ajustados NecromancerGrimoire/Rank (logica ahora en la base). Suite PASS=93.
+- Verificacion: build 0/0; suite PASS=93. SIN probar in-game.
+- Con esto el Nigromante esta completo al 100% del spec (nucleo + coleccion + rangos/paginas
+  + jefes + grimorios especializados). Pendiente: bestiario ampliado; arte real; balance.
+
 ## 2026-07-10 - El Nigromante pasa a ser subclase de MAGO (no Invocador)
 
 - Correccion (usuario): la clase base del Nigromante es Mago. Reemplaza al Mago del

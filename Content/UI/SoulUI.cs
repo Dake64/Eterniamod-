@@ -323,7 +323,7 @@ namespace Eternia.Content.UI
             "Stunner" => "Charge melee to stun on hit",
             "Archer" => "Focus into an empowered Perfect Shot",
             "Gunner" => "Hit the sweet spot for Dead Eye",
-            "Energy Gunner" => "Build Heat for Overdrive (mind overheat)",
+            "Energy Gunner" => "Ride the 70-99% heat zone; don't overheat",
             "Virtuoso" => "Play note melodies for buffs",
             "Elementalist" => "Swap 5 elemental affinities that reshape all magic",
             "Cursed Mage" => "Cursed energy + risky corruption",
@@ -400,7 +400,10 @@ namespace Eternia.Content.UI
                 case "Gunner":
                     return $"Dead Eye {(int)player.GetModPlayer<GunnerPlayer>().DeadEyeEnergy}/100";
                 case "Energy Gunner":
-                    return $"Heat {(int)player.GetModPlayer<EnergyShooterPlayer>().Heat}/100";
+                    var eg = player.GetModPlayer<EnergyShooterPlayer>();
+                    return eg.Overheated
+                        ? "Heat: OVERHEATED"
+                        : $"Heat {(int)eg.HeatPercent}% ({(eg.Zone == 2 ? "critical" : eg.Zone == 1 ? "hot" : "stable")})";
                 case "Virtuoso":
                     return $"Notes {player.GetModPlayer<VirtuosoPlayer>().Notes.Count}/3";
 

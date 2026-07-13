@@ -121,22 +121,20 @@ namespace Eternia.Content.UI
 
                 if (filled)
                 {
-                    float progress =
-                        i / (float)totalSegments;
+                    // Cool below 40%, hot 40-70%, searing 70-99%.
+                    float pct = (i + 0.5f) / totalSegments * 100f;
 
                     color =
-                        Color.Lerp(
-                            Color.Cyan,
-                            Color.Red,
-                            progress
-                        );
+                        pct >= 70f ? Color.OrangeRed :
+                        pct >= 40f ? Color.Orange :
+                        Color.Cyan;
                 }
 
                 // =========================================
-                // OVERDRIVE READY MARK
+                // ZONE THRESHOLD MARKS (40% Hot, 70% Critical)
                 // =========================================
 
-                if (i == 5)
+                if (i == 4 || i == 7)
                 {
                     Rectangle marker =
                         new Rectangle(
@@ -149,7 +147,7 @@ namespace Eternia.Content.UI
                     spriteBatch.Draw(
                         texture,
                         marker,
-                        Color.Lime
+                        i == 7 ? Color.Red : Color.Gold
                     );
                 }
 
@@ -170,52 +168,43 @@ namespace Eternia.Content.UI
             }
 
             // =============================================
-            // TEXT
+            // ZONE LABEL
             // =============================================
+
+            string zoneText;
+            Color zoneColor;
+
+            if (energyPlayer.Overheated)
+            {
+                zoneText = "OVERHEAT";
+                zoneColor = Color.Red;
+            }
+            else
+            {
+                switch (energyPlayer.Zone)
+                {
+                    case 2:
+                        zoneText = $"CRITICAL {(int)energyPlayer.HeatPercent}%";
+                        zoneColor = Color.OrangeRed;
+                        break;
+                    case 1:
+                        zoneText = $"HOT {(int)energyPlayer.HeatPercent}%";
+                        zoneColor = Color.Orange;
+                        break;
+                    default:
+                        zoneText = $"STABLE {(int)energyPlayer.HeatPercent}%";
+                        zoneColor = Color.Cyan;
+                        break;
+                }
+            }
 
             EterniaUI.DrawText(
                 spriteBatch,
-                energyPlayer.Overheated
-                ? "OVERHEAT"
-                : "HEAT",
-                drawPos + new Vector2(18, -20),
-                energyPlayer.Overheated
-                ? Color.Red
-                : Color.White,
+                zoneText,
+                drawPos + new Vector2(0, -20),
+                zoneColor,
                 0.7f
             );
-
-            // =============================================
-            // OVERDRIVE ACTIVE
-            // =============================================
-
-            if (energyPlayer.Overdrive)
-            {
-                EterniaUI.DrawPill(
-                    spriteBatch,
-                    new Rectangle((int)drawPos.X - 8, (int)drawPos.Y - 42, 92, 20),
-                    "OVERDRIVE",
-                    Color.Cyan,
-                    0.48f
-                );
-            }
-
-            // =============================================
-            // READY
-            // =============================================
-
-            if (!energyPlayer.Overdrive
-                && !energyPlayer.Overheated
-                && energyPlayer.Heat >= 50f)
-            {
-                EterniaUI.DrawPill(
-                    spriteBatch,
-                    new Rectangle((int)drawPos.X - 2, (int)drawPos.Y - 42, 72, 20),
-                    "PRESS Q",
-                    Color.Lime,
-                    0.48f
-                );
-            }
 
             return true;
         }
