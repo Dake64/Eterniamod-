@@ -24,11 +24,25 @@ if ($content -notmatch "SoulInventory\.HasAnySoulItem") {
     throw "EternalNPCSystem should skip onboarding spawn for players who already own a Soul item."
 }
 
-if ($npc -notmatch "bool ownsSoulItem =\s*SoulInventory\.HasAnySoulItem\(player\)") {
+# Both the chat and the buttons must key off whether the player OWNS a Soul item --
+# not off the currently active accessory Soul, which can be empty while a Soul sits in
+# the inventory. (Asserted by behaviour, not by variable name, so the check survives a
+# rewrite of the NPC.)
+$getChat = [regex]::Match(
+    $npc,
+    "public override string GetChat\(\)[\s\S]*?\n        \}",
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($getChat -notmatch "SoulInventory\.HasAnySoulItem") {
     throw "EternalNPC chat should use real Soul item ownership, not only the currently active accessory Soul."
 }
 
-if ($npc -notmatch "SetChatButtons[\s\S]*SoulInventory\.HasAnySoulItem\(Main\.LocalPlayer\)") {
+$buttons = [regex]::Match(
+    $npc,
+    "public override void SetChatButtons\([\s\S]*?\n        \}",
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($buttons -notmatch "SoulInventory\.HasAnySoulItem") {
     throw "EternalNPC should not offer another Empty Soul button when the player already owns any Soul item."
 }
 

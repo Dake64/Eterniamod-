@@ -15,6 +15,33 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-14 - El ETERNAL: tienda por alma + "leer tu alma" (revela tu promocion)
+
+- Contexto: el Eternal era el UNICO NPC del mod, de las poquisimas cosas que YA tienen arte
+  (EternalNPC.png)... y lo unico que hacia era regalarte un Alma Vacia. No vendia nada.
+- LO MAS IMPORTANTE -- "Read my soul": la promocion se decide por "la afinidad mas alta gana",
+  y NADA en el juego te decia hacia que subclase ibas. Era informacion OCULTA que solo
+  descubrias al matar al Muro de Carne, con los puntos ya gastados y sin vuelta atras. Ahora
+  el Eternal (que lee almas) te dice tu afinidad dominante, su valor, y en que subclase
+  despertarias SI el Muro cayera hoy. Si ya estas promovido, te dice que afinidad lo sello.
+- `SubclassPlayer` expone PredictedSubclass() / DominantAffinityName() / DominantAffinityValue(),
+  reutilizando su PROPIA logica de promocion (el NPC no la re-deriva -> no puede desincronizarse).
+  PredictedSubclass llama a ResolveSubclass con hardMode=true a proposito, para poder adivinar
+  antes del Muro.
+- TIENDA DINAMICA POR ALMA: el stock se reconstruye segun el Alma que llevas (AddShops +
+  ModifyActiveShop). Warrior -> Training Gauntlet/Shield + Soul of Steel; Mage -> Apprentice
+  Wand + Soul of Ember; Ranger -> Training Bow/Pistol + Soul of the Hunt; Summoner -> Training
+  Whip + Soul of the Pack. En Hardmode ademas vende la SOUL REFORGE por 25 de oro (la salida
+  cara de un build, ahora tambien comprable).
+- Dialogo reactivo: cambia si no tienes alma / tienes Alma Vacia / no has gastado puntos / ya
+  te promoviste.
+- Verificacion: build 0/0; suite PASS=107 (nuevo `tests/EternalNPCSourceSmokeTest.ps1`).
+  Ajustado `EternalNPCSystemSourceSmokeTest`: comprobaba la propiedad correcta (que el chat use
+  la POSESION del objeto Alma, no el alma activa) pero por el NOMBRE EXACTO de una variable
+  local; ahora lo comprueba por comportamiento dentro de GetChat/SetChatButtons, asi sobrevive
+  a una reescritura sin perder la proteccion.
+- Pendientes/riesgos: SIN probar en juego.
+
 ## 2026-07-14 - SOUL REFORGE: el respec (la unica salida de un build)
 
 - Problema encontrado auditando el codigo: `UnlockedPassives` solo tenia UNA operacion en todo

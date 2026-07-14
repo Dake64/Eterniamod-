@@ -20,6 +20,43 @@ namespace Eternia.Content.Players
             DetectSubclass();
         }
 
+        // --- Foresight (used by the Eternal, who reads souls) ---------------------------
+        // Which subclass you WOULD awaken as if the Wall of Flesh fell right now. Promotion is
+        // decided by whichever affinity you fed most, and nothing else in the game tells you
+        // where you are heading -- so the Eternal can.
+
+        public string PredictedSubclass()
+        {
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+            var soulPlayer = Player.GetModPlayer<EterniaPlayer>();
+
+            return ClassPromotionRules.ResolveSubclass(
+                soulPlayer.ActiveSoul,
+                true, // pretend Hardmode
+                CreateAffinitySnapshot(stats),
+                GetLockedPromotion(soulPlayer.ActiveSoul));
+        }
+
+        public string DominantAffinityName()
+        {
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+            var soulPlayer = Player.GetModPlayer<EterniaPlayer>();
+
+            return ClassPromotionRules.GetDominantAffinityName(
+                soulPlayer.ActiveSoul,
+                CreateAffinitySnapshot(stats));
+        }
+
+        public int DominantAffinityValue()
+        {
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+            var soulPlayer = Player.GetModPlayer<EterniaPlayer>();
+
+            return ClassPromotionRules.GetDominantAffinityValue(
+                soulPlayer.ActiveSoul,
+                CreateAffinitySnapshot(stats));
+        }
+
         private void DetectSubclass()
         {
             var stats =
