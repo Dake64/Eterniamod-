@@ -1,4 +1,4 @@
-# Change log de desarrollo
+﻿# Change log de desarrollo
 
 Este archivo es para continuidad entre IAs. Registrar aqui cambios no triviales
 que quedan en el worktree.
@@ -15,26 +15,174 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-14 - Advanced Summoner: rama Fusion + LEGION que se obtiene FUSIONANDO
+
+- Cierra las 12 subclases v1. Obtencion elegida por el usuario: el Advanced Summoner no doma
+  (Beast Tamer) ni ensambla piezas (Tech Summoner) -- FUSIONA SUS PROPIAS INVOCACIONES.
+  (Nota: una version previa de esta subclase se construyo con recetas de materiales y luego
+  con un sistema de componentes; ambas se revirtieron. Esta es la definitiva.)
+- CADENA DE FUSION (la staff anterior SE CONSUME):
+  - Wisp Lantern = la SEMILLA: la unica crafteada de materiales crudos (madera+antorchas),
+    repetible. Todo lo demas sale de ella.
+  - 2x Wisp            -> Spirit Banner (Spirit Soldier)
+  - Soldier + Wisp     -> Construct Core (Arcane Construct)   [mejor pre-HM]
+  - Construct + Soldier-> Fusion Matrix (Fusion Golem)        [primer HM, rompe armadura]
+  - Golem + Construct  -> Sentinel Beacon (Arc Sentinel)      [post-mechs, electrifica]
+  - Sentinel + Golem   -> Singularity Core (Singularity Wraith) [final, mitad de defensa]
+  Tension de diseño: la mecanica LEGION quiere el roster LLENO, pero fusionar te come staves
+  -> hay que volver a craftear semillas. El coste es real.
+- Arsenal/mecanica de la legion: `LegionMinion` (base) -- cada legionario cuesta MEDIO slot
+  (fieldas el doble) y tiene SINERGIA DE ENJAMBRE (+6% daño por cada otro legionario vivo,
+  tope +60%). `LegionMinionPlayer` (conteo por frame) + `LegionMinionBuff` (buff compartido).
+- Rama Fusion cableada en `AdvancedSummonerPlayer`: Perfect Fusion (Command +50% mas rapido),
+  Ultimate Fusion (bonus de Legion 15%->24%), Synchronized Assault / Transcendent Fusion /
+  Overdrive / Singularity (Overclock mas rapido, mas fuerte, mas largo, +4 al cap), keystone
+  Living Swarm (el bonus de Legion paga hasta 130% de roster).
+- 2 latigos HM (gated a Advanced Summoner): Fusion Lash (52) -> Legion Lash (100, endgame).
+  Subido el tag del FusionWhipProjectile existente (3 -> 12).
+- UI: `Content/UI/AdvancedSummonerUI.cs` (Command + OVERCLOCK + "LEGION n/cap").
+- Verificacion: build 0/0; suite verde (nuevo `tests/AdvancedSummonerSourceSmokeTest.ps1`,
+  que fija la cadena de fusion: la semilla NO se fusiona y cada escalon SI consume el anterior).
+- Pendientes/riesgos: SIN probar en juego. Sin commit aun.
+
+## 2026-07-14 - Tech Summoner (Summoner): rama Tech + flota de DRONES (se FABRICAN)
+
+- Contexto: la mecanica POWER CORE/OVERDRIVE ya existia (bateria que se carga sola, mas
+  rapido con drones desplegados; a tope, Overdrive = pico de daño + escudo). Faltaba moldear
+  la rama Tech y darle arsenal. Decision del usuario: sus invocaciones se CRAFTEAN (esta era
+  la instruccion que por error aplique al Advanced Summoner y luego revertí).
+- Rama Tech cableada en `Content/Players/TechSummonerPlayer.cs`: Tech Protocol (el core carga
+  +50% mas rapido), War Machine (un core cargado da 12%->20% de daño), Overclocked Core
+  (Overdrive dura +3s), Nanoswarm (Overdrive da +40% en vez de +25%), keystone Combat
+  Protocol (escudo de Overdrive 15->28 def). Combat AI y Targeting Array se leen en el DRON
+  (cadencia -30%, alcance +40%). Descripciones de los nodos Tech reformadas.
+- Identidad mecanica de los drones: son minions A DISTANCIA -- mantienen formacion alrededor
+  del ingeniero y DISPARAN (MinionContactDamage=false), a diferencia de las bestias del Beast
+  Tamer que embisten. `Content/Projectiles/Summoner/DroneMinion.cs` (base, con hook
+  ConfigureShot para que cada dron moldee su disparo) + `DroneLaser.cs` (daño de invocacion,
+  lleva el debuff de su dron) + `DroneMinionPlayer`/`DroneMinionBuff` (buff compartido).
+- 6 drones: Scout, Repeater (cadencia alta), Tesla (electrifica), Plasma (quema), Rail
+  (francotirador, perfora una linea), Omega (apex: cadencia brutal + perforacion).
+- CRAFTEO EN 2 ETAPAS (la identidad de la subclase -- el ingeniero CONSTRUYE su flota):
+  1) Forjas 3 componentes (`Content/Items/Materials/`, base `DroneComponent`): Drone Chassis
+     (armazon), Servo Core (motor), Command Chip (cerebro) -- hechos de los materiales tech
+     que YA dropean en el mundo (EnergeticFragment/DamagedCircuit/EnergyCrystal), reusando la
+     economia de materiales del Energy Gunner.
+  2) Ensamblas el dron: cada uno de los 6 kits exige Chassis + Servo + Chip (+ material de
+     tier). Scout (1+1+1) -> ... -> Omega (6+5+5 + 15 Ancient Battery + Luminite).
+- 2 latigos HM (gated a Tech Summoner): Circuit Lash (52) -> Omega Lash (100, endgame).
+  Subido el tag del TechWhipProjectile existente (5 -> 12) + OmegaWhipProjectile nuevo.
+- UI: `Content/UI/TechSummonerUI.cs` (barra de Power Core + OVERDRIVE + "FLEET n/cap").
+- Verificacion: build 0/0; suite PASS=102 (nuevo `tests/TechSummonerSourceSmokeTest.ps1`).
+- Pendientes/riesgos: SIN probar en juego (daños/recetas/IA sin tunear). CON ESTO SE CIERRAN
+  LAS 12 SUBCLASES v1 salvo el Advanced Summoner, que quedo revertido y pendiente. Sin commit.
+
+## 2026-07-14 - Beast Tamer: arsenal de LATIGOS (pre-HM + HM) + re-escalonado de bestias
+
+- Hueco detectado por el usuario: el Beast Tamer solo tenia 2 latigos, AMBOS Hardmode. El
+  latigo es EL arma del invocador (las bestias vienen de la doma), asi que faltaba toda la
+  progresion de armas pre-Hardmode.
+- Base `Content/Items/Weapons/Summoner/SummonerWhip.cs` (nueva, quita boilerplate; los 2
+  latigos existentes se refactorizaron a ella).
+- 8 latigos en progresion:
+  - PRE-HM (abiertos a CUALQUIER Summoner -- el Beast Tamer aun no existe): Training Whip
+    (ya existia) -> Leather Lash (15) -> Thorn Lash (23, veneno) -> Bloodfang Whip (31,
+    sangrado) -> Molten Lash (40, quema; el mejor pre-HM, para el Muro de Carne).
+  - HM (gated a Beast Tamer): Beastcaller Whip (52) -> Feral Lash (68, sangrado) ->
+    Savage Lash (84, sangrado+veneno) -> Alpha's Lash (110, endgame).
+  - 6 proyectiles de latigo nuevos + subido el tag de los 2 existentes (BeastWhip 4->12,
+    AlphaWhip 12->26; eran demasiado bajos para su tier de HM).
+- Re-escalonado de las 6 bestias: con la doma, cada bestia se obtiene cuando aparece SU
+  criatura, no cuando la crafteas. Granite Golem y Giant Flying Fox son pre-HM -> Boar (12)
+  y Raptor (18) son las bestias tempranas. Wolf/Unicorn/Werewolf/Wyvern son HM -> Wolf (28,
+  ya no es la "starter"), Bear (38), Sabertooth (48), Wyvern (62).
+- Localizacion: 6 latigos + 6 proyectiles en en-US.hjson.
+- Verificacion: build 0/0; suite PASS=101 (BeastTamerSourceSmokeTest ahora fija la
+  progresion de latigos y que los pre-HM NO esten gated a subclase).
+- Pendientes/riesgos: SIN probar en juego (daÃ±os/recetas sin tunear). Sin commit aun.
+
+## 2026-07-14 - Beast Tamer: obtencion por DOMA (reemplaza el craft de las staves)
+
+- Decision (usuario): el Beast Tamer NO craftea sus bestias; las DOMA. Debilitar una
+  criatura a poca vida y golpearla con el latigo tiene probabilidad de domarla, lo que
+  desbloquea esa bestia (y te entrega su staff). Ver decision-log.
+- `Content/Taming/BeastTameRegistry.cs` (nuevo): mapa criatura->bestia (fuente unica de
+  verdad, editable). Cada una de mis 6 bestias se doma de una criatura vanilla:
+  Wolf<-Wolf, Boar<-Granite Golem/Flyer, Raptor<-Giant Flying Fox, Bear<-Unicorn,
+  Sabertooth<-Werewolf, Wyvern<-Wyvern. (Vanilla no tiene raptor/sabertooth literales; son
+  el fit tematico mas cercano -- editar SourceNPCs libremente.)
+- `Content/Players/BeastTamingPlayer.cs` (nuevo): coleccion TamedBeasts (guardada) + la
+  mecanica en OnHitNPCWithProj: cualquier Summoner, golpe de latigo (IsAWhip), criatura
+  VIVA a <=15% de vida -> 40% de doma. Exito: desbloquea + te da la staff (si no la tienes)
+  + la criatura se une (desaparece sin loot) + "tamed!". Funciona pre-promocion (con el
+  TrainingWhip) para coleccionar antes de ser Beast Tamer.
+- Quitadas las recetas de craft de las 6 staves (ahora solo por doma). Los latigos siguen
+  crafteables (son el instrumento de doma).
+- Mejoras de la doma (segunda pasada, "mejoralo si quieres"):
+  - Probabilidad ESCALADA: en vez de 40% fijo, va de 30% (justo bajo el umbral 15%) a 90%
+    (casi muerta) via MathHelper.Lerp -> debilitarla mas premia la precision y frustra menos.
+  - El arbol Beast tambien moldea la doma: Wild Bond da +15% de probabilidad.
+  - Descubribilidad: golpear con el latigo a una criatura domable pero SANA muestra la pista
+    "weaken it to tame!" (con cooldown, sin spam).
+  - Feedback en el mundo: `Content/Globals/TameableGlobalNPC.cs` (nuevo) hace BRILLAR con
+    chispas doradas a una criatura domable en cuanto entra en la ventana de doma (solo para
+    un Summoner cercano) -> se ve de un vistazo "azota esto ya".
+  - Recompensa: domar una bestia NUEVA da +25 de Ferocidad si ya eres Beast Tamer.
+  - UI: la barra del Beast Tamer muestra el progreso "PACK N/6".
+  - Tooltips de las 6 staves ahora dicen de que criatura se doma cada bestia.
+- Verificacion: build 0/0; suite PASS=101 (nuevo `tests/BeastTamingSourceSmokeTest.ps1`).
+- Pendientes/riesgos: SIN probar en juego. El mapa criatura->bestia es un placeholder
+  tematico; el usuario puede reasignar SourceNPCs. La doma despawnea al bicho de forma
+  simple (ok en un jugador; en multiplayer faltaria sync). Sin commit aun.
+
+## 2026-07-14 - Beast Tamer (Summoner): pasivas de Ferocidad + arsenal de bestias
+
+- Contexto: las 3 subclases del Summoner YA tenian mecanica (Beast Tamer=Ferocidad,
+  Advanced=Legion, Tech=Power Core). El usuario eligio empezar por Beast Tamer y que yo
+  diseÃ±ara pasivas + arsenal (mantiene la mecanica actual de Ferocidad).
+- Ferocidad (ya existia, ahora moldeada por la rama Beast): los golpes de esbirros suben
+  Ferocidad -> escala daÃ±o de invocacion; a tope, la tecla de habilidad lanza PRIMAL ROAR
+  (frenesi ~6s). Cableado de la rama Beast en `Content/Players/BeastTamerPlayer.cs`:
+  Wild Bond (sube mas rapido), Feral Roar (decae mas lento), Primal Instinct (mas daÃ±o por
+  Ferocidad), Savage Alpha (frenesi mas largo), Alpha Beast (mas knockback en el roar),
+  Bloodhound (+crit de invocacion en frenesi), keystone Apex Alpha (+daÃ±o en frenesi).
+  Descripciones de los 8 nodos Beast reformadas; efecto base intacto en EterniaStatsPlayer.
+- Arsenal de bestias (nuevo). Infra de minion estandar (slots), distinta del Nigromante
+  (que usa Vida Reservada): `Content/Players/BeastMinionPlayer.cs` (flag) +
+  `Content/Buffs/BeastMinionBuff.cs` (UN buff compartido para toda la manada mixta) +
+  `Content/Projectiles/Summoner/BeastMinion.cs` (base: minion de invocacion, IA
+  persecucion, daÃ±o por contacto, refresco mutuo con el buff).
+  - 6 bestias: Wolf, Boar (slow), Raptor (bleed), Bear, Sabertooth (bleed+lifesteal),
+    Wyvern (apex). 6 staves (`BeastStaff` base): WolfFangTotem -> BoarhideTotem ->
+    RaptorTalon -> UrsineTotem -> SabertoothFang -> Wyrmcaller (pre-HM -> post-ML).
+  - 2 latigos (tag): BeastcallerWhip (BeastWhipProjectile) + Alpha's Lash (nuevo
+    `AlphaWhipProjectile`, tag 12, mas alcance). Usan el sistema de whips existente.
+- UI: `Content/UI/BeastTamerUI.cs` (barra de Ferocidad + estado PRIMAL ROAR).
+- Localizacion: 8 items + 6 minions + AlphaWhipProjectile + BeastMinionBuff en en-US.hjson.
+- Verificacion: build 0/0; suite PASS=100 (nuevo `tests/BeastTamerSourceSmokeTest.ps1`).
+- Pendientes/riesgos: SIN probar en juego (balance/recetas/IA de minion sin tunear). Faltan
+  las otras 2 subclases del Summoner (Advanced Summoner, Tech Summoner). Sin commit aun.
+
 ## 2026-07-14 - Gunner (Ranger): mecanica de MOMENTUM (pistolero de fuego rapido)
 
-- Decision de diseño (usuario): el Gunner NO cambia de postura y NO es el francotirador
+- Decision de diseÃ±o (usuario): el Gunner NO cambia de postura y NO es el francotirador
   (esa fantasia se reserva para una futura clase de francotirador). Es el pistolero de
-  FUEGO RAPIDO. Rediseño del viejo Sweet Spot/Dead Eye (minijuego de timing de una barra
+  FUEGO RAPIDO. RediseÃ±o del viejo Sweet Spot/Dead Eye (minijuego de timing de una barra
   oscilante) a una mecanica de racha de fuego sostenido. Ver decision-log.
 - Mecanica (solo armas de balas, AmmoID.Bullet):
   - `Content/Players/GunnerPlayer.cs` (reescrito): barra Momentum 0-100 que SUBE al acertar
     balazos (+4, Quick Trigger +6) y BAJA rapido si dejas de acertar (ticksSinceHit>30 ->
-    -1.5/tick, Rapid Chamber -1.0). Escalones 40-69 (+8% daño/cadencia) y 70-99 (+15% +5%
-    crit). Al llegar a 100 se enciende DEAD EYE (sobremarcha ~5s: +30% daño, +20-28% crit,
+    -1.5/tick, Rapid Chamber -1.0). Escalones 40-69 (+8% daÃ±o/cadencia) y 70-99 (+15% +5%
+    crit). Al llegar a 100 se enciende DEAD EYE (sobremarcha ~5s: +30% daÃ±o, +20-28% crit,
     +25% cadencia; Momentum congelado; al terminar vuelve a 0). Metralletas la llenan por
-    volumen; rifles lentos apenas la mueven (por diseño -> francotirador = clase futura).
+    volumen; rifles lentos apenas la mueven (por diseÃ±o -> francotirador = clase futura).
   - `Content/Globals/GunnerGlobalProjectile.cs` (nuevo): durante Dead Eye las balas perforan
     (+1, Full Auto +2) e ignoran armadura (+8, Armor Piercing +20).
   - `Content/UI/GunnerUI.cs` + `SoulUI.cs`: barra de Momentum coloreada por escalon, marcas
     40/70, y estado DEAD EYE (reemplaza el marcador oscilante del Sweet Spot).
   - `Content/Passives/PassiveRegistry.cs`: los 8 nodos de la rama Gun re-describen su rol de
     Momentum (Quick Trigger=gana mas rapido, Rapid Chamber=decae mas lento, Deadshot=Dead
-    Eye dura mas, Hair Trigger=mas cadencia, Bullet Storm=mas daño, Full Auto=perfora en
+    Eye dura mas, Hair Trigger=mas cadencia, Bullet Storm=mas daÃ±o, Full Auto=perfora en
     Dead Eye, Armor Piercing=ignora armadura en Dead Eye, Executioner=mas crit en Dead Eye).
     Efecto base intacto en EterniaStatsPlayer.
 - Keystone Trigger Discipline: matar durante Dead Eye lo extiende (+60 ticks) -> mantener
@@ -47,7 +195,7 @@ Formato sugerido por entrada:
 
 ## 2026-07-14 - Gunner Pass 2: arsenal de 15 armas de balas (fuego rapido)
 
-- Objetivo (usuario pidio que yo diseñara la progresion): 15 armas de balas de fuego rapido
+- Objetivo (usuario pidio que yo diseÃ±ara la progresion): 15 armas de balas de fuego rapido
   (pistolas, SMGs, metralletas, autoguns, minigun endgame), SIN francotiradores.
 - Arquitectura: `Content/Items/Weapons/Ranger/GunnerGun.cs` (base : ModItem, munition Bullet
   -> Momentum aplica) con BulletsPerShot/SpreadDegrees (base Shoot dispara N balas con
@@ -67,14 +215,14 @@ Formato sugerido por entrada:
 
 ## 2026-07-14 - Archer (Ranger): mecanica de CONCENTRACION + sniper
 
-- Objetivo (spec): el Archer premia posicionamiento y paciencia. Rediseño del viejo Focus
+- Objetivo (spec): el Archer premia posicionamiento y paciencia. RediseÃ±o del viejo Focus
   (que se ganaba al golpear y decaia quieto -- al reves del spec) a una barra de
   Concentracion que se CARGA al no disparar (mas rapido quieto) y se GASTA al disparar.
 - Archivos principales:
   - `Content/Players/ArcherPlayer.cs` (reescrito): Focus 0-100; regen por
     ticksSinceFire (quieto x2.5 vs moviendo; Eagle Vision +50%); un enemigo a <12 bloques
-    bloquea la regen de un Archer promovido; recibir daño resta 30; tiers 31-60 (+5%
-    daño/vel) y 61-100 (+10% +5% crit). Un Ranger base tambien "aprende" la mecanica
+    bloquea la regen de un Archer promovido; recibir daÃ±o resta 30; tiers 31-60 (+5%
+    daÃ±o/vel) y 61-100 (+10% +5% crit). Un Ranger base tambien "aprende" la mecanica
     (IsRangerLearning: solo tiers, sin Disparo Perfecto).
   - `Content/Globals/ArcherGlobalProjectile.cs` (nuevo): bono por distancia a la flecha
     (10 bloques 0% -> 50+ bloques +40%), Sniper (Marksman x1.5), Predator (Volley: +25% a
@@ -85,9 +233,9 @@ Formato sugerido por entrada:
     de Concentracion (Eagle Vision/Hunter Instinct/Piercing Arrow/Deadeye/Sniper/Weak
     Point/Predator/Strong Draw), leidos en ArcherPlayer/ArcherGlobalProjectile. Efecto base
     de cada nodo intacto en EterniaStatsPlayer (cobertura/tree-depth sin tocar).
-- Disparo Perfecto (Archer promovido, barra llena): +35% daño (Deadeye -> +55%), +25% crit,
+- Disparo Perfecto (Archer promovido, barra llena): +35% daÃ±o (Deadeye -> +55%), +25% crit,
   +40% vel de proyectil, ignora defensa, mas knockback; la barra vuelve a ~10.
-- Hawkeye (keystone): cada 8 Disparos Perfectos, el siguiente es Legendary (+80% daño,
+- Hawkeye (keystone): cada 8 Disparos Perfectos, el siguiente es Legendary (+80% daÃ±o,
   +50% crit, atraviesa todo, gran ignora-defensa, estela/explosion dorada).
 - La mecanica potencia CUALQUIER arco (arrow ammo), asi que el Archer es jugable ya con
   arcos vanilla/mod -- no requiere arsenal propio como el Energy Gunner.
@@ -99,14 +247,14 @@ Formato sugerido por entrada:
 ## 2026-07-14 - Archer Pass 2: arsenal de 16 arcos + obtencion
 
 - Objetivo (spec): 16 arcos con identidad propia, muchos ligados al Disparo Perfecto, que
-  acompañan la progresion. Potencian la precision, no la cadencia.
+  acompaÃ±an la progresion. Potencian la precision, no la cadencia.
 - Arquitectura: `Content/Items/Weapons/Ranger/ArcherBow.cs` (base : ModItem) dispara la
   flecha del jugador (munition Arrow, asi la Concentracion aplica) y la etiqueta con el arco
   + estado de Disparo Perfecto; virtuals OnArrowSpawn/ModifyArrowHit/OnArrowHit/UpdateArrow.
   `Content/Globals/ArcherBowGlobalProjectile.cs` (InstancePerEntity) despacha esos hooks al
   arco que disparo -> cada efecto vive en su propio archivo. Convive con
   ArcherGlobalProjectile (distancia/Perfecto) sin conflicto.
-- Arcos pre-HM (8): Hunter's Branch (inicio), Woodland Longbow (Merchant tras EoC, +daño por
+- Arcos pre-HM (8): Hunter's Branch (inicio), Woodland Longbow (Merchant tras EoC, +daÃ±o por
   distancia), Falcon Bow (cada 3er disparo), Wind Whisper (Sky Islands, perfora+acelera),
   Jungle Stinger (veneno), Crimson/Corrupt Hunter (lifesteal / Ichor), Molten Longbow
   (Perfecto explota + On Fire).
@@ -130,7 +278,7 @@ Formato sugerido por entrada:
 ## 2026-07-13 - Energy Gunner (Ranger): mecanica de TEMPERATURA por zonas
 
 - Objetivo (spec): el Energy Gunner premia mantener sus armas en la zona 70-99% de
-  temperatura. Rediseño del viejo Heat lineal + Overdrive a un sistema de zonas 0-100%.
+  temperatura. RediseÃ±o del viejo Heat lineal + Overdrive a un sistema de zonas 0-100%.
 - Archivos principales:
   - `Content/Players/EnergyShooterPlayer.cs` (reescrito): `Heat`, `Overheated`, `MaxHeat`
     (100 + 30 con Reactor Core), `HeatPercent`, `Zone` (0 stable / 1 hot / 2 critical).
@@ -140,13 +288,13 @@ Formato sugerido por entrada:
   - `Content/UI/SoulUI.cs`: specialty y linea de estado del Energy Gunner en % + zona.
   - `Content/Passives/PassiveRegistry.cs`: 8 nodos Energy re-describen su rol termico.
 - Mecanica:
-  - Disparar sube calor (`CanUseItem`). Zonas: 0-40 sin bonus; 40-70 +10% daño/cadencia;
-    70-99 +20% daño/cadencia +10% crit; 100 = OVERHEAT.
+  - Disparar sube calor (`CanUseItem`). Zonas: 0-40 sin bonus; 40-70 +10% daÃ±o/cadencia;
+    70-99 +20% daÃ±o/cadencia +10% crit; 100 = OVERHEAT.
   - Overheat: bloquea el arma, true damage al jugador (30, o 15 con Fusion Cannon),
     Burning, y sigue bloqueada hasta enfriar a <=30% de MaxHeat.
   - Passive shaping: Reactor Core (+techo), Energy Core (-calor/disparo), Ion Surge
     (enfria mas rapido), Fusion Cannon (menos true damage), Overload (explosion de
-    emergencia al fundirse), Overcharge (daño escala con calor), Particle Beam (+crit en
+    emergencia al fundirse), Overcharge (daÃ±o escala con calor), Particle Beam (+crit en
     critico), Plasma Reactor (Conductores de Plasma: perfora+quema+crece en critico).
 - Verificacion: build 0/0; suite PASS=95 (nuevo
   `tests/EnergyGunnerTemperatureSourceSmokeTest.ps1`).
@@ -190,7 +338,7 @@ Formato sugerido por entrada:
 - Desbloqueo: NO se usa un item "Energy Soul" (el usuario confirmo que fue error del spec).
   La subclase se activa como todas: tras el Muro de Carne, el Ranger se promueve a la
   subclase con la afinidad de pasivas mas alta. Ya cubierto por ClassPromotionRules.
-- Pendientes/riesgos: SIN probar en juego (balance de daño/calor/recetas sin tunear en vivo;
+- Pendientes/riesgos: SIN probar en juego (balance de daÃ±o/calor/recetas sin tunear en vivo;
   "haz continuo" es EMULADO con bolts rapidos muy perforantes, no un rayo sostenido real).
   Sin commit aun.
 
@@ -198,7 +346,7 @@ Formato sugerido por entrada:
 
 - Sintoma (usuario): "The localization file en-US.hjson is malformed and failed to load /
   Name is not closed" -> los mods se desactivan al arrancar.
-- Causa: los 10 Grimorios se añadieron en formato inline de una linea
+- Causa: los 10 Grimorios se aÃ±adieron en formato inline de una linea
   (`WarGrimoire: { DisplayName: X, Tooltip: "" }`). Hjson lee los strings SIN comillas
   hasta el fin de linea, asi que la coma y el resto se tragaban en el valor y rompian el
   parseo (las llaves dejaban de cuadrar).
@@ -219,17 +367,17 @@ Formato sugerido por entrada:
   (logica de invocar/ciclar movida aqui desde GrimoireOfDeath + virtuals neutrales).
 - Cableo: `NecromancerPlayer` rastrea el Grimorio activo (el sostenido, o el ultimo) y
   aplica ReserveMult (vida reservada), ManaMult (drenaje) y DefenseDelta. `BaseNecroMinion`
-  lo lee: ModifyHitNPC escala el daño (con split BossEcho/Common para el Rey Muerto),
+  lo lee: ModifyHitNPC escala el daÃ±o (con split BossEcho/Common para el Rey Muerto),
   OnHitNPC aplica lifesteal + debuff, y en AI aplica SizeMult (escala) y MoveSpeedMult.
   Ecos de jefe marcados con IsBossEcho.
 - 10 GRIMORIOS (crafteables, uno equipado a la vez):
-  Pre-HM: Basic (neutral), War (+25% daño, -8 def), Sacrifice (-40% vida reservada, +50%
-  mana), Arcane (-40% mana, -15% daño), Commander (+40% velocidad, -10% daño).
-  HM: Lich (lifesteal, +30% reserva), Plague (Venom on-hit, -10% daño), Swarm (-50%
-  reserva, mas pequeños/debiles), Titan (+60% reserva/tamaño/daño), Void (+20% daño +
+  Pre-HM: Basic (neutral), War (+25% daÃ±o, -8 def), Sacrifice (-40% vida reservada, +50%
+  mana), Arcane (-40% mana, -15% daÃ±o), Commander (+40% velocidad, -10% daÃ±o).
+  HM: Lich (lifesteal, +30% reserva), Plague (Venom on-hit, -10% daÃ±o), Swarm (-50%
+  reserva, mas pequeÃ±os/debiles), Titan (+60% reserva/tamaÃ±o/daÃ±o), Void (+20% daÃ±o +
   Shadowflame, +50% mana), Dead King (ecos de jefe +100%, comunes -50%).
 - Tests: `NecromancerGrimoireVariantsSourceSmokeTest` (contrato, base, 10 grimorios con su
-  modificador firma + crafteo, player aplica reserva/mana/def, minion aplica daño/lifesteal/
+  modificador firma + crafteo, player aplica reserva/mana/def, minion aplica daÃ±o/lifesteal/
   debuff/boss). Ajustados NecromancerGrimoire/Rank (logica ahora en la base). Suite PASS=93.
 - Verificacion: build 0/0; suite PASS=93. SIN probar in-game.
 - Con esto el Nigromante esta completo al 100% del spec (nucleo + coleccion + rangos/paginas
@@ -246,12 +394,12 @@ Formato sugerido por entrada:
     "Necromancer" (antes Infinity Mage, que queda sin construir/oculto). Se quita
     Necromancer de las promociones de Summoner; la afinidad Shadow del Summoner queda
     sin subclase (cae al fallback).
-  - Clase de daño MAGIC (para que un Mago no dispare la penalizacion de Soul con el
+  - Clase de daÃ±o MAGIC (para que un Mago no dispare la penalizacion de Soul con el
     Grimorio, y para que los no-muertos escalen con la magia): GrimoireOfDeath,
     BeginnerNecromancyBook y BaseNecroMinion pasan de Summon a Magic.
   - `SubclassEffectsPlayer`: Necromancer bajo Mago (+10% magia, +20 mana max para
     sostener el ejercito que drena mana).
-  - Presentacion: SoulUI (especialidad/bono) y MilestonePlayer (milestone -> daño magico)
+  - Presentacion: SoulUI (especialidad/bono) y MilestonePlayer (milestone -> daÃ±o magico)
     actualizados; se quitan los bonos de invocador (minion slots/summon) obsoletos.
   - Visibilidad v1: Mago mantiene Elemental/Curse/Infinity (Infinity = ruta Necromancer);
     Summoner cambia Shadow -> Fusion (Beast/Fusion/Tech).
@@ -272,7 +420,7 @@ Formato sugerido por entrada:
 - Tests: sin nuevos (helpers cubiertos indirectamente). Suite PASS=92.
 - Verificacion: build 0/0; suite PASS=92. SIN probar in-game.
 - Con esto el Nigromante queda con feedback completo del bucle. Pendiente (contenido/
-  polish): mas criaturas + almas de jefe (añadir al registro); panel interactivo del
+  polish): mas criaturas + almas de jefe (aÃ±adir al registro); panel interactivo del
   Grimorio para gestionar el loadout manualmente; balance in-game.
 
 ## 2026-07-10 - Nigromante Fase 3: Rangos del Grimorio + Paginas Activas + almas de jefe
@@ -300,7 +448,7 @@ Formato sugerido por entrada:
   rango; el Grimorio usa elegibles y activa al invocar). Suite PASS=92. +hjson.
 - Verificacion: build 0/0; suite PASS=92. SIN probar in-game.
 - Con esto el Nigromante tiene su bucle completo (nucleo + coleccion + rangos/paginas +
-  jefes). Pendiente: mas criaturas/almas de jefe (contenido que se añade al registro);
+  jefes). Pendiente: mas criaturas/almas de jefe (contenido que se aÃ±ade al registro);
   UI del Grimorio (coleccion visible / gestion de loadout); balance in-game.
 
 ## 2026-07-10 - Nigromante Fase 2: Grimorio de la Muerte + sistema de Almas
@@ -314,7 +462,7 @@ Formato sugerido por entrada:
   - `Content/Players/NecromancerCollectionPlayer.cs`: Kills (dict NPC->muertes) +
     Unlocked (criaturas dominadas) + SelectedIndex, persistente (Save/Load).
   - `Content/Globals/NecromancerKillGlobalNPC.cs`: OnKill cuenta muertes; ModifyNPCLoot
-    añade el drop del alma via `SoulDropCondition` (1/5 una vez alcanzado el umbral y si
+    aÃ±ade el drop del alma via `SoulDropCondition` (1/5 una vez alcanzado el umbral y si
     no la has dominado aun).
   - Almas: `Content/Items/Souls/{EnemySoul(base),ZombieSoul,DemonEyeSoul}.cs`. Usar el
     alma como Nigromante desbloquea la criatura (consumible).
@@ -332,12 +480,12 @@ Formato sugerido por entrada:
   corruptas, inframundo) + almas de JEFE (versiones menores: King Slime->Guardian Slime,
   etc.); UI del Grimorio (coleccion visible); balance.
 
-## 2026-07-10 - Nigromante Fase 1: Vida Reservada + drenaje de mana (rediseño del nucleo)
+## 2026-07-10 - Nigromante Fase 1: Vida Reservada + drenaje de mana (rediseÃ±o del nucleo)
 
 - Objetivo (spec del usuario, reemplaza al Mago del Infinito en la v1): el Nigromante NO
   usa minion slots. Cada no-muerto reserva vida maxima y drena mana; sin mana crumblean
   los mas debiles primero.
-- Rediseño del nucleo (Fase 1):
+- RediseÃ±o del nucleo (Fase 1):
   - `NecromancerPlayer`: quita MaxNecroSlots/UsedNecroSlots. Cuenta no-muertos ->
     ReservedLifeFraction (suma de ReservePercent, tope 90%) -> baja statLifeMax2. Suma
     ManaDrain; cada segundo drena mana y si llega a 0 despawnea el mas debil
@@ -347,10 +495,10 @@ Formato sugerido por entrada:
     fade); el player gestiona los despawns.
   - SkeletonMinion: ReservePercent 15. BeginnerNecromancyBook: invoca mientras
     ReservedLifeFraction < 0.9 (sin slots). UI (Necromancer/SoulUI) muestran "Reserved
-    life %" + nº de no-muertos.
+    life %" + nÂº de no-muertos.
 - Tests: `NecromancerReservedLife` (nuevo: sin slots, reserva vida, despawn del mas
   debil, base no se auto-mata); NecromancerFlow y PassiveRuntimeEffects (Bone Conduit)
-  actualizados al nuevo diseño. Suite PASS=89.
+  actualizados al nuevo diseÃ±o. Suite PASS=89.
 - Verificacion: build 0/0; suite PASS=89. SIN probar in-game.
 - PENDIENTE (fases del spec): Fase 2 = Grimorio de la Muerte + sistema de Almas (matar N
   -> drop de <Enemy> Soul -> registrar en el Grimorio -> desbloquea la criatura);
@@ -360,11 +508,11 @@ Formato sugerido por entrada:
 
 - Objetivo: que la rama de pasivas Curse moldee la mecanica (energia/corrupcion/burst),
   como Defensa->aura y Elemental->afinidad. Se mantuvieron los 8 nombres de nodo y sus
-  stats magicos planos en EterniaStatsPlayer (lo exigen los tests) y se AÑADIO el
+  stats magicos planos en EterniaStatsPlayer (lo exigen los tests) y se AÃ‘ADIO el
   moldeado en CursedMagePlayer (leido via nuevo helper HasCurse).
 - Mapeo (efecto plano + rol de mecanica, gated a Cursed Mage promovido):
   - Dark Ritual: +3% curse power - +1 regen de Energia Maldita.
-  - Cursed Blood: +15% cursed dmg - la Corrupcion da mas daño magico (+0.125%/pt).
+  - Cursed Blood: +15% cursed dmg - la Corrupcion da mas daÃ±o magico (+0.125%/pt).
   - Doom Bringer: +12% magic dmg - la Corrupcion da mas vel. lanzamiento (+0.05%/pt).
   - Withering Curse: +5 pen - reduce a la MITAD la perdida de defensa por Corrupcion.
   - Soul Rot: +5 pen - menos perdida de vida max por Corrupcion (c/8 en vez de c/5).
@@ -372,8 +520,8 @@ Formato sugerido por entrada:
   - Malediction: +8% crit - el Burst refunde mas Energia (70) y el Colapso empieza mas
     tarde (190 en vez de 175).
   - Forbidden Hex: +10% duracion de debuff (rol de maldicion, sin cambios).
-- Consecuencia de diseño: invertir en Curse te deja empujar mas la Corrupcion (menos
-  castigo) y sacarle mas provecho (mas daño/regen/burst) -> profundiza el riesgo/
+- Consecuencia de diseÃ±o: invertir en Curse te deja empujar mas la Corrupcion (menos
+  castigo) y sacarle mas provecho (mas daÃ±o/regen/burst) -> profundiza el riesgo/
   recompensa. Sin tocar el conteo de nodos ni EterniaStatsPlayer.
 - Tests: CursedMageMechanic ampliado (HasCurse + los 7 nodos que moldean). Suite PASS=89.
 - Verificacion: build 0/0; suite PASS=89. SIN probar in-game.
@@ -382,8 +530,8 @@ Formato sugerido por entrada:
 
 ## 2026-07-10 - Mago de Maldiciones: arsenal de 12 armas (Energia + Corrupcion)
 
-- Objetivo (spec): armas que giran en torno a administrar recursos, no solo daño.
-  Pre-HM enseñan a manejar Energia Maldita; HM añaden Corrupcion (riesgo/recompensa).
+- Objetivo (spec): armas que giran en torno a administrar recursos, no solo daÃ±o.
+  Pre-HM enseÃ±an a manejar Energia Maldita; HM aÃ±aden Corrupcion (riesgo/recompensa).
 - Arquitectura: interfaz `Content/Items/ICurseWeapon.cs` (EnergyCost + BurstMultiplier),
   clase base `Content/Items/Weapons/Magic/CurseWeapon.cs` (CanUseItem gatea por energia;
   Shoot consume energia y en HM suma CorruptionPerCast; ModifyWeaponDamage escala con
@@ -404,7 +552,7 @@ Formato sugerido por entrada:
   Energia pre-HM cuando sostienes un ICurseWeapon (feedback del recurso en la fase de
   entrenamiento).
 - Tests: `CurseArsenalSourceSmokeTest` (12 armas extienden CurseWeapon, EnergyCost,
-  crafteo, no-lock, daño exacto, HM genera corrupcion; base consume energia + corrupcion
+  crafteo, no-lock, daÃ±o exacto, HM genera corrupcion; base consume energia + corrupcion
   gated a Cursed Mage + escala; escalados de Cursed Staff/Book of Collapse/Necronomicon).
   Suite PASS=89. +hjson.
 - Verificacion: build 0/0; suite PASS=89. SIN probar in-game.
@@ -412,7 +560,7 @@ Formato sugerido por entrada:
   Curse que moldee la mecanica (reducir castigos, mas regen, potenciar el Burst); balance
   in-game.
 
-## 2026-07-10 - Mago de Maldiciones: rediseño de la mecanica en dos fases (spec usuario)
+## 2026-07-10 - Mago de Maldiciones: rediseÃ±o de la mecanica en dos fases (spec usuario)
 
 - Objetivo (spec del usuario): dos fases claras. PRE-HARDMODE (cualquier Mago): solo
   Energia Maldita con regen FIJA; sin Corrupcion ni Burst (entrenamiento del recurso).
@@ -426,9 +574,9 @@ Formato sugerido por entrada:
   - Regen de energia: FIJA pre-HM (PreHardmodeRegen=3); en HM escala con Corrupcion
     (1..12) + milestones.
   - Corrupcion = riesgo/recompensa continuo (antes casi todo era via Burst):
-    RECOMPENSA +0.25%/pt daño magico y +0.1%/pt vel. lanzamiento; RIESGO -def (/20),
-    -vida max (/5), +daño recibido (endurance -0.15%/pt); COLAPSO: DoT fuerte >=175.
-  - Cursed Burst REDISEÑADO: de buff sostenido (+40% 10s + backlash) a EXPLOSION
+    RECOMPENSA +0.25%/pt daÃ±o magico y +0.1%/pt vel. lanzamiento; RIESGO -def (/20),
+    -vida max (/5), +daÃ±o recibido (endurance -0.15%/pt); COLAPSO: DoT fuerte >=175.
+  - Cursed Burst REDISEÃ‘ADO: de buff sostenido (+40% 10s + backlash) a EXPLOSION
     instantanea que gasta TODA la corrupcion: dano = 40 + corrupcion*4 en area
     (radio 220+corrupcion), resetea la corrupcion temporal a 0 y refunde 40 de energia.
     Escala con la corrupcion gastada.
@@ -486,12 +634,12 @@ Formato sugerido por entrada:
   rapido y ganar bonos temporales al cambiar.
 - Mecanica (ElementalistPlayer): el cambio de elemento ahora tiene un cooldown base de
   45 ticks (0.75s) -- `SwitchTimer`, ticked en PostUpdate, gatea ChangeNote. Al cambiar,
-  si tienes Momentum Shift se enciende un `SurgeTimer` (surge) que da +daño magico
+  si tienes Momentum Shift se enciende un `SurgeTimer` (surge) que da +daÃ±o magico
   temporal en PostUpdateEquips.
 - Sub-rama nueva "Elemental Mastery" (AffinityType "Elemental", 3 nodos, transversal a
   los elementos; rutea a ElementalAffinity como el resto):
   - Elemental Flux: -20 ticks al cooldown de cambio.
-  - Momentum Shift: al cambiar, surge de +15% daño magico por 3s.
+  - Momentum Shift: al cambiar, surge de +15% daÃ±o magico por 3s.
   - Grand Attunement: -15 ticks mas (min 8), y el surge sube a +25% por 5s.
   Leidos via `ElementalistPlayer.HasElementNode(...)` (solo importan promovido = HM).
 - Tests: ElementalBranches ampliado (3 nodos Mastery + SwitchTimer/SurgeTimer). Ajustes:
@@ -540,14 +688,14 @@ Formato sugerido por entrada:
 - Objetivo (spec del usuario): el Elementalist domina 5 elementos. En hardmode (ya
   promovido) puede cambiar libremente de afinidad; la afinidad activa modifica el
   comportamiento de PRACTICAMENTE TODAS las armas magicas. Pre-hardmode: sin afinidad,
-  solo se especializa via arbol (pendiente el rediseño del ramo elemental).
-- Base existente extendida: `ElementalistPlayer` pasa de 3 a **5 elementos** (se añaden
+  solo se especializa via arbol (pendiente el rediseÃ±o del ramo elemental).
+- Base existente extendida: `ElementalistPlayer` pasa de 3 a **5 elementos** (se aÃ±aden
   Viento y Tierra): WindAffinity/EarthAffinity + niveles + Save/Load + colores +
   ultimates (CYCLONE empuja enemigos, EARTHQUAKE golpea en area). Se conserva toda la
   API previa (carga, GainAffinity, ultimates con teclas R/Z).
 - Efectos de stat de la afinidad activa (`ElementalistPlayer.PostUpdateEquips`, gated a
-  Elementalist): Fuego +12% daño magico; Viento -15% mana + 15% vel. de lanzamiento;
-  Tierra +12 defensa y sin retroceso mientras empuña magia. (Hielo/Rayo son on-hit.)
+  Elementalist): Fuego +12% daÃ±o magico; Viento -15% mana + 15% vel. de lanzamiento;
+  Tierra +12 defensa y sin retroceso mientras empuÃ±a magia. (Hielo/Rayo son on-hit.)
 - NUEVO nucleo (el spec): la afinidad remodela TODAS las armas magicas via globales:
   - `Content/Globals/ElementalAffinityGlobalProjectile.cs` (solo magia de un Elementalist
     activo): OnHit -> Fuego Quemadura; Hielo Escarcha+Chilled+chance Congelar; Rayo
@@ -556,12 +704,12 @@ Formato sugerido por entrada:
     penetracion.
   - `Content/Globals/ElementalAffinityGlobalItem.cs`: Rayo/Viento -> proyectiles +25%
     mas rapidos (ModifyShootStats).
-- UI: ElementalistUI muestra los 5 pills (Viento/Tierra añadidos, panel mas alto); el
+- UI: ElementalistUI muestra los 5 pills (Viento/Tierra aÃ±adidos, panel mas alto); el
   SoulUI ya mostraba elemento+carga; especialidad actualizada.
 - Tests: `ElementalAffinitySourceSmokeTest` (5 elementos, Save, stats por afinidad,
   globales de magia con on-hit por elemento + fuego/viento + velocidad). Suite PASS=85.
 - Verificacion: build 0/0; suite PASS=85. SIN probar in-game.
-- Pendiente (proximas pasadas): rediseñar el ramo de pasivas "Elemental" en 5
+- Pendiente (proximas pasadas): rediseÃ±ar el ramo de pasivas "Elemental" en 5
   sub-ramas (Fuego/Hielo/Rayo/Viento/Tierra) + nodos exclusivos de hardmode; arsenal de
   armas magicas del Elementalist; balance in-game.
 
@@ -580,7 +728,7 @@ Formato sugerido por entrada:
 - Visibles v1: Guerrero {Bleed, Combo, Defense}; Mago {Elemental, Curse, Infinity};
   Rango {Energy, Bow, Gun}; Invocador {Beast, Tech, Shadow}.
 - Ocultas: Precision (Yoyo), Rage (Berserker), Control (Stunner), Arcane (Arcane Bard),
-  Music (Virtuoso), Fusion (Advanced Summoner). Re-activar una = añadir su afinidad a
+  Music (Virtuoso), Fusion (Advanced Summoner). Re-activar una = aÃ±adir su afinidad a
   la lista blanca.
 - Tests: `PassiveTreeV1VisibilitySourceSmokeTest` fija la lista blanca (12 visibles, 6
   ocultas) y que ambos draws filtran por IsAffinityVisible. Suite PASS=84.
@@ -589,7 +737,7 @@ Formato sugerido por entrada:
 ## 2026-07-10 - Escudos: linea de hardmode + obtencion + escudo de promocion al aura
 
 - Objetivo (usuario): meter "todo lo demas" del Escudero salvo el recurso de
-  Resistencia. Hecho: linea de escudos de hardmode, 2ª pasada de obtencion, y convertir
+  Resistencia. Hecho: linea de escudos de hardmode, 2Âª pasada de obtencion, y convertir
   el TrainingShield (premio de promocion) a la mecanica de aura.
 - LINEA HARDMODE (6, crafteables salvo lo indicado, Generic, NO subclass-locked):
   Mythril Bulwark (60, HM ore, Frostburn) -> Hallowed Bulwark (74, Hallow, Cursed
@@ -598,7 +746,7 @@ Formato sugerido por entrada:
   Barrier (128, Luminite, Ichor + regen aliados) -> Eternal Aegis (156, capstone
   Eternia, Shadowflame+Ichor+regen; se craftea desde Luminite Barrier + 4 fragmentos).
   DPS de aura ~225 (Mythril) a ~670 (Eternal), x1.8 con el Escudero.
-- OBTENCION 2ª pasada (`Content/Globals/ShieldDropsGlobalNPC.cs`,
+- OBTENCION 2Âª pasada (`Content/Globals/ShieldDropsGlobalNPC.cs`,
   `Content/Systems/ShieldChestLoot.cs`, `tests/ShieldObtentionSourceSmokeTest.ps1`):
   - Drop-only (sin receta): Corrupt Shield <- Brain of Cthulhu (1/2) y Eater of Worlds
     (OnKill 1/2, con guarda de ultimo segmento).
@@ -625,7 +773,7 @@ Formato sugerido por entrada:
   EterniaStatsPlayer -- lo exige PassiveTreeDepth y es el fantasy del Guardian) y
   ADEMAS cada nodo ahora moldea el aura del escudo (gated a Guardian activo).
 - Mapeo (leido en GuardianPlayer via HasDefensePassive, solo si IsActiveGuardian):
-  - Daño de aura: Iron Wall +10%, Fortress Body +15%, Aegis +20% (sobre el +25% base
+  - DaÃ±o de aura: Iron Wall +10%, Fortress Body +15%, Aegis +20% (sobre el +25% base
     del Escudero + escalado con Defensa).
   - Radio de aura: Shield Training +10%, Bulwark +15% (sobre el +15% base).
   - Velocidad de pulso: Unbreakable y Stonewall, cada uno *0.85 (con ambos ~28% mas
@@ -649,22 +797,22 @@ Formato sugerido por entrada:
   (~4.5 a ~6.5 tiles); el Escudero suma +15% encima.
 - Knockback: los pulsos ahora aplican knockback (Item.knockBack 0->3 por escudo, el
   pulso usa Projectile.knockBack en vez de 0f). Con el radio grande el empujon no saca
-  al enemigo del aura: queda orbitando en el borde, recibiendo daño sin tocarte. Los
+  al enemigo del aura: queda orbitando en el borde, recibiendo daÃ±o sin tocarte. Los
   jefes son resistentes al knockback (comportamiento vanilla).
-- DPS a un objetivo (daño de aura = daño / intervalo de pulso). Se subio daño y se
-  acelero el pulso, y luego se subio el daño otra vez (~+60%) a peticion del usuario:
+- DPS a un objetivo (daÃ±o de aura = daÃ±o / intervalo de pulso). Se subio daÃ±o y se
+  acelero el pulso, y luego se subio el daÃ±o otra vez (~+60%) a peticion del usuario:
   - Wooden 6->16 (/20t, ~48 DPS); Iron 9->21 (~63); Corrupt 11->27 (/18, ~90,
     +Ichor); Glacial 12->31 (~103, +Slow); Ember 14->36 (/16, ~135, +fuego); Holy
     16->44 (~165, +regen). Con el Escudero (arbol completo ~1.8x) el Holy ronda ~300
     DPS de aura en area. Caps del test subidos a 20/26/32/36/42/50.
-- Payoff del Escudero (GuardianPlayer.AuraDamageMultiplier): ahora +25% PLANO de daño
+- Payoff del Escudero (GuardianPlayer.AuraDamageMultiplier): ahora +25% PLANO de daÃ±o
   de aura (es su arma) + escalado con Defensa +1%/4 def. Un Escudero a 40 def -> +35%;
   el Holy Shield en su mano ~= 90*1.35 ~ 121 DPS de aura.
 - Bonus de GUARDIA (nuevo `Content/Players/ShieldPlayer.cs`, cualquier clase): mientras
   el aura este activa (posee el DefensiveAuraProjectile) -> +10% endurance. Permite
   tanquear el "abrazo" al jefe. Se prefirio sobre knockback (que empujaria enemigos
-  fuera del radio pequeño).
-- Tests: caps de daño del ShieldArsenal subidos (12/15/18/20/24/28); ShieldAura verifica
+  fuera del radio pequeÃ±o).
+- Tests: caps de daÃ±o del ShieldArsenal subidos (12/15/18/20/24/28); ShieldAura verifica
   el +25% plano del Escudero y el guard DR de ShieldPlayer. Suite PASS=82.
 - Verificacion: build 0/0; suite PASS=82. SIN probar in-game (numeros a validar).
 
@@ -675,7 +823,7 @@ Formato sugerido por entrada:
   muerte (SoulViolation), matando al jugador.
 - Causa: `SoulRules.IsWeaponAllowed` mapea DamageClass -> clase. Un escudo es
   DamageClass.Generic, que no es Melee/Ranged/Magic/Summon, asi que TODA clase lo
-  rechazaba (isMelee/isMagic/... = false) -> penalizacion. Contradecia el diseño
+  rechazaba (isMelee/isMagic/... = false) -> penalizacion. Contradecia el diseÃ±o
   ("cualquier clase puede usar escudos").
 - Arreglo (sin quitar la penalizacion): un arma class-neutral (DamageClass.Generic)
   no pertenece a ninguna clase, por lo que nunca traiciona a un Soul -> se permite
@@ -694,36 +842,36 @@ Formato sugerido por entrada:
 
 - Objetivo (spec del usuario): los Escudos son una categoria de arma distinta. Clic
   izquierdo mantenido levanta el escudo; tras ~0.5s proyecta un Aura Defensiva que hace
-  daño continuo a enemigos en un radio pequeño mientras se sostenga; al soltar
+  daÃ±o continuo a enemigos en un radio pequeÃ±o mientras se sostenga; al soltar
   desaparece. No hay golpe melee tradicional. Cualquier clase puede usarlos; el
   Escudero (Guardian) saca el maximo.
 - Infra nueva: `Content/Items/IShieldWeapon.cs` (interfaz: AuraPulseInterval,
   AuraRadius, AuraColor, OnAuraHit, OnAuraPulse) y
   `Content/Projectiles/Guardian/DefensiveAuraProjectile.cs` (proyectil canalizado:
-  spin-up 30 ticks, se pega al owner, pulsos de daño manuales Generic por radio, aplica
-  efecto del escudo, se mata al soltar el canal; solo el owner hace daño para MP).
+  spin-up 30 ticks, se pega al owner, pulsos de daÃ±o manuales Generic por radio, aplica
+  efecto del escudo, se mata al soltar el canal; solo el owner hace daÃ±o para MP).
 - Payoff del Escudero: `GuardianPlayer.AuraDamageMultiplier()` (aura escala con Defensa,
   +1%/5 def) y `AuraRadiusMultiplier()` (+15% radio), solo si IsActiveGuardian.
 - LINEA DE ESCUDOS pre-hardmode (6, crafteables, NO subclass-locked, Generic):
-  Wooden Shield (6, aura fisica basica) -> Iron Shield (9, mas daño) -> Corrupt Shield
+  Wooden Shield (6, aura fisica basica) -> Iron Shield (9, mas daÃ±o) -> Corrupt Shield
   (11, Ichor = debilita defensa enemiga) -> Glacial Shield (12, Slow+Frostburn) ->
-  Ember Shield (14, En llamas) -> Holy Shield (16, daña + regen ligera a aliados via
-  OnAuraPulse). Daño de aura monotono creciente.
+  Ember Shield (14, En llamas) -> Holy Shield (16, daÃ±a + regen ligera a aliados via
+  OnAuraPulse). DaÃ±o de aura monotono creciente.
 - Cada escudo: Item.channel=true, noMelee, useStyle Shoot, dispara UNA aura persistente
   (guarda ownedProjectileCounts[type]==0), UseSound=null (evita sonido repetido).
 - Tests: `ShieldAuraSourceSmokeTest` (canal, spin-up 30, Kill al soltar, pulsos Generic,
   lee IShieldWeapon, aplica efectos, payoff Guardian con Defensa) y
   `ShieldArsenalSourceSmokeTest` (6 escudos: IShieldWeapon, channel, aura Generic,
-  no-swing, una sola aura, crafteo, no-lock, efecto de personalidad, daño monotono).
+  no-swing, una sola aura, crafteo, no-lock, efecto de personalidad, daÃ±o monotono).
 - Verificacion: build 0/0; suite PASS=82. SIN probar in-game.
-- Pendientes (proximas pasadas): rediseñar la rama de pasivas de Defensa para que
-  moldee el aura (daño/radio/efectos/duracion de guardia); recurso de Resistencia;
-  linea de escudos de hardmode; 2ª pasada de obtencion (drops/cofres); convertir el
+- Pendientes (proximas pasadas): rediseÃ±ar la rama de pasivas de Defensa para que
+  moldee el aura (daÃ±o/radio/efectos/duracion de guardia); recurso de Resistencia;
+  linea de escudos de hardmode; 2Âª pasada de obtencion (drops/cofres); convertir el
   TrainingShield (premio de promocion) al aura; UI/HUD del aura; arte real.
 
-## 2026-07-10 - Obtencion 2ª pasada del arsenal de puños (drops de jefe/evento/cofre)
+## 2026-07-10 - Obtencion 2Âª pasada del arsenal de puÃ±os (drops de jefe/evento/cofre)
 
-- Objetivo (spec del usuario): igual que el Espadachin, atar las armas de puños al
+- Objetivo (spec del usuario): igual que el Espadachin, atar las armas de puÃ±os al
   jefe/zona/evento que les corresponde en vez de un simple gate de materiales.
 - Archivos nuevos: `Content/Globals/FighterDropsGlobalNPC.cs` (drops via ModifyNPCLoot
   + OnKill), `Content/Systems/FighterChestLoot.cs` (semilla en cofres subterraneos),
@@ -747,7 +895,7 @@ Formato sugerido por entrada:
   no-crafteo. Suite PASS=80.
 - Verificacion: build 0/0; suite PASS=80. SIN probar in-game.
 
-## 2026-07-10 - Arsenal completo de puños del Peleador (pre + hardmode) con efectos
+## 2026-07-10 - Arsenal completo de puÃ±os del Peleador (pre + hardmode) con efectos
 
 - Objetivo (spec del usuario): las armas del Peleador representan presion constante a
   corto alcance, NO golpe unico devastador. Todas comparten mecanicas base; solo
@@ -758,7 +906,7 @@ Formato sugerido por entrada:
   golpe, mecanica de distancia 100%->50%), Melee, useTime bajo (rapidas), knockback
   muy bajo (<=3), crafteables, NO subclass-locked.
 - Infra nueva: `Content/Items/IFistWeapon.cs` (interfaz marcadora con
-  `OnPunchHit(owner, target)` de cuerpo vacio por defecto). El puñetazo, al golpear,
+  `OnPunchHit(owner, target)` de cuerpo vacio por defecto). El puÃ±etazo, al golpear,
   lee el arma equipada (`HeldItem.ModItem is IFistWeapon`) y ejecuta su efecto
   secundario -- que jamas modifica el Combo.
 - LINEA PRE-HARDMODE (6): Padded Fists (8, inicio, sin efecto) -> Iron Knuckles (11,
@@ -777,21 +925,21 @@ Formato sugerido por entrada:
 - Tests: `FistArsenalSourceSmokeTest` reescrito -> valida ambas lineas (dano
   monotono + tope por tier, useTime<=15, kb<=3, crafteo, no subclass-lock, efecto via
   IFistWeapon.OnPunchHit, y que NINGUN arma manipula el Combo en codigo) + que el
-  puñetazo cablea OnPunchHit.
+  puÃ±etazo cablea OnPunchHit.
 - Verificacion: build 0/0; suite PASS=79. SIN probar in-game.
 - Pendientes: numeros/efectos a tunear; arte real de cada arma (todas reusan el
-  placeholder TrainingGauntlet); drops de jefe/evento y cofres (2ª pasada de
+  placeholder TrainingGauntlet); drops de jefe/evento y cofres (2Âª pasada de
   obtencion, como se hizo con el Espadachin) aun no hechos -- por ahora todo es
   crafteo.
 
-## 2026-07-10 - Peleador pre-hardmode: Combo como CONTADOR + armas de puños
+## 2026-07-10 - Peleador pre-hardmode: Combo como CONTADOR + armas de puÃ±os
 
-- Objetivo (spec del usuario): en pre-hardmode el jugador ya usa armas de puños y
+- Objetivo (spec del usuario): en pre-hardmode el jugador ya usa armas de puÃ±os y
   aprende el Combo, pero el Combo NO da nada (solo contador). Al promover a Peleador
   (post Muro de Carne) el MISMO combo empieza a interactuar con las pasivas -> la
   progresion se siente natural, no un sistema nuevo en hardmode.
 - Arquitectura (paralela al sangrado): el Combo es una mecanica de clase WARRIOR (lo
-  construye cualquier Guerrero con puños), y el payoff es de SUBCLASE (Peleador).
+  construye cualquier Guerrero con puÃ±os), y el payoff es de SUBCLASE (Peleador).
 - Archivos: `Content/Players/FighterPlayer.cs` (contador Warrior-wide, efectos
   Fighter-gated), `Content/Projectiles/FighterPunchProjectile.cs` (gate ->
   IsActiveWarrior; la distancia funciona pre-hardmode), armas nuevas
@@ -806,13 +954,13 @@ Formato sugerido por entrada:
   - `FighterPunchProjectile`: gate a IsActiveWarrior. La mecanica de distancia
     (100% pegado -> 50% al final del alcance) aplica desde pre-hardmode y no cambia
     en hardmode. El multiplicador de combo es 1 hasta promover.
-  - LINEA DE PUÑOS pre-hardmode (crafteable, NO subclass-locked): Padded Fists (8,
+  - LINEA DE PUÃ‘OS pre-hardmode (crafteable, NO subclass-locked): Padded Fists (8,
     inicio) -> Iron Knuckles (11) -> Prospector's Gauntlets (15) -> Molten Knuckles
-    (20, inframundo). Todas lanzan el puñetazo. El Training Gauntlet sigue siendo el
+    (20, inframundo). Todas lanzan el puÃ±etazo. El Training Gauntlet sigue siendo el
     premio de promocion Fighter-locked (hardmode).
 - Verificacion: build 0/0; suite PASS=79. SIN probar in-game.
 - Pendientes: numeros a tunear; FighterComboUI aun con valores viejos (cosmetico);
-  arte real de puños.
+  arte real de puÃ±os.
 
 ## 2026-07-10 - Rediseno del Peleador (Fighter): Combo pasivo-driven + Frenesi + Remate
 
@@ -1193,7 +1341,7 @@ Formato sugerido por entrada:
   - La seccion subclase tiene 3 filas: **Specialty** (one-liner de su mecanica),
     **Subclass bonus** (los +stat que da, espejo de `SubclassEffectsPlayer`) y
     **Resource** (el recurso EN VIVO de esa subclase: Crimson Trail, Rage, Overflow,
-    Ferocity, Necro slots, etc. — mapeo de las 18 subclases + las 4 base).
+    Ferocity, Necro slots, etc. â€” mapeo de las 18 subclases + las 4 base).
   - Se elimino la fila "Base resource / Inactive after promotion"; ahora sin
     promover se muestra el recurso base (Momentum/Charge/Focus/Bond) en la fila
     Resource, y las clases base dicen "Not promoted - build affinity to promote".
@@ -1319,18 +1467,18 @@ Formato sugerido por entrada:
   `TechSummonerPlayer.cs`; `tests/SubclassMechanicsSourceSmokeTest.ps1` (nuevo).
 - Cambios (5 mecanicas, todas gated a la subclase activa via `IsActiveX`,
   reusan `SkillKey`+`SkillPlayer` cooldown como el Espadachin):
-  - **Infinity Mage — OVERFLOW**: castear rebosa un pozo (0-100); a tope empuja
+  - **Infinity Mage â€” OVERFLOW**: castear rebosa un pozo (0-100); a tope empuja
     +15% magia pasivo; `SkillKey` a full = ARCANE OVERLOAD (~5s de `manaCost=0` +
     +25% magia). Fantasia "nunca te quedas sin mana".
-  - **Arcane Bard — CRESCENDO**: golpes magicos suben momento (0-100) que escala
+  - **Arcane Bard â€” CRESCENDO**: golpes magicos suben momento (0-100) que escala
     magia/cast speed/move de forma CONTINUA y decae si dejas de pegar; a tope,
     pulso de cura. Sin gasto ni boton (identidad = mantener el ritmo).
-  - **Beast Tamer — FEROCITY**: los golpes de tus minions suben furia (+15% invoc
+  - **Beast Tamer â€” FEROCITY**: los golpes de tus minions suben furia (+15% invoc
     pasivo); `SkillKey` a full = PRIMAL ROAR (~6s, +30% invoc + knockback).
-  - **Advanced Summoner — LEGION + OVERCLOCK**: +daño segun que tan llena esta la
+  - **Advanced Summoner â€” LEGION + OVERCLOCK**: +daÃ±o segun que tan llena esta la
     tropa (`slotsMinions/maxMinions`); la tropa carga COMMAND; `SkillKey` a full =
     OVERCLOCK (~5s, +2 al tope de minions + velocidad de invocacion).
-  - **Tech Summoner — POWER CORE**: bateria que carga sola (mas rapido con drones)
+  - **Tech Summoner â€” POWER CORE**: bateria que carga sola (mas rapido con drones)
     y da +defensa pasiva; `SkillKey` a full = OVERDRIVE PROTOCOL (~5s, +25% invoc +
     15 defensa/escudo).
 - Nota: los `+stat` base en `SubclassEffectsPlayer` NO se tocaron (sirven de
@@ -1486,7 +1634,7 @@ Formato sugerido por entrada:
   `tests/PassiveDiamondTreeSourceSmokeTest.ps1`.
 - Cambios:
   - `EterniaUI.DrawLine` = linea recta (rotada) entre dos puntos. Los conectores del
-    arbol ahora son ARISTAS RECTAS tipo telarana PoE: un diamante se ve como una V/◇
+    arbol ahora son ARISTAS RECTAS tipo telarana PoE: un diamante se ve como una V/â—‡
     limpia, sin escaleras que se cruzan. (Se conserva el glow de camino tomado y el
     pulso de disponible.)
   - Formas de rama VARIADAS: `BranchStyle` (deterministico por afinidad) elige entre
@@ -1496,7 +1644,7 @@ Formato sugerido por entrada:
 - Verificacion: `dotnet build -t:Compile` 0/0; suite 69/69.
 - BUGFIX (reportado con screenshot): la 1a version de `DrawLine` escalaba
   `MagicPixel` por `(length, thickness)`; como esa textura no es 1x1, dibujaba
-  cuñas gigantes que llenaban la pantalla. Corregido dividiendo la escala por las
+  cuÃ±as gigantes que llenaban la pantalla. Corregido dividiendo la escala por las
   dimensiones reales de la textura (`length / pixel.Width`, `thickness / pixel.Height`).
 - Pendientes/riesgos: SIN probar in-game. Ajustable: `laneSpacing`/`nodeSpacing`
   si un diamante queda muy junto/separado, grosor de linea, y el reparto de estilos.
@@ -1946,8 +2094,8 @@ Formato sugerido por entrada:
     Mythic 0.8 / Ancient 0.3 / Nightmare 0.1 (%).
   - Cada tier con color propio (Mythic violeta, Ancient teal, Nightmare rojo
     sangre), particula (PurpleTorch / IceTorch / Shadowflame), intensidad de aura
-    y stats. Tanques con daño moderado: se respeto el guard de no-8x vida / 4x
-    daño-defensa en enemigos NORMALES; los bosses escalan un poco mas.
+    y stats. Tanques con daÃ±o moderado: se respeto el guard de no-8x vida / 4x
+    daÃ±o-defensa en enemigos NORMALES; los bosses escalan un poco mas.
   - XP escala fuerte con la rareza (Mythic x9, Ancient x15, Nightmare x25).
   - Aura limitada a 18 copias por perf.
 - Verificacion: `dotnet build -t:Compile` 0/0; suite 58/58. Falta reload in-game.

@@ -1508,7 +1508,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Wild Bond",
-        "+5% summon damage",
+        "Ferocity builds faster on every pack hit. +5% summon damage.",
         1,
         "Beast",
         3,
@@ -1519,7 +1519,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Alpha Beast",
-        "+10% summon knockback",
+        "Primal Roar knocks foes back harder. +10% summon knockback.",
         1,
         "Beast",
         4,
@@ -1530,7 +1530,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Primal Instinct",
-        "+15% beast damage",
+        "Ferocity grants more summon damage. +15% beast damage.",
         2,
         "Beast",
         5,
@@ -1552,7 +1552,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Savage Alpha",
-        "+10% summon damage",
+        "Primal Roar frenzy lasts longer. +10% summon damage.",
         3,
         "Beast",
         7,
@@ -1563,7 +1563,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Feral Roar",
-        "+8% summon damage",
+        "Ferocity fades more slowly. +8% summon damage.",
         3,
         "Beast",
         8,
@@ -1574,7 +1574,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Bloodhound",
-        "+8% summon crit",
+        "The frenzied pack lands crits (+15% during Primal Roar). +8% summon crit.",
         3,
         "Beast",
         9,
@@ -1609,7 +1609,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Perfect Fusion",
-        "+10% summon attack speed",
+        "Command charges 50% faster. +10% summon attack speed.",
         1,
         "Fusion",
         4,
@@ -1620,7 +1620,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Ultimate Fusion",
-        "+15% fusion power",
+        "A full roster (Legion) is worth far more damage. +15% fusion power.",
         2,
         "Fusion",
         5,
@@ -1631,7 +1631,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Synchronized Assault",
-        "+8% summon speed",
+        "Overclock grants far more summon attack speed. +8% summon speed.",
         2,
         "Fusion",
         6,
@@ -1642,7 +1642,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Transcendent Fusion",
-        "+12% summon damage",
+        "Overclock also grants +20% summon damage. +12% summon damage.",
         3,
         "Fusion",
         7,
@@ -1664,7 +1664,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Overdrive",
-        "+8% summon attack speed",
+        "The Overclock window lasts 3 seconds longer. +8% summon attack speed.",
         3,
         "Fusion",
         9,
@@ -1675,7 +1675,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Singularity",
-        "+10% summon damage",
+        "Overclock raises the minion cap by 4 instead of 2. +10% summon damage.",
         4,
         "Fusion",
         10,
@@ -1688,7 +1688,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Tech Protocol",
-        "+5% summon speed",
+        "The Power Core charges 50% faster. +5% summon speed.",
         1,
         "Tech",
         3,
@@ -1699,7 +1699,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Combat AI",
-        "+8% summon crit",
+        "Your drones fire 30% faster. +8% summon crit.",
         1,
         "Tech",
         4,
@@ -1710,7 +1710,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "War Machine",
-        "+15% tech summon damage",
+        "A charged Power Core pushes far more power to the fleet. +15% tech summon damage.",
         2,
         "Tech",
         5,
@@ -1721,7 +1721,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Overclocked Core",
-        "+10% summon crit",
+        "The Overdrive Protocol runs 3 seconds longer. +10% summon crit.",
         2,
         "Tech",
         6,
@@ -1743,7 +1743,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Targeting Array",
-        "+8% summon crit",
+        "Your drones acquire targets 40% farther out. +8% summon crit.",
         3,
         "Tech",
         8,
@@ -1754,7 +1754,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Nanoswarm",
-        "+8% summon damage",
+        "The Overdrive Protocol spikes damage far harder. +8% summon damage.",
         3,
         "Tech",
         9,

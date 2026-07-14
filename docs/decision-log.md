@@ -22,6 +22,51 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-14 - Cada subclase de Invocador obtiene sus invocaciones de forma DISTINTA
+
+- Estado: Aceptada (decision del usuario).
+- Contexto: las 3 subclases del Summoner deben diferenciarse no solo por su mecanica, sino
+  por COMO consigues tus invocaciones.
+- Decision:
+  - Beast Tamer -> las DOMA (debilitar a <=15% de vida + latigo). NO hay recetas para sus
+    staves de bestia.
+  - Tech Summoner -> las FABRICA. Sus drones se craftean SIEMPRE, en 2 etapas: forjas las
+    piezas (Drone Chassis / Servo Core / Command Chip) con la chatarra tech que dropea en el
+    mundo, y luego ENSAMBLAS el dron (cada uno de los 6 kits exige las 3 piezas + material de
+    tier). Ningun dron se dropea ni se encuentra.
+  - Advanced Summoner -> FUSIONA sus propias invocaciones. Solo el Wisp Lantern (la SEMILLA)
+    se craftea de materiales crudos y es repetible; TODO lo demas se fusiona a partir de
+    staves que YA posees, y esas staves SE CONSUMEN. Cadena: 2 Wisp -> Spirit Soldier;
+    Soldier+Wisp -> Construct; Construct+Soldier -> Fusion Golem; Golem+Construct -> Arc
+    Sentinel; Sentinel+Golem -> Singularity Wraith. Encaja con su afinidad "Fusion" y crea
+    tension con su mecanica LEGION (quieres el roster lleno, pero fusionar te come staves ->
+    hay que re-craftear semillas).
+- Consecuencias: no quitar las recetas a los DroneKit. El test
+  `tests/TechSummonerSourceSmokeTest.ps1` lo hace cumplir (falla si un kit pierde su receta o
+  alguna de las 3 piezas). El crafteo de drones reutiliza a proposito la economia de
+  materiales tech del Energy Gunner (EnergeticFragment/DamagedCircuit/EnergyCrystal/
+  PlasmaCore/AncientBattery) en vez de inventar materiales nuevos.
+- Archivos relacionados: Content/Items/Weapons/Summoner/*DroneKit.cs,
+  Content/Items/Materials/{DroneComponent,DroneChassis,ServoCore,CommandChip}.cs,
+  Content/Taming/BeastTameRegistry.cs (el contraste con la doma).
+
+## 2026-07-14 - El Beast Tamer obtiene sus bestias DOMANDO, no crafteando
+
+- Estado: Aceptada (decision del usuario).
+- Contexto: el Beast Tamer se armo primero con staves crafteables. El usuario quiere que la
+  identidad sea DOMAR criaturas para obtenerlas (como el Nigromante domina para coleccionar).
+- Decision: cada una de las 6 bestias se desbloquea DOMANDO una criatura vanilla, no
+  crafteando. Metodo de doma: debilitar a <=15% de vida y golpear con el latigo -> 40% de
+  probabilidad -> desbloquea la bestia y entrega su staff. Se mantienen las 6 bestias y su
+  progresion; solo cambia la obtencion (craft -> doma).
+- Consecuencias: no hay recetas para las staves de bestia. Mapa criatura->bestia en
+  BeastTameRegistry (editable). Vanilla no tiene raptor/sabertooth literales -> se usa el
+  fit tematico mas cercano (Giant Flying Fox, Werewolf), reasignable. La doma funciona para
+  cualquier Summoner (para coleccionar antes de la promocion a Beast Tamer).
+- Archivos relacionados: Content/Taming/BeastTameRegistry.cs,
+  Content/Players/BeastTamingPlayer.cs, Content/Items/Weapons/Summoner/*Totem.cs / *Fang.cs
+  / Wyrmcaller.cs (sin recetas).
+
 ## 2026-07-14 - Los 3 Ranger no se solapan; el Gunner es fuego rapido, no francotirador
 
 - Estado: Aceptada (decision del usuario).

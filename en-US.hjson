@@ -25,6 +25,21 @@ Mods: {
 				DisplayName: Bleed
 				Description: Losing blood over time.
 			}
+
+			BeastMinionBuff: {
+				DisplayName: Beast Pack
+				Description: A beast fights at your side.
+			}
+
+			DroneMinionBuff: {
+				DisplayName: Drone Fleet
+				Description: Your drones are deployed.
+			}
+
+			LegionMinionBuff: {
+				DisplayName: Legion
+				Description: Your legion is deployed.
+			}
 		}
 
 		Items: {
@@ -999,6 +1014,213 @@ Mods: {
 					in a heartbeat and shreds through it.
 					'''
 			}
+
+			WolfFangTotem: {
+				DisplayName: Wolf Fang Totem
+				Tooltip:
+					'''
+					Summons a swift wolf to hunt at your side.
+					Earned by taming a Wolf.
+					'''
+			}
+
+			BoarhideTotem: {
+				DisplayName: Boarhide Totem
+				Tooltip:
+					'''
+					Summons a bulky boar that bodyslams and slows foes.
+					Earned by taming a Granite Golem.
+					'''
+			}
+
+			RaptorTalon: {
+				DisplayName: Raptor Talon
+				Tooltip:
+					'''
+					Summons a blistering raptor whose bites make foes bleed.
+					Earned by taming a Giant Flying Fox.
+					'''
+			}
+
+			UrsineTotem: {
+				DisplayName: Ursine Totem
+				Tooltip:
+					'''
+					Summons a hulking bear bruiser.
+					Earned by taming a Unicorn.
+					'''
+			}
+
+			SabertoothFang: {
+				DisplayName: Sabertooth Fang
+				Tooltip:
+					'''
+					Summons a savage sabertooth: bleeding bites that feed you life.
+					Earned by taming a Werewolf.
+					'''
+			}
+
+			Wyrmcaller: {
+				DisplayName: Wyrmcaller
+				Tooltip:
+					'''
+					The apex staff. Summons a soaring wyvern -- speed and deep bleeds.
+					Earned by taming a Wyvern.
+					'''
+			}
+
+			LeatherLash: {
+				DisplayName: Leather Lash
+				Tooltip: An early whip. Tags foes for your pack -- and weakens beasts to tame.
+			}
+
+			ThornLash: {
+				DisplayName: Thorn Lash
+				Tooltip: Jungle barbs. Poisons what it tags.
+			}
+
+			BloodfangWhip: {
+				DisplayName: Bloodfang Whip
+				Tooltip: Tears wounds open. Tagged foes bleed.
+			}
+
+			MoltenLash: {
+				DisplayName: Molten Lash
+				Tooltip: The best pre-Hardmode whip. Sets tagged foes ablaze.
+			}
+
+			BeastcallerWhip: {
+				DisplayName: Beastcaller Whip
+				Tooltip: Your first Hardmode whip. Tags foes and points your beasts at the target.
+			}
+
+			FeralLash: {
+				DisplayName: Feral Lash
+				Tooltip: Heavier tag, longer reach. Leaves foes bleeding for the pack.
+			}
+
+			SavageLash: {
+				DisplayName: Savage Lash
+				Tooltip: Long reach and a brutal tag. Bleeds and poisons.
+			}
+
+			AlphasLash: {
+				DisplayName: Alpha's Lash
+				Tooltip: The endgame whip. Enormous reach and a crushing tag that turns the pack rabid.
+			}
+
+			DroneChassis: {
+				DisplayName: Drone Chassis
+				Tooltip: The airframe. Forged from salvaged tech scrap.
+			}
+
+			ServoCore: {
+				DisplayName: Servo Core
+				Tooltip: The motor. Makes a chassis fly and track a target.
+			}
+
+			CommandChip: {
+				DisplayName: Command Chip
+				Tooltip: The brain. Without one, a drone is a hovering brick.
+			}
+
+			ScoutDroneKit: {
+				DisplayName: Scout Drone Kit
+				Tooltip:
+					'''
+					Deploys a scout drone. Drones hold formation and SHOOT -- they do not ram.
+					Assembled from a Chassis, a Servo Core and a Command Chip.
+					'''
+			}
+
+			RepeaterDroneKit: {
+				DisplayName: Repeater Drone Kit
+				Tooltip: Deploys a rapid-fire drone. Weaker bolts, but it never stops chattering.
+			}
+
+			TeslaDroneKit: {
+				DisplayName: Tesla Drone Kit
+				Tooltip: The best pre-Hardmode build. Its bolts electrify what they hit.
+			}
+
+			PlasmaDroneKit: {
+				DisplayName: Plasma Drone Kit
+				Tooltip: First Hardmode build. Heavy plasma bolts that set targets ablaze.
+			}
+
+			RailDroneKit: {
+				DisplayName: Rail Drone Kit
+				Tooltip: A long-range sniper platform. Its railshots pierce a whole line.
+			}
+
+			OmegaDroneKit: {
+				DisplayName: Omega Drone Kit
+				Tooltip:
+					'''
+					The engineer's masterpiece. Relentless fire, long reach, piercing bolts.
+					A full fleet of these is the Tech Summoner's endgame.
+					'''
+			}
+
+			WispLantern: {
+				DisplayName: Wisp Lantern
+				Tooltip:
+					'''
+					The seed of the legion -- the only one crafted from raw materials.
+					Everything stronger is FUSED from staves you own, which are consumed.
+					Legion minions cost half a slot, and each hits harder per other one alive.
+					'''
+			}
+
+			SpiritBanner: {
+				DisplayName: Spirit Banner
+				Tooltip: FUSION: two Wisps become one Spirit Soldier.
+			}
+
+			ConstructCore: {
+				DisplayName: Construct Core
+				Tooltip: FUSION: Soldier + Wisp, forged into matter. Its blows slow foes.
+			}
+
+			FusionMatrix: {
+				DisplayName: Fusion Matrix
+				Tooltip: FUSION: Construct + Soldier collapse into a golem that shatters armor.
+			}
+
+			SentinelBeacon: {
+				DisplayName: Sentinel Beacon
+				Tooltip: FUSION: Golem + Construct, refined into arc energy. It electrifies.
+			}
+
+			SingularityCore: {
+				DisplayName: Singularity Core
+				Tooltip:
+					'''
+					THE FINAL FUSION: Sentinel + Golem collapse into a Singularity Wraith
+					that halves defenses. A field full of them is the whole fantasy.
+					'''
+			}
+
+			FusionLash: {
+				DisplayName: Fusion Lash
+				Tooltip: Your first Hardmode whip. Tags a foe for the whole legion.
+			}
+
+			LegionLash: {
+				DisplayName: Legion Lash
+				Tooltip: The endgame whip. Mark one foe and the entire legion erases it.
+			}
+
+			CircuitLash: {
+				DisplayName: Circuit Lash
+				Tooltip: Your first Hardmode whip. Paints a target for the fleet to focus.
+			}
+
+			OmegaLash: {
+				DisplayName: Omega Lash
+				Tooltip: The endgame whip. Mark one target and the whole fleet erases it.
+			}
+
 		}
 
 		NPCs: {
@@ -1040,9 +1262,37 @@ Mods: {
 			EyeSpiritMinion.DisplayName: Eye Spirit
 			PracticeYoyoProjectile.DisplayName: Practice Yoyo Projectile
 			BeastWhipProjectile.DisplayName: Beast Whip Projectile
+			AlphaWhipProjectile.DisplayName: Alpha Whip Projectile
+			OmegaWhipProjectile.DisplayName: Omega Whip Projectile
+			LegionWhipProjectile.DisplayName: Legion Whip Projectile
+			WispMinion.DisplayName: Wisp
+			SpiritSoldierMinion.DisplayName: Spirit Soldier
+			ArcaneConstructMinion.DisplayName: Arcane Construct
+			FusionGolemMinion.DisplayName: Fusion Golem
+			ArcSentinelMinion.DisplayName: Arc Sentinel
+			SingularityWraithMinion.DisplayName: Singularity Wraith
+			DroneLaser.DisplayName: Drone Laser
+			ScoutDrone.DisplayName: Scout Drone
+			RepeaterDrone.DisplayName: Repeater Drone
+			TeslaDrone.DisplayName: Tesla Drone
+			PlasmaDrone.DisplayName: Plasma Drone
+			RailDrone.DisplayName: Rail Drone
+			OmegaDrone.DisplayName: Omega Drone
+			LeatherWhipProjectile.DisplayName: Leather Whip Projectile
+			ThornWhipProjectile.DisplayName: Thorn Whip Projectile
+			BloodfangWhipProjectile.DisplayName: Bloodfang Whip Projectile
+			MoltenWhipProjectile.DisplayName: Molten Whip Projectile
+			FeralWhipProjectile.DisplayName: Feral Whip Projectile
+			SavageWhipProjectile.DisplayName: Savage Whip Projectile
 			FusionWhipProjectile.DisplayName: Fusion Whip Projectile
 			TechWhipProjectile.DisplayName: Tech Whip Projectile
 			TrainingWhipProjectile.DisplayName: Training Whip Projectile
+			WolfMinion.DisplayName: Wolf
+			BoarMinion.DisplayName: Boar
+			RaptorMinion.DisplayName: Raptor
+			BearMinion.DisplayName: Bear
+			SabertoothMinion.DisplayName: Sabertooth
+			WyvernMinion.DisplayName: Wyvern
 		}
 	}
 }

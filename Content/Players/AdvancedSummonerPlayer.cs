@@ -48,7 +48,10 @@ namespace Eternia.Content.Players
             // The standing army feeds Command; an empty field slowly loses it.
             if (Player.slotsMinions > 0f)
             {
-                Command += 0.15f + Player.slotsMinions * 0.12f;
+                // Perfect Fusion: the legion reports faster -- Command charges quicker.
+                float rate = HasFusion("Perfect Fusion") ? 1.5f : 1f;
+
+                Command += (0.15f + Player.slotsMinions * 0.12f) * rate;
 
                 if (Command > MaxCommand)
                 {
@@ -93,19 +96,34 @@ namespace Eternia.Content.Players
 
             float fill = Player.slotsMinions / cap;
 
-            if (fill > 1f)
+            // Living Swarm (keystone): the legion keeps paying off even past a full roster.
+            float fillCap = HasKeystone("Living Swarm") ? 1.3f : 1f;
+
+            if (fill > fillCap)
             {
-                fill = 1f;
+                fill = fillCap;
             }
 
-            Player.GetDamage(DamageClass.Summon) += fill * 0.15f;
+            // Ultimate Fusion: a full roster is worth far more.
+            float legionScale = HasFusion("Ultimate Fusion") ? 0.24f : 0.15f;
+
+            Player.GetDamage(DamageClass.Summon) += fill * legionScale;
 
             // OVERCLOCK window: exceed your cap and summon faster.
             if (OverclockTimer > 0)
             {
-                Player.maxMinions += 2;
+                // Singularity: Overclock raises the cap even higher.
+                Player.maxMinions += HasFusion("Singularity") ? 4 : 2;
 
-                Player.GetAttackSpeed(DamageClass.Summon) += 0.25f;
+                // Synchronized Assault: a sharper Overclock.
+                Player.GetAttackSpeed(DamageClass.Summon) +=
+                    HasFusion("Synchronized Assault") ? 0.40f : 0.25f;
+
+                // Transcendent Fusion: Overclock also hits harder.
+                if (HasFusion("Transcendent Fusion"))
+                {
+                    Player.GetDamage(DamageClass.Summon) += 0.20f;
+                }
             }
         }
 
@@ -137,7 +155,8 @@ namespace Eternia.Content.Players
 
             Command = 0f;
 
-            OverclockTimer = OverclockDuration;
+            // Overdrive: the Overclock window lasts longer.
+            OverclockTimer = OverclockDuration + (HasFusion("Overdrive") ? 180 : 0);
 
             SoundEngine.PlaySound(SoundID.Item29, Player.position);
 
@@ -154,6 +173,20 @@ namespace Eternia.Content.Players
                     Player.height,
                     DustID.PurpleTorch);
             }
+        }
+
+        private bool HasFusion(string node)
+        {
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+
+            return stats.HasActivePassive(soul.ActiveSoul, node);
+        }
+
+        private bool HasKeystone(string keystone)
+        {
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .UnlockedPassives.Contains(keystone);
         }
 
         public bool IsActiveAdvancedSummoner()
