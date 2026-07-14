@@ -58,6 +58,16 @@ Mods: {
 				Tooltip: ""
 			}
 
+			SoulReforge: {
+				DisplayName: Soul Reforge
+				Tooltip:
+					'''
+					Wipes every passive you have unlocked and returns all the points you spent.
+					Your affinities reset, so your subclass is decided again from scratch.
+					The only way out of a build -- and it is not cheap.
+					'''
+			}
+
 			MageSoul: {
 				DisplayName: Mage Soul
 				Tooltip: ""

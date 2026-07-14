@@ -92,6 +92,70 @@ namespace Eternia.Content.Progression
             return true;
         }
 
+        // Wipes every unlocked passive, zeroes the affinities that drive promotion, and refunds
+        // exactly the points they cost. The subclass then re-resolves on its own: SubclassPlayer
+        // recomputes it every frame from the affinity snapshot, so clearing the affinities drops
+        // you back to your base class, and re-spending the points promotes you again.
+        //
+        // This is the ONLY way out of a build. Without it a player who invested in the wrong
+        // branch would be locked into the wrong subclass for the life of that character.
+        // Returns how many passive points were handed back.
+        public static int ResetPassives(Player player)
+        {
+            var soul = player.GetModPlayer<EterniaPlayer>();
+            var stats = player.GetModPlayer<EterniaStatsPlayer>();
+            var level = player.GetModPlayer<EterniaLevelPlayer>();
+
+            if (!soul.HasClassSoul || stats.UnlockedPassives.Count == 0)
+            {
+                return 0;
+            }
+
+            System.Collections.Generic.List<PassiveNode> tree =
+                PassiveRegistry.GetPassivesForSoul(soul.ActiveSoul);
+
+            int refunded = 0;
+
+            foreach (string name in stats.UnlockedPassives)
+            {
+                PassiveNode node = tree?.Find(n => n.Name == name);
+
+                if (node != null)
+                {
+                    refunded += node.Cost;
+                }
+            }
+
+            stats.UnlockedPassives.Clear();
+            ClearAffinities(stats);
+
+            level.passivePoints += refunded;
+
+            return refunded;
+        }
+
+        private static void ClearAffinities(EterniaStatsPlayer stats)
+        {
+            stats.BleedAffinity = 0;
+            stats.ComboAffinity = 0;
+            stats.DefenseAffinity = 0;
+            stats.PrecisionAffinity = 0;
+            stats.RageAffinity = 0;
+            stats.ControlAffinity = 0;
+            stats.EnergyAffinity = 0;
+            stats.BowAffinity = 0;
+            stats.GunAffinity = 0;
+            stats.MusicAffinity = 0;
+            stats.ElementalAffinity = 0;
+            stats.CurseAffinity = 0;
+            stats.InfinityAffinity = 0;
+            stats.ArcaneAffinity = 0;
+            stats.BeastAffinity = 0;
+            stats.FusionAffinity = 0;
+            stats.TechAffinity = 0;
+            stats.ShadowAffinity = 0;
+        }
+
         private static void AddAffinity(
             EterniaStatsPlayer stats,
             string affinity,

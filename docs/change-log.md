@@ -15,6 +15,29 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-14 - SOUL REFORGE: el respec (la unica salida de un build)
+
+- Problema encontrado auditando el codigo: `UnlockedPassives` solo tenia UNA operacion en todo
+  el mod -- `.Add()`. No habia Remove ni Clear. Una pasiva desbloqueada lo era PARA SIEMPRE.
+  Y como la promocion es "la afinidad mas alta gana", un jugador que invertia en Bow y luego
+  descubria que queria el Momentum del Gunner quedaba encerrado en Archer para toda la vida de
+  ese personaje. En un mod cuya gracia son DOCE subclases, eso castiga justo lo que queremos
+  premiar: experimentar.
+- `ProgressionService.ResetPassives(player)` (nuevo, junto al TryUnlockPassive): borra las
+  pasivas, pone a CERO las 18 afinidades, y devuelve EXACTAMENTE los puntos que costaron
+  (lee node.Cost de cada una, incluidos los keystones -- que tambien son nodos del registro).
+- Cero fontaneria extra para la re-promocion: `SubclassPlayer` ya recalcula CurrentSubclass
+  cada frame desde el snapshot de afinidades, asi que al ponerlas a cero vuelves a tu clase
+  base sola, y al re-gastar los puntos te vuelves a promover sola.
+- `Content/Items/Souls/SoulReforge.cs`: consumible, y DELIBERADAMENTE CARO (decision del
+  usuario: "que la decision pese"). Ritual en un ALTAR DEMONIACO: 1 Empty Soul + 30 Almas de
+  Luz + 30 Almas de Noche + 20 barras de oro/platino. Se niega a usarse si no hay nada que
+  devolver (no se desperdicia), y el tooltip avisa cuantas pasivas vas a borrar.
+- Verificacion: build 0/0; suite PASS=106 (nuevo `tests/SoulReforgeSourceSmokeTest.ps1`, que
+  fija que devuelva el coste REAL y que borre LAS 18 afinidades -- si quedase una sin limpiar,
+  el reforge te dejaria atrapado en la subclase vieja).
+- Pendientes/riesgos: SIN probar en juego.
+
 ## 2026-07-14 - ARMADURAS: 16 sets (48 piezas) cuyo BONUS DE SET dobla la mecanica
 
 - Hueco detectado al auditar el mod: NO habia ni una sola armadura. El poder en Terraria es
