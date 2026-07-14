@@ -1,89 +1,183 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
+    // The Archer runs on CONCENTRATION (0-100). It fills while you hold fire -- faster while
+    // standing still -- and is spent when you shoot. A base Ranger already learns it (weak
+    // tiered bonuses); once promoted to Archer it becomes the core: firing at a full bar lands
+    // a PERFECT SHOT (huge damage/crit/speed, armor pierce, unique FX), and distance to the
+    // target scales damage, turning the Archer into a sniper. The Bow passive branch shapes it.
+    //   0-30   : no bonus
+    //   31-60  : +5% damage, +5% projectile speed
+    //   61-100 : +10% damage, +10% projectile speed, +5% crit
     public class ArcherPlayer : ModPlayer
     {
-        // =================================================
-        // FOCUS
-        // =================================================
-
         public float Focus;
-
         public const float MaxFocus = 100f;
 
-        // =================================================
-        // PERFECT SHOT
-        // =================================================
+        // Decided in CanUseItem, read by ModifyWeapon* and by ArcherGlobalProjectile at spawn.
+        public bool ShotIsPerfect;
+        public bool ShotIsLegendary;
 
-        public bool PerfectShot;
+        private int ticksSinceFire;
+        private int perfectShotCount;
 
-        // =================================================
-        // RESET EFFECTS
-        // =================================================
+        public float FocusPercent => Focus / MaxFocus * 100f;
+
+        // Full bar on a promoted Archer -> the next bow shot is a Perfect Shot (UI glow).
+        public bool PerfectReady => IsActiveArcher() && Focus >= MaxFocus;
 
         public override void ResetEffects()
         {
-            if (!IsActiveArcher())
+            if ((!IsActiveArcher() && !IsRangerLearning()))
             {
                 Focus = 0f;
-
-                PerfectShot = false;
+                ShotIsPerfect = false;
+                ShotIsLegendary = false;
             }
         }
 
-        // =================================================
-        // POST UPDATE
-        // =================================================
-
         public override void PostUpdate()
         {
-            if (!IsActiveArcher())
+            if ((!IsActiveArcher() && !IsRangerLearning()))
             {
                 return;
             }
 
-            // =============================================
-            // ACTIVATE PERFECT SHOT
-            // =============================================
+            ticksSinceFire++;
 
-            if (EterniaKeybinds.SkillKey.JustPressed
-                && Focus >= MaxFocus
-                && !PerfectShot)
+            // The perfect/legendary tag only belongs to the arrows spawned on the firing tick.
+            if (ticksSinceFire > 1)
             {
-                PerfectShot = true;
-
-                CombatText.NewText(
-                    Player.Hitbox,
-                    Color.Gold,
-                    "PERFECT SHOT!"
-                );
+                ShotIsPerfect = false;
+                ShotIsLegendary = false;
             }
 
-            // =============================================
-            // FOCUS DECAY
-            // =============================================
+            // A promoted Archer cannot concentrate with an enemy breathing down their neck.
+            bool blocked = IsActiveArcher() && EnemyTooClose();
 
-            if (Focus > 0f
-                && Player.velocity.Length() <= 0.1f)
+            if (ticksSinceFire > 18 && !blocked)
             {
-                Focus -= 0.03f;
-            }
+                bool still = Player.velocity.Length() < 0.5f;
+                float regen = still ? 0.9f : 0.35f;
 
-            if (Focus < 0f)
-            {
-                Focus = 0f;
+                // Eagle Vision: Concentration charges faster.
+                if (HasPassive("Eagle Eye"))
+                {
+                    regen *= 1.5f;
+                }
+
+                Focus += regen;
+
+                if (Focus > MaxFocus)
+                {
+                    Focus = MaxFocus;
+                }
             }
         }
 
-        // =================================================
-        // MODIFY SHOOT STATS
-        // =================================================
+        // Enemy within ~12 blocks -- the Archer wants distance.
+        private bool EnemyTooClose()
+        {
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+
+                if (!npc.active || npc.friendly || npc.dontTakeDamage)
+                {
+                    continue;
+                }
+
+                if (Vector2.Distance(Player.Center, npc.Center) < 190f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public override bool CanUseItem(Item item)
+        {
+            if ((!IsActiveArcher() && !IsRangerLearning()) || !IsBow(item))
+            {
+                return true;
+            }
+
+            ticksSinceFire = 0;
+
+            // Decide the Perfect Shot up front so the damage/crit hooks (which run before the
+            // projectile spawns) can empower this exact shot.
+            ShotIsPerfect = IsActiveArcher() && Focus >= MaxFocus;
+            ShotIsLegendary = false;
+
+            if (ShotIsPerfect)
+            {
+                perfectShotCount++;
+
+                // Hawkeye (keystone ultimate): every 8th Perfect Shot becomes a Legendary Shot.
+                if (HasKeystone("Hawkeye") && perfectShotCount % 8 == 0)
+                {
+                    ShotIsLegendary = true;
+                }
+
+                CombatText.NewText(
+                    Player.Hitbox,
+                    ShotIsLegendary ? Color.Orange : Color.Gold,
+                    ShotIsLegendary ? "LEGENDARY SHOT!" : "PERFECT SHOT!");
+            }
+
+            return true;
+        }
+
+        public override void ModifyWeaponDamage(Item item, ref StatModifier damage)
+        {
+            if ((!IsActiveArcher() && !IsRangerLearning()) || !IsBow(item))
+            {
+                return;
+            }
+
+            // Tiered Concentration bonus (both base Ranger and promoted Archer).
+            damage += TierBonus();
+
+            if (ShotIsLegendary)
+            {
+                damage *= 1.80f;
+            }
+            else if (ShotIsPerfect)
+            {
+                // Deadeye increases Perfect Shot damage.
+                damage *= HasPassive("Storm of Arrows") ? 1.55f : 1.35f;
+            }
+        }
+
+        public override void ModifyWeaponCrit(Item item, ref float crit)
+        {
+            if ((!IsActiveArcher() && !IsRangerLearning()) || !IsBow(item))
+            {
+                return;
+            }
+
+            if (Focus >= 61f)
+            {
+                crit += 5f;
+            }
+
+            if (ShotIsLegendary)
+            {
+                crit += 50f;
+            }
+            else if (ShotIsPerfect)
+            {
+                crit += 25f;
+            }
+        }
 
         public override void ModifyShootStats(
             Item item,
@@ -93,193 +187,125 @@ namespace Eternia.Content.Players
             ref int damage,
             ref float knockback)
         {
-            if (!IsActiveArcher())
+            if ((!IsActiveArcher() && !IsRangerLearning()) || !IsBow(item))
             {
                 return;
             }
 
-            // =============================================
-            // ONLY BOWS
-            // =============================================
+            velocity *= 1f + TierBonus();
 
-            if (item.useAmmo != AmmoID.Arrow)
+            if (ShotIsLegendary)
             {
-                return;
+                velocity *= 1.5f;
+                knockback += 6f;
             }
-
-            // =============================================
-            // FOCUS BONUS
-            // =============================================
-
-            float focusPercent =
-                Focus / MaxFocus;
-
-            velocity *=
-                1f + (focusPercent * 0.25f);
-
-            damage +=
-                (int)(
-                    damage
-                    * focusPercent
-                    * 0.20f
-                );
-
-            // =============================================
-            // PERFECT SHOT
-            // =============================================
-
-            if (PerfectShot)
+            else if (ShotIsPerfect)
             {
-                damage =
-                    (int)(damage * 2f);
-
                 velocity *= 1.4f;
-
-                PerfectShot = false;
-
-                Focus = 0f;
-
-                // =========================================
-                // VISUAL FX
-                // =========================================
+                knockback += 4f;
 
                 for (int i = 0; i < 25; i++)
                 {
                     Dust.NewDust(
-                        Player.position,
-                        Player.width,
-                        Player.height,
-                        DustID.GoldFlame
-                    );
+                        Player.position, Player.width, Player.height, DustID.GoldFlame);
+                }
+            }
+
+            // Consume Concentration. A Perfect Shot burns almost the whole bar (back to ~10).
+            if (ShotIsPerfect)
+            {
+                Focus = 10f;
+            }
+            else
+            {
+                Focus -= IsActiveArcher() ? 16f : 10f;
+
+                if (Focus < 0f)
+                {
+                    Focus = 0f;
                 }
             }
         }
 
-        // =================================================
-// HIT NPC
-// =================================================
-
         public override void OnHitNPCWithProj(
-            Projectile proj,
-            NPC target,
-            NPC.HitInfo hit,
-            int damageDone)
+            Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
         {
-            if (!IsActiveArcher())
+            if ((!IsActiveArcher() && !IsRangerLearning()) || !IsBow(Player.HeldItem))
             {
                 return;
             }
 
-            // =============================================
-            // ONLY BOWS
-            // =============================================
-
-            if (Player.HeldItem.useAmmo
-                != AmmoID.Arrow)
+            // Hunter Instinct: felling an enemy restores Concentration.
+            if (target.life <= 0 && HasPassive("Hunter Instinct"))
             {
-                return;
-            }
+                Focus += 22f;
 
-            // =============================================
-            // GAIN FOCUS
-            // =============================================
-
-            Focus += 8f;
-
-            if (Focus > MaxFocus)
-            {
-                Focus = MaxFocus;
-            }
-
-            // =============================================
-            // PARTICLES
-            // =============================================
-
-            for (int i = 0; i < 3; i++)
-            {
-                Dust.NewDust(
-                    target.position,
-                    target.width,
-                    target.height,
-                    DustID.GoldFlame
-                );
+                if (Focus > MaxFocus)
+                {
+                    Focus = MaxFocus;
+                }
             }
         }
 
-        // =================================================
-        // RANGED CRIT
-        // =================================================
-
-        public override void ModifyWeaponCrit(
-            Item item,
-            ref float crit)
+        public override void OnHurt(Player.HurtInfo info)
         {
-            if (!IsActiveArcher())
+            if (!IsActiveArcher() && !IsRangerLearning())
             {
                 return;
             }
 
-            // =============================================
-            // ONLY BOWS
-            // =============================================
+            Focus -= 30f;
 
-            if (item.useAmmo != AmmoID.Arrow)
+            if (Focus < 0f)
             {
-                return;
+                Focus = 0f;
             }
-
-            // =============================================
-            // FOCUS CRIT BONUS
-            // =============================================
-
-            float focusPercent =
-                Focus / MaxFocus;
-
-            crit +=
-                focusPercent * 10f;
         }
 
-        // =================================================
-        // ATTACK SPEED
-        // =================================================
-
-        public override float UseSpeedMultiplier(
-            Item item)
+        // 31-60 -> +5%, 61-100 -> +10% (damage and projectile speed).
+        private float TierBonus()
         {
-            if (!IsActiveArcher())
+            if (Focus >= 61f)
             {
-                return 1f;
+                return 0.10f;
             }
 
-            // =============================================
-            // ONLY BOWS
-            // =============================================
+            return Focus >= 31f ? 0.05f : 0f;
+        }
 
-            if (item.useAmmo != AmmoID.Arrow)
-            {
-                return 1f;
-            }
+        private static bool IsBow(Item item) => item.useAmmo == AmmoID.Arrow;
 
-            // =============================================
-            // SPEED BONUS
-            // =============================================
+        private bool HasPassive(string node)
+        {
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
 
-            float focusPercent =
-                Focus / MaxFocus;
+            return stats.HasActivePassive(soul.ActiveSoul, node);
+        }
 
-            return 1f
-                + (focusPercent * 0.20f);
+        private bool HasKeystone(string keystone)
+        {
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .UnlockedPassives.Contains(keystone);
+        }
+
+        // Base Ranger, pre-promotion: learns the mechanic with the weaker tiered bonuses only.
+        public bool IsRangerLearning()
+        {
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+
+            return soul.HasClassSoul &&
+                soul.ActiveSoul == SoulId.Ranger &&
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass == "Ranger";
         }
 
         public bool IsActiveArcher()
         {
-            var soul =
-                Player.GetModPlayer<EterniaPlayer>();
+            var soul = Player.GetModPlayer<EterniaPlayer>();
 
             return soul.HasClassSoul &&
                 soul.ActiveSoul == SoulId.Ranger &&
-                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
-                "Archer";
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass == "Archer";
         }
     }
 }

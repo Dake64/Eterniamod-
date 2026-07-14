@@ -166,32 +166,16 @@ namespace Eternia.Content.UI
             );
 
             // =============================================
-            // PERFECT SHOT READY
+            // PERFECT SHOT READY (next bow shot lands it automatically)
             // =============================================
 
-            if (archerPlayer.Focus
-                >= ArcherPlayer.MaxFocus)
+            if (archerPlayer.PerfectReady)
             {
                 EterniaUI.DrawPill(
                     spriteBatch,
-                    new Rectangle((int)drawPos.X - 6, (int)drawPos.Y - 42, 72, 20),
-                    "PRESS Q",
+                    new Rectangle((int)drawPos.X - 22, (int)drawPos.Y - 42, 114, 20),
+                    "PERFECT READY",
                     Color.Gold,
-                    0.48f
-                );
-            }
-
-            // =============================================
-            // PERFECT SHOT ACTIVE
-            // =============================================
-
-            if (archerPlayer.PerfectShot)
-            {
-                EterniaUI.DrawPill(
-                    spriteBatch,
-                    new Rectangle((int)drawPos.X - 22, (int)drawPos.Y - 64, 114, 20),
-                    "PERFECT SHOT",
-                    Color.Yellow,
                     0.48f
                 );
             }

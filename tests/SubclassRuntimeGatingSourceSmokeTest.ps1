@@ -109,7 +109,7 @@ foreach ($check in @(
         Content=$archer
         Helper="IsActiveArcher"
         Soul="Ranger"
-        Methods=@("ResetEffects", "PostUpdate", "ModifyShootStats", "OnHitNPCWithProj", "ModifyWeaponCrit", "UseSpeedMultiplier")
+        Methods=@("ResetEffects", "PostUpdate", "CanUseItem", "ModifyWeaponDamage", "ModifyWeaponCrit", "ModifyShootStats", "OnHitNPCWithProj", "OnHurt")
     },
     @{
         Name="EnergyShooterPlayer"
