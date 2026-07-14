@@ -27,8 +27,17 @@ namespace Eternia.Content.Players
 
         private const int OverdriveCooldown = 660;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccCoreRateMult = 1f;
+        public int AccOverdriveDefense;
+        public int AccOverdriveBonusTicks;
+
         public override void ResetEffects()
         {
+            AccCoreRateMult = 1f;
+            AccOverdriveDefense = 0;
+            AccOverdriveBonusTicks = 0;
+
             if (!IsActiveTechSummoner())
             {
                 PowerCore = 0f;
@@ -51,7 +60,7 @@ namespace Eternia.Content.Players
                 // Tech Protocol: a better power bus -- the core charges faster.
                 float rate = HasTech("Tech Protocol") ? 1.5f : 1f;
 
-                PowerCore += (0.25f + Player.slotsMinions * 0.08f) * rate;
+                PowerCore += (0.25f + Player.slotsMinions * 0.08f) * rate * AccCoreRateMult;
 
                 if (PowerCore > MaxPowerCore)
                 {
@@ -99,7 +108,8 @@ namespace Eternia.Content.Players
                     HasTech("Nanoswarm") ? 0.40f : 0.25f;
 
                 // Combat Protocol (keystone): the shield holds far better.
-                Player.statDefense += HasKeystone("Combat Protocol") ? 28 : 15;
+                Player.statDefense +=
+                    (HasKeystone("Combat Protocol") ? 28 : 15) + AccOverdriveDefense;
             }
         }
 
@@ -132,7 +142,9 @@ namespace Eternia.Content.Players
             PowerCore = 0f;
 
             // Overclocked Core: the Overdrive window runs longer.
-            OverdriveTimer = OverdriveDuration + (HasTech("Overclocked Core") ? 180 : 0);
+            OverdriveTimer = OverdriveDuration
+                + (HasTech("Overclocked Core") ? 180 : 0)
+                + AccOverdriveBonusTicks;
 
             SoundEngine.PlaySound(SoundID.Item92, Player.position);
 

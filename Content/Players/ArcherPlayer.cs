@@ -33,8 +33,17 @@ namespace Eternia.Content.Players
         // Full bar on a promoted Archer -> the next bow shot is a Perfect Shot (UI glow).
         public bool PerfectReady => IsActiveArcher() && Focus >= MaxFocus;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccFocusRegenMult = 1f;
+        public float AccPerfectDamage;
+        public float AccFocusLossMult = 1f;
+
         public override void ResetEffects()
         {
+            AccFocusRegenMult = 1f;
+            AccPerfectDamage = 0f;
+            AccFocusLossMult = 1f;
+
             if ((!IsActiveArcher() && !IsRangerLearning()))
             {
                 Focus = 0f;
@@ -73,7 +82,7 @@ namespace Eternia.Content.Players
                     regen *= 1.5f;
                 }
 
-                Focus += regen;
+                Focus += regen * AccFocusRegenMult;
 
                 if (Focus > MaxFocus)
                 {
@@ -148,12 +157,12 @@ namespace Eternia.Content.Players
 
             if (ShotIsLegendary)
             {
-                damage *= 1.80f;
+                damage *= 1.80f + AccPerfectDamage;
             }
             else if (ShotIsPerfect)
             {
                 // Deadeye increases Perfect Shot damage.
-                damage *= HasPassive("Storm of Arrows") ? 1.55f : 1.35f;
+                damage *= (HasPassive("Storm of Arrows") ? 1.55f : 1.35f) + AccPerfectDamage;
             }
         }
 
@@ -254,7 +263,8 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            Focus -= 30f;
+            // Calm Breath rigs (accessories) soften how much a hit rattles you.
+            Focus -= 30f * AccFocusLossMult;
 
             if (Focus < 0f)
             {

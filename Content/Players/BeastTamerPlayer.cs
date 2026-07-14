@@ -27,8 +27,17 @@ namespace Eternia.Content.Players
 
         private const int FrenzyCooldown = 600;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccFerocityGainMult = 1f;
+        public float AccFerocityDecayMult = 1f;
+        public float AccFrenzyDamage;
+
         public override void ResetEffects()
         {
+            AccFerocityGainMult = 1f;
+            AccFerocityDecayMult = 1f;
+            AccFrenzyDamage = 0f;
+
             if (!IsActiveBeastTamer())
             {
                 Ferocity = 0f;
@@ -53,7 +62,7 @@ namespace Eternia.Content.Players
                 || proj.DamageType.CountsAsClass(DamageClass.Summon))
             {
                 // Wild Bond: the pack whips itself into a fury faster.
-                Ferocity += HasBeast("Wild Bond") ? 6f : 4f;
+                Ferocity += (HasBeast("Wild Bond") ? 6f : 4f) * AccFerocityGainMult;
 
                 if (Ferocity > MaxFerocity)
                 {
@@ -73,7 +82,7 @@ namespace Eternia.Content.Players
             if (FrenzyTimer <= 0 && Ferocity > 0f)
             {
                 // Feral Roar: the fury lingers -- Ferocity fades more slowly.
-                Ferocity -= HasBeast("Feral Roar") ? 0.08f : 0.15f;
+                Ferocity -= (HasBeast("Feral Roar") ? 0.08f : 0.15f) * AccFerocityDecayMult;
 
                 if (Ferocity < 0f)
                 {
@@ -112,7 +121,7 @@ namespace Eternia.Content.Players
             if (FrenzyTimer > 0)
             {
                 // PRIMAL ROAR frenzy.
-                Player.GetDamage(DamageClass.Summon) += 0.30f;
+                Player.GetDamage(DamageClass.Summon) += 0.30f + AccFrenzyDamage;
 
                 // Alpha Beast: the roar knocks foes back even harder.
                 Player.GetKnockback(DamageClass.Summon) +=

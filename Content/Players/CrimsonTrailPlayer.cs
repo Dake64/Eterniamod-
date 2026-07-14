@@ -15,8 +15,13 @@ namespace Eternia.Content.Players
 
         public int CrimsonTrail;
 
+        // --- Accessory hook (reset every frame; accessories re-apply it) ----------------
+        public float AccTrailGainMult = 1f;
+
         public override void ResetEffects()
         {
+            AccTrailGainMult = 1f;
+
             // The resource only exists for an active Swordsman.
             if (!Player.GetModPlayer<SwordsmanPlayer>().IsActiveSwordsman())
             {
@@ -31,7 +36,7 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            CrimsonTrail += amount;
+            CrimsonTrail += (int)System.Math.Round(amount * AccTrailGainMult);
 
             if (CrimsonTrail > MaxCrimsonTrail)
             {

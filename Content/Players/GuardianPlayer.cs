@@ -18,8 +18,17 @@ namespace Eternia.Content.Players
         // RESET EFFECTS
         // =================================================
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccAuraDamage;
+        public float AccAuraRadius;
+        public float AccAuraPulseMult = 1f;
+
         public override void ResetEffects()
         {
+            AccAuraDamage = 0f;
+            AccAuraRadius = 0f;
+            AccAuraPulseMult = 1f;
+
             // =============================================
             // ONLY GUARDIAN
             // =============================================
@@ -159,7 +168,7 @@ namespace Eternia.Content.Players
             if (HasDefensePassive("Fortress Body")) mult += 0.15f;
             if (HasDefensePassive("Aegis")) mult += 0.20f;
 
-            return mult;
+            return mult + AccAuraDamage;
         }
 
         // The Guardian projects a larger aura; the Defense tree widens it further.
@@ -175,7 +184,7 @@ namespace Eternia.Content.Players
             if (HasDefensePassive("Shield Training")) mult += 0.10f;
             if (HasDefensePassive("Bulwark")) mult += 0.15f;
 
-            return mult;
+            return mult + AccAuraRadius;
         }
 
         // The Defense tree makes the Guardian's aura pulse faster (<1 = shorter gap).
@@ -191,7 +200,7 @@ namespace Eternia.Content.Players
             if (HasDefensePassive("Unbreakable")) mult *= 0.85f;
             if (HasDefensePassive("Stonewall")) mult *= 0.85f;
 
-            return mult;
+            return mult * AccAuraPulseMult;
         }
 
         // Per-pulse Guardian passive effects: Last Bastion sustains the wielder while

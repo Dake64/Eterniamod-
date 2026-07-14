@@ -22,6 +22,16 @@ namespace Eternia.Content.Players
         // The equipped (held / last-held) Grimoire that reshapes the whole army.
         public ISpecializedGrimoire ActiveGrimoire;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccReserveMult = 1f;
+        public float AccManaDrainMult = 1f;
+
+        public override void ResetEffects()
+        {
+            AccReserveMult = 1f;
+            AccManaDrainMult = 1f;
+        }
+
         public override void PostUpdateEquips()
         {
             ActiveNecroSummons = 0;
@@ -40,8 +50,9 @@ namespace Eternia.Content.Players
                 ActiveGrimoire = held;
             }
 
-            float reserveMult = ActiveGrimoire?.ReserveMult ?? 1f;
-            float manaMult = ActiveGrimoire?.ManaMult ?? 1f;
+            // Accessories (phylacteries, bone conduits...) ease the toll of the undead.
+            float reserveMult = (ActiveGrimoire?.ReserveMult ?? 1f) * AccReserveMult;
+            float manaMult = (ActiveGrimoire?.ManaMult ?? 1f) * AccManaDrainMult;
 
             float reserve = 0f;
 

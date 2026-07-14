@@ -1221,6 +1221,274 @@ Mods: {
 				Tooltip: The endgame whip. Mark one target and the whole fleet erases it.
 			}
 
+			SoulOfSteel: {
+				DisplayName: Soul of Steel
+				Tooltip: For any Warrior. +6% melee damage, +3% crit, +4 defense.
+			}
+
+			SoulOfEmber: {
+				DisplayName: Soul of Ember
+				Tooltip: For any Mage. +6% magic damage, +40 mana, faster mana regen.
+			}
+
+			SoulOfTheHunt: {
+				DisplayName: Soul of the Hunt
+				Tooltip: For any Ranger. +6% ranged damage, +3% crit, +5% move speed.
+			}
+
+			SoulOfThePack: {
+				DisplayName: Soul of the Pack
+				Tooltip: For any Summoner. +6% summon damage, +1 minion.
+			}
+
+			BrawlersWraps: {
+				DisplayName: Brawler's Wraps
+				Tooltip: +3 max Combo and a longer window before it drops.
+			}
+
+			ChainBreaker: {
+				DisplayName: Chain Breaker
+				Tooltip: +8 max Combo. A bigger ceiling means a bigger payoff at the top.
+			}
+
+			EndlessRhythm: {
+				DisplayName: Endless Rhythm
+				Tooltip:
+					'''
+					The Combo window runs 3 seconds longer -- reposition and dodge without
+					dropping your chain.
+					'''
+			}
+
+			BloodletterBand: {
+				DisplayName: Bloodletter's Band
+				Tooltip: You bank Crimson Trail 30% faster off every bleeding wound.
+			}
+
+			HemophageSigil: {
+				DisplayName: Hemophage Sigil
+				Tooltip: Crimson Trail floods in 60% faster. Your technique never stops coming.
+			}
+
+			CrimsonChalice: {
+				DisplayName: Crimson Chalice
+				Tooltip: Crimson Trail builds faster, and your crits drink it back as life.
+			}
+
+			BulwarkCharm: {
+				DisplayName: Bulwark Charm
+				Tooltip: Your defensive aura projects 12% wider. +4 defense.
+			}
+
+			AegisCore: {
+				DisplayName: Aegis Core
+				Tooltip:
+					'''
+					+30% aura damage. The aura already scales with Defense, so the defense
+					this grants feeds back into itself.
+					'''
+			}
+
+			ResonatingWard: {
+				DisplayName: Resonating Ward
+				Tooltip: The aura pulses 30% faster and reaches 25% wider. The crowd-control build.
+			}
+
+			AttunementCharm: {
+				DisplayName: Attunement Charm
+				Tooltip: You flow between elements faster. +5% magic damage.
+			}
+
+			ElementalPrism: {
+				DisplayName: Elemental Prism
+				Tooltip: Element switching is almost instant. Weave all five in one fight.
+			}
+
+			PrimalConvergence: {
+				DisplayName: Primal Convergence
+				Tooltip:
+					'''
+					Switching stays slow, but every switch Surge lasts 4 seconds longer.
+					Commit to an element and ride the wave.
+					'''
+			}
+
+			CursedTalisman: {
+				DisplayName: Cursed Talisman
+				Tooltip: +15 base Corruption. You start every fight already tainted.
+			}
+
+			PactSeal: {
+				DisplayName: Pact Seal
+				Tooltip: +40 base Corruption. Your Cursed Burst starts loaded.
+			}
+
+			BlightedHeart: {
+				DisplayName: Blighted Heart
+				Tooltip:
+					'''
+					+70 base Corruption and +15% magic damage, but it eats 40 of your
+					maximum life. The reckless pact.
+					'''
+			}
+
+			BonePhylactery: {
+				DisplayName: Bone Phylactery
+				Tooltip: The undead reserve 18% less of your maximum life.
+			}
+
+			SoulConduit: {
+				DisplayName: Soul Conduit
+				Tooltip: 28% less Reserved Life and 25% less mana drain. Raise a bigger army.
+			}
+
+			LichsSigil: {
+				DisplayName: Lich's Sigil
+				Tooltip:
+					'''
+					Halves the undead's mana drain and pours the saving into raw power.
+					You still pay the life reserve in full. The glass-cannon Necromancer.
+					'''
+			}
+
+			CoolantRig: {
+				DisplayName: Coolant Rig
+				Tooltip: Energy weapons run 15% cooler. Ride the hot zone a little longer.
+			}
+
+			HeatSinkArray: {
+				DisplayName: Heat Sink Array
+				Tooltip: Vents 60% faster and burns 20% less heat per shot. Live in the critical zone.
+			}
+
+			RefractoryPlating: {
+				DisplayName: Refractory Plating
+				Tooltip:
+					'''
+					Overheating no longer hurts you at all -- the weapon still locks out to
+					vent, but you can shove it into the red without fear.
+					Traps heat, so it cools 20% slower.
+					'''
+			}
+
+			HuntersLens: {
+				DisplayName: Hunter's Lens
+				Tooltip: Concentration charges 25% faster. +4% ranged crit.
+			}
+
+			FalconEye: {
+				DisplayName: Falcon Eye
+				Tooltip: Perfect Shots hit 25% harder, and the bar fills 40% faster.
+			}
+
+			SteadyNerve: {
+				DisplayName: Steady Nerve
+				Tooltip:
+					'''
+					Taking a hit costs 65% less Concentration -- hold a charge through
+					a brawl. The survivalist's Archer.
+					'''
+			}
+
+			RecoilDamper: {
+				DisplayName: Recoil Damper
+				Tooltip: Momentum bleeds away 30% slower. A missed beat will not cost you the run.
+			}
+
+			HotStreakRig: {
+				DisplayName: Hot Streak Rig
+				Tooltip: Momentum builds 45% faster. Reach Dead Eye in a fraction of the time.
+			}
+
+			DeadEyeRegulator: {
+				DisplayName: Dead Eye Regulator
+				Tooltip:
+					'''
+					Dead Eye runs 4 seconds longer and Momentum barely decays.
+					Stay in the rampage instead of racing to it.
+					'''
+			}
+
+			AlphasFang: {
+				DisplayName: Alpha's Fang
+				Tooltip: The pack whips itself into a fury 30% faster.
+			}
+
+			BeastlordsCollar: {
+				DisplayName: Beastlord's Collar
+				Tooltip: Ferocity builds 55% faster and lingers far longer. Primal Roar is always close.
+			}
+
+			PrimalTotem: {
+				DisplayName: Primal Totem
+				Tooltip: Primal Roar grants a further +25% summon damage. The burst build.
+			}
+
+			CapacitorBank: {
+				DisplayName: Capacitor Bank
+				Tooltip: The Power Core charges 30% faster. +3 defense.
+			}
+
+			FusionCapacitor: {
+				DisplayName: Fusion Capacitor
+				Tooltip: The core charges 60% faster and Overdrive runs 4 seconds longer.
+			}
+
+			ReactivePlating: {
+				DisplayName: Reactive Plating
+				Tooltip: +10 defense, and the Overdrive shield hardens by a further 20.
+			}
+
+			CommandersSigil: {
+				DisplayName: Commander's Sigil
+				Tooltip: Command charges 30% faster. Overclock comes around sooner.
+			}
+
+			LegionStandard: {
+				DisplayName: Legion Standard
+				Tooltip: A full roster is worth far more, and Command charges 40% faster. +1 minion.
+			}
+
+			OverclockGovernor: {
+				DisplayName: Overclock Governor
+				Tooltip: Overclock -- the window where you exceed your minion cap -- runs 5 seconds longer.
+			}
+
+			EternalBulwark: {
+				DisplayName: Eternal Bulwark
+				Tooltip:
+					'''
+					The Warrior's capstone. Shores up EVERY Warrior mechanic at once --
+					Combo, Crimson Trail and the aura -- so it fits whichever subclass you took.
+					'''
+			}
+
+			EternalGrimoire: {
+				DisplayName: Eternal Grimoire
+				Tooltip:
+					'''
+					The Mage's capstone. Serves all three Mage mechanics at once --
+					attunement, Corruption, and the undead's toll.
+					'''
+			}
+
+			EternalSight: {
+				DisplayName: Eternal Sight
+				Tooltip:
+					'''
+					The Ranger's capstone. Feeds all three Ranger mechanics at once --
+					Temperature, Concentration and Momentum.
+					'''
+			}
+
+			EternalCrown: {
+				DisplayName: Eternal Crown
+				Tooltip:
+					'''
+					The Summoner's capstone. Drives all three Summoner mechanics at once --
+					Ferocity, the Power Core, and Command. +2 minions.
+					'''
+			}
 		}
 
 		NPCs: {

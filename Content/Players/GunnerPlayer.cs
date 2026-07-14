@@ -36,8 +36,17 @@ namespace Eternia.Content.Players
             Momentum >= 70f ? 2 :
             Momentum >= 40f ? 1 : 0;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccMomentumGainMult = 1f;
+        public float AccMomentumDecayMult = 1f;
+        public int AccDeadEyeBonusTicks;
+
         public override void ResetEffects()
         {
+            AccMomentumGainMult = 1f;
+            AccMomentumDecayMult = 1f;
+            AccDeadEyeBonusTicks = 0;
+
             if (!IsActiveGunner())
             {
                 Momentum = 0f;
@@ -87,7 +96,7 @@ namespace Eternia.Content.Players
             if (ticksSinceHit > 30)
             {
                 float decay = HasGun("Rapid Chamber") ? 1.0f : 1.5f;
-                Momentum -= decay;
+                Momentum -= decay * AccMomentumDecayMult;
 
                 if (Momentum < 0f)
                 {
@@ -99,7 +108,7 @@ namespace Eternia.Content.Players
         private void ActivateDeadEye()
         {
             DeadEye = true;
-            DeadEyeTimer = 300 + (HasGun("Deadshot") ? 120 : 0);
+            DeadEyeTimer = 300 + (HasGun("Deadshot") ? 120 : 0) + AccDeadEyeBonusTicks;
             Momentum = MaxMomentum;
 
             CombatText.NewText(Player.Hitbox, Color.Gold, "DEAD EYE");
@@ -124,7 +133,7 @@ namespace Eternia.Content.Players
             if (!DeadEye)
             {
                 // Landing a shot builds Momentum. Quick Trigger builds it faster.
-                Momentum += HasGun("Quick Trigger") ? 6f : 4f;
+                Momentum += (HasGun("Quick Trigger") ? 6f : 4f) * AccMomentumGainMult;
 
                 if (Momentum > MaxMomentum)
                 {

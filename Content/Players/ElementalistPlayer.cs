@@ -225,12 +225,25 @@ namespace Eternia.Content.Players
                 cd -= 15;
             }
 
+            // Attunement accessories let you flow between elements faster.
+            cd -= AccSwitchCooldownCut;
+
             return System.Math.Max(8, cd);
         }
 
         private int SurgeDuration()
         {
-            return HasElementNode("Grand Attunement") ? 300 : 180;
+            return (HasElementNode("Grand Attunement") ? 300 : 180) + AccSurgeBonusTicks;
+        }
+
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public int AccSwitchCooldownCut;
+        public int AccSurgeBonusTicks;
+
+        public override void ResetEffects()
+        {
+            AccSwitchCooldownCut = 0;
+            AccSurgeBonusTicks = 0;
         }
 
         private float SurgeAmount()

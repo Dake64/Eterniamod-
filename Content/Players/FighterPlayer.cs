@@ -34,18 +34,27 @@ namespace Eternia.Content.Players
 
         // Passive modifiers only apply to a promoted Peleador; pre-hardmode the cap
         // and window are the fixed base values.
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public int AccBonusMaxCombo;
+        public int AccBonusComboDuration;
+
         public int EffectiveMaxCombo =>
             BaseMaxCombo +
-            (IsActiveFighter() && HasActivePassive("Unbroken Chain") ? 10 : 0);
+            (IsActiveFighter() && HasActivePassive("Unbroken Chain") ? 10 : 0) +
+            AccBonusMaxCombo;
 
         private int EffectiveComboDuration =>
             BaseComboDuration +
-            (IsActiveFighter() && HasActivePassive("Adrenaline Rush") ? 90 : 0);
+            (IsActiveFighter() && HasActivePassive("Adrenaline Rush") ? 90 : 0) +
+            AccBonusComboDuration;
 
         public bool AtMaxCombo => Combo >= EffectiveMaxCombo;
 
         public override void ResetEffects()
         {
+            AccBonusMaxCombo = 0;
+            AccBonusComboDuration = 0;
+
             // The Combo counter exists for any Warrior; only a promotion turns it into
             // stats, so it is cleared only when you are no longer a Warrior.
             if (!IsActiveWarrior())

@@ -15,6 +15,41 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-14 - 44 ACCESORIOS que doblan la mecanica de cada subclase (pre-HM + HM)
+
+- Peticion del usuario: accesorios pre-HM y HM para las subclases, con VARIEDAD, y mezclando
+  accesorios vanilla existentes en las recetas.
+- Principio de diseño: NO son "+10% daño". Cada accesorio mete la mano en la MECANICA FIRMA
+  de su subclase (Temperatura, Concentracion, Momentum, Ferocidad, Power Core, Legion,
+  Combo, Rastro Carmesi, Aura, Afinidad, Corrupcion, Vida Reservada) y la dobla -- igual que
+  hacen los arboles de pasivas. Se craftean combinando un accesorio VANILLA con materiales
+  de Eternia, asi que se leen como mejoras de gear que ya conoces.
+- FONTANERIA (nuevo patron): cada ModPlayer de subclase expone campos `Acc*` publicos que se
+  RESETEAN cada frame en ResetEffects; los accesorios los re-aplican en UpdateAccessory.
+  (Si no se reseteasen, el efecto se acumularia infinito -- el test lo verifica.)
+  El CursedMagePlayer ya tenia el patron (BaseCorruption "from equipped curse accessories").
+- 44 accesorios (`Content/Items/Accessories/`, base `EterniaAccessory` + 4 bases de clase):
+  - 4 de CLASE BASE (pre-HM): Soul of Steel / Ember / the Hunt / the Pack -- algo que ponerte
+    antes de saber que subclase seras.
+  - 36 de SUBCLASE (1 pre-HM + 2 HM por cada una de las 12). Las dos opciones de HM son
+    DIVERGENTES a proposito, no un upgrade lineal. Ejemplos:
+    - Energy Gunner: Heat Sink Array (vive en la zona critica) vs Refractory Plating (el
+      sobrecalentamiento YA NO TE HACE DAÑO, pero enfrias mas lento).
+    - Archer: Falcon Eye (mas Disparos Perfectos, mas fuertes) vs Steady Nerve (recibir un
+      golpe casi no te quita Concentracion).
+    - Gunner: Hot Streak Rig (llegas a Dead Eye volando) vs Dead Eye Regulator (te quedas
+      dentro mucho mas tiempo).
+    - Cursed Mage: Blighted Heart (+70 Corrupcion base... -40 de vida maxima).
+  - 4 CAPSTONES post-Moon Lord (Eternal Bulwark/Grimoire/Sight/Crown): alimentan las TRES
+    mecanicas de su clase a la vez, asi que sirven sea cual sea tu subclase.
+- Recetas: usan accesorios vanilla (Shackle, Aglet, Feral Claws, Obsidian Shield, Cross
+  Necklace, Magic Quiver, Sniper Scope, Power Glove, Papyrus Scarab, Necromantic Scroll,
+  Mana Flower, Philosopher's Stone, los Emblemas de clase, Avenger Emblem) + materiales del
+  mod. El accesorio pre-HM se CONSUME al craftear su version HM.
+- Verificacion: build 0/0; suite PASS=104 (nuevo `tests/AccessorySourceSmokeTest.ps1`, que
+  fija que cada accesorio doble su mecanica y que TODOS los hooks se reseteen cada frame).
+- Pendientes/riesgos: SIN probar en juego (los numeros son mi criterio). Sin commit aun.
+
 ## 2026-07-14 - Advanced Summoner: rama Fusion + LEGION que se obtiene FUSIONANDO
 
 - Cierra las 12 subclases v1. Obtencion elegida por el usuario: el Advanced Summoner no doma

@@ -28,8 +28,17 @@ namespace Eternia.Content.Players
 
         private const int OverclockCooldown = 720;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccCommandRateMult = 1f;
+        public float AccLegionScaleBonus;
+        public int AccOverclockBonusTicks;
+
         public override void ResetEffects()
         {
+            AccCommandRateMult = 1f;
+            AccLegionScaleBonus = 0f;
+            AccOverclockBonusTicks = 0;
+
             if (!IsActiveAdvancedSummoner())
             {
                 Command = 0f;
@@ -51,7 +60,7 @@ namespace Eternia.Content.Players
                 // Perfect Fusion: the legion reports faster -- Command charges quicker.
                 float rate = HasFusion("Perfect Fusion") ? 1.5f : 1f;
 
-                Command += (0.15f + Player.slotsMinions * 0.12f) * rate;
+                Command += (0.15f + Player.slotsMinions * 0.12f) * rate * AccCommandRateMult;
 
                 if (Command > MaxCommand)
                 {
@@ -105,7 +114,8 @@ namespace Eternia.Content.Players
             }
 
             // Ultimate Fusion: a full roster is worth far more.
-            float legionScale = HasFusion("Ultimate Fusion") ? 0.24f : 0.15f;
+            float legionScale =
+                (HasFusion("Ultimate Fusion") ? 0.24f : 0.15f) + AccLegionScaleBonus;
 
             Player.GetDamage(DamageClass.Summon) += fill * legionScale;
 
@@ -156,7 +166,9 @@ namespace Eternia.Content.Players
             Command = 0f;
 
             // Overdrive: the Overclock window lasts longer.
-            OverclockTimer = OverclockDuration + (HasFusion("Overdrive") ? 180 : 0);
+            OverclockTimer = OverclockDuration
+                + (HasFusion("Overdrive") ? 180 : 0)
+                + AccOverclockBonusTicks;
 
             SoundEngine.PlaySound(SoundID.Item29, Player.position);
 

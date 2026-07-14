@@ -35,8 +35,17 @@ namespace Eternia.Content.Players
             HeatPercent >= 70f ? 2 :
             HeatPercent >= 40f ? 1 : 0;
 
+        // --- Accessory hooks (reset every frame; accessories re-apply them) -------------
+        public float AccHeatPerShotMult = 1f;
+        public float AccCoolRateMult = 1f;
+        public bool AccOverheatShield;
+
         public override void ResetEffects()
         {
+            AccHeatPerShotMult = 1f;
+            AccCoolRateMult = 1f;
+            AccOverheatShield = false;
+
             if (!IsActiveEnergyGunner())
             {
                 Heat = 0f;
@@ -57,7 +66,7 @@ namespace Eternia.Content.Players
             // faster.
             if (ticksSinceFire > 8)
             {
-                Heat -= 0.55f * (HasEnergy("Ion Surge") ? 1.5f : 1f);
+                Heat -= 0.55f * (HasEnergy("Ion Surge") ? 1.5f : 1f) * AccCoolRateMult;
 
                 if (Heat < 0f)
                 {
@@ -109,7 +118,7 @@ namespace Eternia.Content.Players
                 (item.ModItem as Content.Items.Weapons.Ranger.IEnergyWeapon)
                     ?.HeatPerShot ?? 6f;
 
-            Heat += perShot * (HasEnergy("Energy Core") ? 0.7f : 1f);
+            Heat += perShot * (HasEnergy("Energy Core") ? 0.7f : 1f) * AccHeatPerShotMult;
 
             if (Heat >= MaxHeat)
             {
@@ -124,14 +133,18 @@ namespace Eternia.Content.Players
         {
             Overheated = true;
 
-            // True damage to the player. Materiales Refractarios (Fusion Cannon) softens it.
+            // True damage to the player. Materiales Refractarios (Fusion Cannon) softens it;
+            // a Coolant Rig (accessory) shrugs the meltdown off entirely.
             int selfDamage = HasEnergy("Fusion Cannon") ? 15 : 30;
 
-            Player.Hurt(
-                PlayerDeathReason.ByCustomReason(
-                    NetworkText.FromLiteral($"{Player.name} overheated.")),
-                selfDamage,
-                0);
+            if (!AccOverheatShield)
+            {
+                Player.Hurt(
+                    PlayerDeathReason.ByCustomReason(
+                        NetworkText.FromLiteral($"{Player.name} overheated.")),
+                    selfDamage,
+                    0);
+            }
 
             Player.AddBuff(BuffID.OnFire, 180); // Burning
 
