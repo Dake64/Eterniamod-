@@ -1561,6 +1561,9 @@ Mods: {
 			BearMinion.DisplayName: Bear
 			SabertoothMinion.DisplayName: Sabertooth
 			WyvernMinion.DisplayName: Wyvern
+			EnergyChainBolt.DisplayName: Energy Chain Bolt
+			EnergyHomingBolt.DisplayName: Energy Homing Bolt
+			EnergyPlasmaBolt.DisplayName: Energy Plasma Bolt
 		}
 	}
 }
