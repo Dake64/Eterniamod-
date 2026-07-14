@@ -48,7 +48,10 @@ namespace Eternia.Content.Players
             // not build further while Overdrive is draining it.
             if (OverdriveTimer <= 0 && PowerCore < MaxPowerCore)
             {
-                PowerCore += 0.25f + Player.slotsMinions * 0.08f;
+                // Tech Protocol: a better power bus -- the core charges faster.
+                float rate = HasTech("Tech Protocol") ? 1.5f : 1f;
+
+                PowerCore += (0.25f + Player.slotsMinions * 0.08f) * rate;
 
                 if (PowerCore > MaxPowerCore)
                 {
@@ -81,16 +84,22 @@ namespace Eternia.Content.Players
             float percent = PowerCore / MaxPowerCore;
 
             // A charged core empowers drones and hardens plating.
-            Player.GetDamage(DamageClass.Summon) += percent * 0.12f;
+            // War Machine: the core pushes far more power to the fleet.
+            float coreScale = HasTech("War Machine") ? 0.20f : 0.12f;
+
+            Player.GetDamage(DamageClass.Summon) += percent * coreScale;
 
             Player.statDefense += (int)(percent * 6f);
 
             // OVERDRIVE PROTOCOL: damage spike + shield.
             if (OverdriveTimer > 0)
             {
-                Player.GetDamage(DamageClass.Summon) += 0.25f;
+                // Nanoswarm: a sharper damage spike.
+                Player.GetDamage(DamageClass.Summon) +=
+                    HasTech("Nanoswarm") ? 0.40f : 0.25f;
 
-                Player.statDefense += 15;
+                // Combat Protocol (keystone): the shield holds far better.
+                Player.statDefense += HasKeystone("Combat Protocol") ? 28 : 15;
             }
         }
 
@@ -122,7 +131,8 @@ namespace Eternia.Content.Players
 
             PowerCore = 0f;
 
-            OverdriveTimer = OverdriveDuration;
+            // Overclocked Core: the Overdrive window runs longer.
+            OverdriveTimer = OverdriveDuration + (HasTech("Overclocked Core") ? 180 : 0);
 
             SoundEngine.PlaySound(SoundID.Item92, Player.position);
 
@@ -139,6 +149,20 @@ namespace Eternia.Content.Players
                     Player.height,
                     DustID.Electric);
             }
+        }
+
+        private bool HasTech(string node)
+        {
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+
+            return stats.HasActivePassive(soul.ActiveSoul, node);
+        }
+
+        private bool HasKeystone(string keystone)
+        {
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .UnlockedPassives.Contains(keystone);
         }
 
         public bool IsActiveTechSummoner()

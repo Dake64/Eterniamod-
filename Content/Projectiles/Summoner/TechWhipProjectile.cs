@@ -10,7 +10,7 @@ namespace Eternia.Content.Projectiles.Summoner
 
         protected override Color WhipColor => Color.Cyan;
 
-        protected override int TagDamage => 5;
+        protected override int TagDamage => 12;
 
         protected override string RequiredSubclass => "Tech Summoner";
     }
