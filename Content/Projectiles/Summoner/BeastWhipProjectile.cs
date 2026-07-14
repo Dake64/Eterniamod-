@@ -10,7 +10,7 @@ namespace Eternia.Content.Projectiles.Summoner
 
         protected override Color WhipColor => Color.SandyBrown;
 
-        protected override int TagDamage => 4;
+        protected override int TagDamage => 12;
 
         protected override string RequiredSubclass => "Beast Tamer";
     }

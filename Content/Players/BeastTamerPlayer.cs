@@ -52,7 +52,8 @@ namespace Eternia.Content.Players
             if (proj.minion
                 || proj.DamageType.CountsAsClass(DamageClass.Summon))
             {
-                Ferocity += 4f;
+                // Wild Bond: the pack whips itself into a fury faster.
+                Ferocity += HasBeast("Wild Bond") ? 6f : 4f;
 
                 if (Ferocity > MaxFerocity)
                 {
@@ -71,7 +72,8 @@ namespace Eternia.Content.Players
             // The pack calms down if it stops connecting (never mid-frenzy).
             if (FrenzyTimer <= 0 && Ferocity > 0f)
             {
-                Ferocity -= 0.15f;
+                // Feral Roar: the fury lingers -- Ferocity fades more slowly.
+                Ferocity -= HasBeast("Feral Roar") ? 0.08f : 0.15f;
 
                 if (Ferocity < 0f)
                 {
@@ -103,13 +105,30 @@ namespace Eternia.Content.Players
 
             float percent = Ferocity / MaxFerocity;
 
-            Player.GetDamage(DamageClass.Summon) += percent * 0.15f;
+            // Primal Instinct: Ferocity translates into more summon damage.
+            float scale = HasBeast("Primal Instinct") ? 0.22f : 0.15f;
+            Player.GetDamage(DamageClass.Summon) += percent * scale;
 
             if (FrenzyTimer > 0)
             {
+                // PRIMAL ROAR frenzy.
                 Player.GetDamage(DamageClass.Summon) += 0.30f;
 
-                Player.GetKnockback(DamageClass.Summon) += 1.5f;
+                // Alpha Beast: the roar knocks foes back even harder.
+                Player.GetKnockback(DamageClass.Summon) +=
+                    HasBeast("Alpha Beast") ? 3f : 1.5f;
+
+                // Bloodhound: the frenzied pack crits.
+                if (HasBeast("Bloodhound"))
+                {
+                    Player.GetCritChance(DamageClass.Summon) += 15f;
+                }
+
+                // Apex Alpha (keystone): the frenzy is even deadlier.
+                if (HasKeystone("Apex Alpha"))
+                {
+                    Player.GetDamage(DamageClass.Summon) += 0.20f;
+                }
             }
         }
 
@@ -141,7 +160,8 @@ namespace Eternia.Content.Players
 
             Ferocity = 0f;
 
-            FrenzyTimer = FrenzyDuration;
+            // Savage Alpha: the frenzy rages longer.
+            FrenzyTimer = FrenzyDuration + (HasBeast("Savage Alpha") ? 180 : 0);
 
             SoundEngine.PlaySound(SoundID.Roar, Player.position);
 
@@ -158,6 +178,20 @@ namespace Eternia.Content.Players
                     Player.height,
                     DustID.GoldFlame);
             }
+        }
+
+        private bool HasBeast(string node)
+        {
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+
+            return stats.HasActivePassive(soul.ActiveSoul, node);
+        }
+
+        private bool HasKeystone(string keystone)
+        {
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .UnlockedPassives.Contains(keystone);
         }
 
         public bool IsActiveBeastTamer()
