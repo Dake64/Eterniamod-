@@ -15,6 +15,45 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-14 - ARMADURAS: 16 sets (48 piezas) cuyo BONUS DE SET dobla la mecanica
+
+- Hueco detectado al auditar el mod: NO habia ni una sola armadura. El poder en Terraria es
+  un triangulo (arma + armadura + accesorio) y el mod solo tenia dos lados: llegabas a
+  Hardmode con tus armas y accesorios... y la armadura de vanilla.
+- SOLUCION AL BLOQUEO DE ARTE (lo importante): una armadura en tModLoader necesita texturas
+  de equipo que se dibujan SOBRE EL JUGADOR (<Name>_Head.png etc.) o el mod NI SIQUIERA
+  CARGA. Como no hay arte, cada pieza TOMA PRESTADA la apariencia de una armadura vanilla
+  apuntando head/body/legSlot a un `ArmorIDs.*` vanilla. El jugador se ve con ese set vanilla
+  -- se lee como armadura de verdad, no como un sprite roto. Cuando haya arte, se cambian 3
+  lineas por set y nada mas. (El test lo obliga: sin ArmorIDs, falla.)
+- Estructura: UN ARCHIVO POR SET (3 piezas + el bonus juntos) en vez de 48 sueltos.
+- 4 sets de CLASE BASE (pre-HM), utiles antes de la promocion:
+  Steelbound (Warrior, look Molten) / Emberweave (Mage, Jungle) / Hunter's Garb (Ranger,
+  Necro) / Packmaster (Summoner, Bee).
+- 12 sets de SUBCLASE (HM). El BONUS DE SET reutiliza los MISMOS hooks Acc* que los
+  accesorios, asi que armadura y accesorios COMPONEN en vez de pelearse:
+  - Ironchain (Fighter, Titanium): +10 max Combo, ventana +2s
+  - Hemocarnage (Swordsman, Adamantite): Rastro Carmesi +60%
+  - Aegis Bulwark (Escudero, Turtle): aura +35% daño, +20% radio (y el aura escala con
+    Defensa, asi que la defensa enorme del set se retroalimenta)
+  - Prismatic (Elementalist, Hallowed): cambio de elemento -20 ticks Y Surge +3s (te da las
+    DOS mitades que los accesorios te obligan a elegir)
+  - Blightweave (Cursed Mage, Spectre): +55 Corrupcion base
+  - Lich Regalia (Necromancer, Nebula): Vida Reservada -32% y drenaje de mana -32%
+  - Reactor Suit (Energy Gunner, Vortex): -25% calor por disparo, +60% enfriamiento
+  - Hawkeye Garb (Archer, Chlorophyte): Concentracion +55%, Disparo Perfecto +20%
+  - Gunslinger Rig (Gunner, Shroomite): Momentum +50% gana / -50% decae
+  - Alphahide (Beast Tamer, Spooky): Ferocidad +60%, Frenesi +20% daño
+  - Exoframe (Tech Summoner, Stardust): Power Core +60%, escudo de Overdrive +20
+  - Legion Regalia (Advanced Summoner, Tiki): +2 esbirros (y la legion cuesta MEDIO slot, o
+    sea +4 cuerpos), roster lleno vale mas, Command +50%
+- Detalle: el set pre-HM del Ranger ya toca la Concentracion, porque TODO Ranger la aprende
+  antes del Muro de Carne (no hay que esperar a ser Archer).
+- Verificacion: build 0/0; suite PASS=105 (nuevo `tests/ArmorSourceSmokeTest.ps1`, que fija
+  las 3 piezas por set, el bonus, y que cada set doble su mecanica).
+- Pendientes/riesgos: SIN probar en juego. Los sets se VEN como armadura vanilla hasta que
+  haya arte propio (por diseño, ver arriba). Sin commit aun.
+
 ## 2026-07-14 - 44 ACCESORIOS que doblan la mecanica de cada subclase (pre-HM + HM)
 
 - Peticion del usuario: accesorios pre-HM y HM para las subclases, con VARIEDAD, y mezclando

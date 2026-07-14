@@ -1489,6 +1489,213 @@ Mods: {
 					Ferocity, the Power Core, and Command. +2 minions.
 					'''
 			}
+			SteelboundHelm: {
+				DisplayName: Steelbound Helm
+				Tooltip: +5% melee critical strike chance
+			}
+			SteelboundChest: {
+				DisplayName: Steelbound Chestplate
+				Tooltip: +7% melee damage
+			}
+			SteelboundGreaves: {
+				DisplayName: Steelbound Greaves
+				Tooltip: +6% melee speed and movement speed
+			}
+
+			EmberweaveHood: {
+				DisplayName: Emberweave Hood
+				Tooltip: +6% magic critical strike chance and +40 maximum mana
+			}
+			EmberweaveRobe: {
+				DisplayName: Emberweave Robe
+				Tooltip: +8% magic damage and +40 maximum mana
+			}
+			EmberweaveLeggings: {
+				DisplayName: Emberweave Leggings
+				Tooltip: +40 maximum mana and +8% movement speed
+			}
+
+			HuntersGarbHood: {
+				DisplayName: Hunter's Hood
+				Tooltip: +6% ranged critical strike chance
+			}
+			HuntersGarbChest: {
+				DisplayName: Hunter's Garb
+				Tooltip: +8% ranged damage
+			}
+			HuntersGarbLeggings: {
+				DisplayName: Hunter's Leggings
+				Tooltip: +6% ranged speed and +8% movement speed
+			}
+
+			PackmasterHood: {
+				DisplayName: Packmaster's Hood
+				Tooltip: +1 minion
+			}
+			PackmasterChest: {
+				DisplayName: Packmaster's Hide
+				Tooltip: +10% summon damage
+			}
+			PackmasterLeggings: {
+				DisplayName: Packmaster's Leggings
+				Tooltip: +5% summon damage and +8% movement speed
+			}
+
+			IronchainHelm: {
+				DisplayName: Ironchain Helm
+				Tooltip: +8% melee critical strike chance
+			}
+			IronchainChest: {
+				DisplayName: Ironchain Chestplate
+				Tooltip: +10% melee damage
+			}
+			IronchainGreaves: {
+				DisplayName: Ironchain Greaves
+				Tooltip: +10% melee speed and +8% movement speed
+			}
+
+			HemocarnageHelm: {
+				DisplayName: Hemocarnage Helm
+				Tooltip: +10% melee critical strike chance
+			}
+			HemocarnageChest: {
+				DisplayName: Hemocarnage Chestplate
+				Tooltip: +12% melee damage and a little life steal
+			}
+			HemocarnageGreaves: {
+				DisplayName: Hemocarnage Greaves
+				Tooltip: +6% melee critical strike chance and +8% movement speed
+			}
+
+			AegisBulwarkHelm: {
+				DisplayName: Aegis Bulwark Helm
+				Tooltip: +4 defense
+			}
+			AegisBulwarkChest: {
+				DisplayName: Aegis Bulwark Plate
+				Tooltip: +6 defense and +4% damage reduction
+			}
+			AegisBulwarkGreaves: {
+				DisplayName: Aegis Bulwark Greaves
+				Tooltip: +4 defense and faster life regeneration
+			}
+
+			PrismaticHood: {
+				DisplayName: Prismatic Hood
+				Tooltip: +8% magic critical strike chance and +60 maximum mana
+			}
+			PrismaticRobe: {
+				DisplayName: Prismatic Vestments
+				Tooltip: +14% magic damage and +60 maximum mana
+			}
+			PrismaticLeggings: {
+				DisplayName: Prismatic Leggings
+				Tooltip: -10% mana cost and +8% movement speed
+			}
+
+			BlightweaveHood: {
+				DisplayName: Blightweave Hood
+				Tooltip: +8% magic damage and +60 maximum mana
+			}
+			BlightweaveRobe: {
+				DisplayName: Blightweave Robe
+				Tooltip: +16% magic damage and +60 maximum mana
+			}
+			BlightweaveLeggings: {
+				DisplayName: Blightweave Leggings
+				Tooltip: +8% magic critical strike chance and +8% movement speed
+			}
+
+			LichRegaliaHood: {
+				DisplayName: Lich's Crown
+				Tooltip: +10% magic damage and faster mana regeneration
+			}
+			LichRegaliaRobe: {
+				DisplayName: Lich's Regalia
+				Tooltip: +16% magic damage and +60 maximum mana
+			}
+			LichRegaliaLeggings: {
+				DisplayName: Lich's Leggings
+				Tooltip: -12% mana cost and +8% movement speed
+			}
+
+			ReactorSuitHelm: {
+				DisplayName: Reactor Visor
+				Tooltip: +10% ranged critical strike chance
+			}
+			ReactorSuitChest: {
+				DisplayName: Reactor Suit
+				Tooltip: +14% ranged damage
+			}
+			ReactorSuitGreaves: {
+				DisplayName: Reactor Greaves
+				Tooltip: +10% ranged speed and +8% movement speed
+			}
+
+			HawkeyeGarbHood: {
+				DisplayName: Hawkeye Hood
+				Tooltip: +12% ranged critical strike chance
+			}
+			HawkeyeGarbChest: {
+				DisplayName: Hawkeye Garb
+				Tooltip: +14% ranged damage
+			}
+			HawkeyeGarbLeggings: {
+				DisplayName: Hawkeye Leggings
+				Tooltip: +6% ranged critical strike chance and +8% movement speed
+			}
+
+			GunslingerRigHelm: {
+				DisplayName: Gunslinger's Mask
+				Tooltip: +10% ranged speed
+			}
+			GunslingerRigChest: {
+				DisplayName: Gunslinger's Rig
+				Tooltip: +16% ranged damage
+			}
+			GunslingerRigGreaves: {
+				DisplayName: Gunslinger's Greaves
+				Tooltip: +8% ranged critical strike chance and +10% movement speed
+			}
+
+			AlphahideHood: {
+				DisplayName: Alphahide Hood
+				Tooltip: +1 minion and +8% summon damage
+			}
+			AlphahideChest: {
+				DisplayName: Alphahide Mantle
+				Tooltip: +1 minion and +14% summon damage
+			}
+			AlphahideGreaves: {
+				DisplayName: Alphahide Greaves
+				Tooltip: +10% whip speed and +10% movement speed
+			}
+
+			ExoframeHelm: {
+				DisplayName: Exoframe Visor
+				Tooltip: +1 minion and +4 defense
+			}
+			ExoframeChest: {
+				DisplayName: Engineer's Exoframe
+				Tooltip: +1 minion and +14% summon damage
+			}
+			ExoframeGreaves: {
+				DisplayName: Exoframe Greaves
+				Tooltip: +4 defense and +8% movement speed
+			}
+
+			LegionRegaliaHood: {
+				DisplayName: Legion Crown
+				Tooltip: +1 minion and +8% summon damage
+			}
+			LegionRegaliaChest: {
+				DisplayName: Legion Regalia
+				Tooltip: +1 minion and +14% summon damage
+			}
+			LegionRegaliaLeggings: {
+				DisplayName: Legion Leggings
+				Tooltip: +10% summon speed and +8% movement speed
+			}
 		}
 
 		NPCs: {
