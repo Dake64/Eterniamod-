@@ -396,9 +396,15 @@ namespace Eternia.Content.UI
                     return $"Charge {stunner.Charge}/{stunner.MaxCharge}";
 
                 case "Archer":
-                    return $"Focus {(int)player.GetModPlayer<ArcherPlayer>().Focus}/100";
+                    var ar = player.GetModPlayer<ArcherPlayer>();
+                    return ar.PerfectReady
+                        ? "Focus 100/100 (PERFECT READY)"
+                        : $"Focus {(int)ar.Focus}/100";
                 case "Gunner":
-                    return $"Dead Eye {(int)player.GetModPlayer<GunnerPlayer>().DeadEyeEnergy}/100";
+                    var gn = player.GetModPlayer<GunnerPlayer>();
+                    return gn.DeadEye
+                        ? "Momentum: DEAD EYE"
+                        : $"Momentum {(int)gn.MomentumPercent}%";
                 case "Energy Gunner":
                     var eg = player.GetModPlayer<EnergyShooterPlayer>();
                     return eg.Overheated

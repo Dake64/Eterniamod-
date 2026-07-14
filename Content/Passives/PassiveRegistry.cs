@@ -848,7 +848,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Bow Precision",
-        "+5% arrow speed",
+        "Strong Draw: arrows fly faster (+5% arrow speed).",
         1,
         "Bow",
         3,
@@ -859,7 +859,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Eagle Eye",
-        "+10% ranged crit",
+        "Eagle Vision: Concentration charges 50% faster. +10% ranged crit.",
         1,
         "Bow",
         4,
@@ -870,7 +870,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Hunter Instinct",
-        "+15% bow damage",
+        "Felling an enemy restores Concentration. +15% bow damage.",
         2,
         "Bow",
         5,
@@ -881,7 +881,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Piercing Shot",
-        "+5 ranged armor penetration",
+        "Piercing Arrow: Perfect Shots pierce enemies. +5 ranged armor penetration.",
         2,
         "Bow",
         6,
@@ -892,7 +892,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Storm of Arrows",
-        "+10% ranged speed",
+        "Deadeye: Perfect Shots hit much harder. +10% ranged attack speed.",
         3,
         "Bow",
         7,
@@ -903,7 +903,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Marksman",
-        "+8% ranged damage",
+        "Sniper: the distance damage bonus scales higher. +8% ranged damage.",
         3,
         "Bow",
         8,
@@ -914,7 +914,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "True Flight",
-        "+8% ranged crit",
+        "Weak Point: Perfect Shots ignore far more defense. +8% ranged crit.",
         3,
         "Bow",
         9,
@@ -925,7 +925,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Volley",
-        "+8% ranged speed",
+        "Predator: +25% damage to full-health enemies. +8% ranged attack speed.",
         4,
         "Bow",
         10,
@@ -938,7 +938,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Quick Trigger",
-        "+4% gun speed",
+        "Momentum builds faster on every hit. +4% gun speed.",
         1,
         "Gun",
         3,
@@ -949,7 +949,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Rapid Chamber",
-        "+8% fire rate",
+        "Momentum decays more slowly. +8% fire rate.",
         1,
         "Gun",
         4,
@@ -960,7 +960,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Deadshot",
-        "+15% crit damage",
+        "Dead Eye lasts longer. +15% crit damage.",
         2,
         "Gun",
         5,
@@ -971,7 +971,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Hair Trigger",
-        "+8% ranged speed",
+        "Sharper fire-rate scaling from Momentum. +8% ranged speed.",
         2,
         "Gun",
         6,
@@ -982,7 +982,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Bullet Storm",
-        "+12% ranged damage",
+        "Bigger damage at every Momentum tier. +12% ranged damage.",
         3,
         "Gun",
         7,
@@ -993,7 +993,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Full Auto",
-        "+8% ranged speed",
+        "Dead Eye bullets pierce an extra enemy. +8% ranged speed.",
         3,
         "Gun",
         8,
@@ -1004,7 +1004,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Armor Piercing",
-        "+5 ranged armor penetration",
+        "Dead Eye bullets ignore far more defense. +5 ranged armor penetration.",
         3,
         "Gun",
         9,
@@ -1015,7 +1015,7 @@ new List<PassiveNode>()
 
     new PassiveNode(
         "Executioner",
-        "+10% ranged crit",
+        "Dead Eye grants even more crit. +10% ranged crit.",
         4,
         "Gun",
         10,

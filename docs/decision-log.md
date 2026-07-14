@@ -22,6 +22,25 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-14 - Los 3 Ranger no se solapan; el Gunner es fuego rapido, no francotirador
+
+- Estado: Aceptada (decision del usuario).
+- Contexto: las 3 subclases visibles del Ranger deben tener identidades distintas. El
+  Archer ya ocupa la fantasia de precision/distancia/burst (francotirador de arco) y el
+  Energy Gunner la de fuego sostenido con gestion de calor. Para el Gunner se considero una
+  mecanica de "doble postura" (Precision/Supresion) que abarcaba metralletas y
+  francotiradores; el usuario la descarto.
+- Decision: el Gunner NO cambia de postura y NO es el francotirador. Es el pistolero de
+  FUEGO RAPIDO, con mecanica de MOMENTUM (racha de fuego sostenido: sube al acertar, baja al
+  parar/fallar; al tope enciende Dead Eye). La fantasia de francotirador puro (un disparo,
+  mucho daño) se reserva para una FUTURA clase de francotirador dedicada.
+- Consecuencias: la mecanica de Momentum favorece armas de balas rapidas (metralletas/SMG)
+  por diseño; los rifles lentos apenas la mueven -> quedan como territorio de la futura
+  clase. No implementar un arquetipo francotirador dentro del Gunner.
+- Archivos relacionados: Content/Players/GunnerPlayer.cs,
+  Content/Globals/GunnerGlobalProjectile.cs, Content/UI/GunnerUI.cs,
+  Content/Passives/PassiveRegistry.cs (rama Gun).
+
 ## 2026-07-10 - El Nigromante usa Vida Reservada + drenaje de mana (NO minion slots)
 
 - Estado: Aceptada (spec del usuario). Reemplaza al Mago del Infinito en la v1 (el

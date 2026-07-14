@@ -15,6 +15,118 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-14 - Gunner (Ranger): mecanica de MOMENTUM (pistolero de fuego rapido)
+
+- Decision de diseño (usuario): el Gunner NO cambia de postura y NO es el francotirador
+  (esa fantasia se reserva para una futura clase de francotirador). Es el pistolero de
+  FUEGO RAPIDO. Rediseño del viejo Sweet Spot/Dead Eye (minijuego de timing de una barra
+  oscilante) a una mecanica de racha de fuego sostenido. Ver decision-log.
+- Mecanica (solo armas de balas, AmmoID.Bullet):
+  - `Content/Players/GunnerPlayer.cs` (reescrito): barra Momentum 0-100 que SUBE al acertar
+    balazos (+4, Quick Trigger +6) y BAJA rapido si dejas de acertar (ticksSinceHit>30 ->
+    -1.5/tick, Rapid Chamber -1.0). Escalones 40-69 (+8% daño/cadencia) y 70-99 (+15% +5%
+    crit). Al llegar a 100 se enciende DEAD EYE (sobremarcha ~5s: +30% daño, +20-28% crit,
+    +25% cadencia; Momentum congelado; al terminar vuelve a 0). Metralletas la llenan por
+    volumen; rifles lentos apenas la mueven (por diseño -> francotirador = clase futura).
+  - `Content/Globals/GunnerGlobalProjectile.cs` (nuevo): durante Dead Eye las balas perforan
+    (+1, Full Auto +2) e ignoran armadura (+8, Armor Piercing +20).
+  - `Content/UI/GunnerUI.cs` + `SoulUI.cs`: barra de Momentum coloreada por escalon, marcas
+    40/70, y estado DEAD EYE (reemplaza el marcador oscilante del Sweet Spot).
+  - `Content/Passives/PassiveRegistry.cs`: los 8 nodos de la rama Gun re-describen su rol de
+    Momentum (Quick Trigger=gana mas rapido, Rapid Chamber=decae mas lento, Deadshot=Dead
+    Eye dura mas, Hair Trigger=mas cadencia, Bullet Storm=mas daño, Full Auto=perfora en
+    Dead Eye, Armor Piercing=ignora armadura en Dead Eye, Executioner=mas crit en Dead Eye).
+    Efecto base intacto en EterniaStatsPlayer.
+- Keystone Trigger Discipline: matar durante Dead Eye lo extiende (+60 ticks) -> mantener
+  la matanza. Leido via HasKeystone.
+- Distinto del Energy Gunner (gestiona un TECHO: no sobrecalentar) y del Archer (paciencia):
+  aqui la tension es MANTENER la racha viva (no parar, no fallar).
+- Verificacion: build 0/0; suite PASS=98 (nuevo `tests/GunnerMomentumSourceSmokeTest.ps1`;
+  el gating estricto !IsActiveGunner() ya cumplia SubclassRuntimeGating, sin cambios).
+- Pendientes/riesgos: SIN probar en juego. Sin commit aun.
+
+## 2026-07-14 - Gunner Pass 2: arsenal de 15 armas de balas (fuego rapido)
+
+- Objetivo (usuario pidio que yo diseñara la progresion): 15 armas de balas de fuego rapido
+  (pistolas, SMGs, metralletas, autoguns, minigun endgame), SIN francotiradores.
+- Arquitectura: `Content/Items/Weapons/Ranger/GunnerGun.cs` (base : ModItem, munition Bullet
+  -> Momentum aplica) con BulletsPerShot/SpreadDegrees (base Shoot dispara N balas con
+  dispersion y las etiqueta) + virtual OnBulletHit. `Content/Globals/
+  GunnerGunGlobalProjectile.cs` despacha OnBulletHit al arma que disparo.
+- Pre-HM (5): Scrap Pistol (inicio), Rattler SMG (spray rapido), Twin Derringer (2 balas),
+  Chatterbox (bullet hose), Hellfire Repeater (quema, mejor para el Muro de Carne).
+- HM (10): Mythril Ripper, Autoloader (cadencia extrema), Twin Vortex SMG (2 balas),
+  Suppressor (mas Momentum al golpear -> Dead Eye mas rapido), Frost Sweeper (Chilled+
+  Frostburn), Chlorophyte Autogun, Spectral Shredder, Vortex Ripper, Storm Minigun (drop
+  Martian Saucer), Singularity Barrage (minigun endgame, useTime 3).
+- Obtencion: recetas + `Content/Globals/GunnerObtentionGlobalNPC.cs` (Storm Minigun del
+  Martian Saucer). `GunnerPlayer.AddMomentum` para la sinergia del Suppressor.
+- Localizacion: 15 armas en en-US.hjson (parsea con Hjson.dll).
+- Verificacion: build 0/0; suite PASS=99 (nuevo `tests/GunnerArsenalSourceSmokeTest.ps1`).
+- Pendientes/riesgos: SIN probar en juego (balance/recetas sin tunear). Sin commit aun.
+
+## 2026-07-14 - Archer (Ranger): mecanica de CONCENTRACION + sniper
+
+- Objetivo (spec): el Archer premia posicionamiento y paciencia. Rediseño del viejo Focus
+  (que se ganaba al golpear y decaia quieto -- al reves del spec) a una barra de
+  Concentracion que se CARGA al no disparar (mas rapido quieto) y se GASTA al disparar.
+- Archivos principales:
+  - `Content/Players/ArcherPlayer.cs` (reescrito): Focus 0-100; regen por
+    ticksSinceFire (quieto x2.5 vs moviendo; Eagle Vision +50%); un enemigo a <12 bloques
+    bloquea la regen de un Archer promovido; recibir daño resta 30; tiers 31-60 (+5%
+    daño/vel) y 61-100 (+10% +5% crit). Un Ranger base tambien "aprende" la mecanica
+    (IsRangerLearning: solo tiers, sin Disparo Perfecto).
+  - `Content/Globals/ArcherGlobalProjectile.cs` (nuevo): bono por distancia a la flecha
+    (10 bloques 0% -> 50+ bloques +40%), Sniper (Marksman x1.5), Predator (Volley: +25% a
+    enemigos con vida llena), y perforacion/ignora-defensa/FX dorado de Perfectos/Legendarios.
+  - `Content/UI/ArcherFocusUI.cs` + `SoulUI.cs`: quitado "PRESS Q" (el Perfect es
+    automatico al disparar con la barra llena); "PERFECT READY".
+  - `Content/Passives/PassiveRegistry.cs`: los 8 nodos de la rama Bow re-describen su rol
+    de Concentracion (Eagle Vision/Hunter Instinct/Piercing Arrow/Deadeye/Sniper/Weak
+    Point/Predator/Strong Draw), leidos en ArcherPlayer/ArcherGlobalProjectile. Efecto base
+    de cada nodo intacto en EterniaStatsPlayer (cobertura/tree-depth sin tocar).
+- Disparo Perfecto (Archer promovido, barra llena): +35% daño (Deadeye -> +55%), +25% crit,
+  +40% vel de proyectil, ignora defensa, mas knockback; la barra vuelve a ~10.
+- Hawkeye (keystone): cada 8 Disparos Perfectos, el siguiente es Legendary (+80% daño,
+  +50% crit, atraviesa todo, gran ignora-defensa, estela/explosion dorada).
+- La mecanica potencia CUALQUIER arco (arrow ammo), asi que el Archer es jugable ya con
+  arcos vanilla/mod -- no requiere arsenal propio como el Energy Gunner.
+- Verificacion: build 0/0; suite PASS=96 (nuevo
+  `tests/ArcherConcentrationSourceSmokeTest.ps1`; ajustada la lista de metodos del Archer
+  en SubclassRuntimeGatingSourceSmokeTest a los hooks reales).
+- Pendientes/riesgos: SIN probar en juego. Sin commit aun.
+
+## 2026-07-14 - Archer Pass 2: arsenal de 16 arcos + obtencion
+
+- Objetivo (spec): 16 arcos con identidad propia, muchos ligados al Disparo Perfecto, que
+  acompañan la progresion. Potencian la precision, no la cadencia.
+- Arquitectura: `Content/Items/Weapons/Ranger/ArcherBow.cs` (base : ModItem) dispara la
+  flecha del jugador (munition Arrow, asi la Concentracion aplica) y la etiqueta con el arco
+  + estado de Disparo Perfecto; virtuals OnArrowSpawn/ModifyArrowHit/OnArrowHit/UpdateArrow.
+  `Content/Globals/ArcherBowGlobalProjectile.cs` (InstancePerEntity) despacha esos hooks al
+  arco que disparo -> cada efecto vive en su propio archivo. Convive con
+  ArcherGlobalProjectile (distancia/Perfecto) sin conflicto.
+- Arcos pre-HM (8): Hunter's Branch (inicio), Woodland Longbow (Merchant tras EoC, +daño por
+  distancia), Falcon Bow (cada 3er disparo), Wind Whisper (Sky Islands, perfora+acelera),
+  Jungle Stinger (veneno), Crimson/Corrupt Hunter (lifesteal / Ichor), Molten Longbow
+  (Perfecto explota + On Fire).
+- Arcos HM (8): Mythril Precision (Perfecto ignora defensa), Frostpiercer (Ice Mimic,
+  Perfecto congela), Chlorophyte Sniper (homing suave), Temple Judgement (Golem, Perfecto
+  atraviesa todo + onda), Eclipse Recurve (Mothron, ramp por perforacion), Dragonbone (Duke
+  Fishron, dragon espectral), Celestial Horizon (fragmentos, lluvia de estrellas), Eternal
+  Horizon (ultimate: cada Perfecto -> Constellation Arrow).
+- Proyectiles nuevos (`Content/Projectiles/Ranger/`): SpectralDragon, StarShard,
+  ConstellationArrow (perfora infinito, ignora 50% defensa via DefenseEffectiveness, escala
+  con distancia recorrida, explota). Reutilizan textura LightningBoltProjectile.
+- Obtencion: `Content/Globals/ArcherObtentionGlobalNPC.cs` (drops Ice Mimic/Golem/Mothron/
+  Duke Fishron + tienda del Merchant tras EoC) + `Content/Systems/ArcherChestLoot.cs`
+  (Wind Whisper en cofres de Sky Island).
+- Localizacion: 16 arcos + 3 proyectiles en en-US.hjson (parsea con Hjson.dll).
+- Verificacion: build 0/0; suite PASS=97 (nuevo `tests/ArcherArsenalSourceSmokeTest.ps1`).
+- Pendientes/riesgos: SIN probar en juego (balance/recetas sin tunear). Eternal Horizon es
+  crafteable con Luminite como PLACEHOLDER hasta que exista el boss final de Eternia (el
+  spec lo pide como drop de ese boss). Sin commit aun.
+
 ## 2026-07-13 - Energy Gunner (Ranger): mecanica de TEMPERATURA por zonas
 
 - Objetivo (spec): el Energy Gunner premia mantener sus armas en la zona 70-99% de

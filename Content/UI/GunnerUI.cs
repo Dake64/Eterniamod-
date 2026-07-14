@@ -72,7 +72,7 @@ namespace Eternia.Content.UI
                 EterniaUI.ClampWorldAnchored(drawPos, -2, -44, 124, 68);
 
             // =============================================
-            // MAIN BAR
+            // MOMENTUM BAR
             // =============================================
 
             Rectangle backRect =
@@ -89,62 +89,48 @@ namespace Eternia.Content.UI
                 EterniaUI.PanelSurface * 0.86f
             );
 
+            // Filled portion, colored by tier (or gold in Dead Eye).
+            float momentumPercent =
+                gunnerPlayer.Momentum / GunnerPlayer.MaxMomentum;
+
+            Color fillColor =
+                gunnerPlayer.DeadEye ? Color.Gold :
+                gunnerPlayer.Tier == 2 ? Color.OrangeRed :
+                gunnerPlayer.Tier == 1 ? Color.Orange :
+                Color.Silver;
+
+            Rectangle fillRect =
+                new Rectangle(
+                    (int)drawPos.X,
+                    (int)drawPos.Y,
+                    (int)(120 * momentumPercent),
+                    12
+                );
+
+            spriteBatch.Draw(texture, fillRect, fillColor);
+
             EterniaUI.DrawBorder(
                 spriteBatch,
                 backRect,
                 Color.Silver * 0.55f);
 
             // =============================================
-            // PERFECT ZONE
+            // TIER THRESHOLD MARKS (40 warmed, 70 hot)
             // =============================================
 
-            Rectangle perfectZone =
-                new Rectangle(
-                    (int)drawPos.X + 45,
-                    (int)drawPos.Y,
-                    30,
-                    12
-                );
+            foreach (int mark in new[] { 40, 70 })
+            {
+                Rectangle tick =
+                    new Rectangle(
+                        (int)drawPos.X + (int)(120 * (mark / 100f)) - 1,
+                        (int)drawPos.Y - 3,
+                        2,
+                        18
+                    );
 
-            Color zoneColor =
-                gunnerPlayer.DeadEye
-                ? Color.Gold
-                : Color.Lime;
-
-            spriteBatch.Draw(
-                texture,
-                perfectZone,
-                zoneColor
-            );
-
-            // =============================================
-            // MOVING INDICATOR
-            // =============================================
-
-            int markerX =
-                (int)(
-                    drawPos.X
-                    + (gunnerPlayer.SweetSpotValue * 120f)
-                );
-
-            Rectangle marker =
-                new Rectangle(
-                    markerX - 2,
-                    (int)drawPos.Y - 4,
-                    4,
-                    20
-                );
-
-            Color markerColor =
-                gunnerPlayer.DeadEye
-                ? Color.Gold
-                : Color.White;
-
-            spriteBatch.Draw(
-                texture,
-                marker,
-                markerColor
-            );
+                spriteBatch.Draw(
+                    texture, tick, mark == 70 ? Color.Red : Color.Gold);
+            }
 
             // =============================================
             // TITLE
@@ -152,50 +138,13 @@ namespace Eternia.Content.UI
 
             EterniaUI.DrawText(
                 spriteBatch,
-                "SWEET SPOT",
+                gunnerPlayer.DeadEye
+                    ? "DEAD EYE"
+                    : $"MOMENTUM {(int)gunnerPlayer.MomentumPercent}%",
                 drawPos + new Vector2(8, -20),
-                Color.White,
+                gunnerPlayer.DeadEye ? Color.Gold : Color.White,
                 0.7f
             );
-
-            // =============================================
-            // DEAD EYE ACTIVE
-            // =============================================
-
-            if (gunnerPlayer.DeadEye)
-            {
-                EterniaUI.DrawPill(
-                    spriteBatch,
-                    new Rectangle((int)drawPos.X + 12, (int)drawPos.Y - 44, 86, 20),
-                    "DEAD EYE",
-                    Color.Gold,
-                    0.48f
-                );
-
-                // =========================================
-                // ENERGY BAR
-                // =========================================
-
-                float energyPercent =
-                    gunnerPlayer.DeadEyeEnergy
-                    / GunnerPlayer.MaxDeadEyeEnergy;
-
-                Rectangle energyBack =
-                    new Rectangle(
-                        (int)drawPos.X,
-                        (int)drawPos.Y + 18,
-                        120,
-                        6
-                    );
-
-                EterniaUI.DrawProgressBar(
-                    spriteBatch,
-                    energyBack,
-                    energyPercent,
-                    Color.Gold,
-                    $"{(int)gunnerPlayer.DeadEyeEnergy}"
-                );
-            }
 
             return true;
         }

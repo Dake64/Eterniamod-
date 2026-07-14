@@ -832,6 +832,173 @@ Mods: {
 					Colossal heat, colossal reward.
 					'''
 			}
+
+			HuntersBranch: {
+				DisplayName: Hunter's Branch
+				Tooltip: A starter bow. Fast, and pushes arrows a little faster.
+			}
+
+			WoodlandLongbow: {
+				DisplayName: Woodland Longbow
+				Tooltip: Precise. Deals more damage the farther the target.
+			}
+
+			FalconBow: {
+				DisplayName: Falcon Bow
+				Tooltip: Every third shot strikes with bonus damage and crit.
+			}
+
+			WindWhisper: {
+				DisplayName: Wind Whisper
+				Tooltip: Arrows pierce one enemy and accelerate as they fly.
+			}
+
+			JungleStinger: {
+				DisplayName: Jungle Stinger
+				Tooltip: Poisons its targets and bites harder into poisoned foes.
+			}
+
+			CrimsonHunter: {
+				DisplayName: Crimson Hunter
+				Tooltip: Critical hits heal you a little.
+			}
+
+			CorruptHunter: {
+				DisplayName: Corrupt Hunter
+				Tooltip: Arrows sap enemy defense (Ichor).
+			}
+
+			MoltenLongbow: {
+				DisplayName: Molten Longbow
+				Tooltip:
+					'''
+					Perfect Shots explode in fire and apply On Fire! The best bow for the
+					Wall of Flesh.
+					'''
+			}
+
+			MythrilPrecisionBow: {
+				DisplayName: Mythril Precision Bow
+				Tooltip: Perfect Shots ignore part of the enemy's defense.
+			}
+
+			Frostpiercer: {
+				DisplayName: Frostpiercer
+				Tooltip: Chills enemies; Perfect Shots briefly freeze normal foes.
+			}
+
+			ChlorophyteSniperBow: {
+				DisplayName: Chlorophyte Sniper Bow
+				Tooltip: Arrows gently correct their aim toward nearby enemies.
+			}
+
+			TempleJudgement: {
+				DisplayName: Temple Judgement
+				Tooltip: Perfect Shots pierce every enemy and release an energy shockwave.
+			}
+
+			EclipseRecurve: {
+				DisplayName: Eclipse Recurve
+				Tooltip: Arrows pierce; each enemy hit makes the shot stronger.
+			}
+
+			DragonboneBow: {
+				DisplayName: Dragonbone Bow
+				Tooltip: Each arrow looses a spectral dragon that streaks straight ahead.
+			}
+
+			CelestialHorizon: {
+				DisplayName: Celestial Horizon
+				Tooltip: Perfect Shots call a rain of stars onto the target.
+			}
+
+			EternalHorizon: {
+				DisplayName: Eternal Horizon
+				Tooltip:
+					'''
+					The Archer's ultimate. Every Perfect Shot looses a Constellation Arrow:
+					pierces forever, ignores half defense, and grows with distance.
+					'''
+			}
+
+			ScrapPistol: {
+				DisplayName: Scrap Pistol
+				Tooltip: A starter sidearm. Build Momentum with every hit.
+			}
+
+			RattlerSMG: {
+				DisplayName: Rattler SMG
+				Tooltip: Blistering rate, low damage. Builds Momentum fast.
+			}
+
+			TwinDerringer: {
+				DisplayName: Twin Derringer
+				Tooltip: Fires two bullets per shot in a small spread.
+			}
+
+			Chatterbox: {
+				DisplayName: Chatterbox
+				Tooltip: A bullet hose: very fast and a little inaccurate.
+			}
+
+			HellfireRepeater: {
+				DisplayName: Hellfire Repeater
+				Tooltip: Every bullet sets the target ablaze. Great for the Wall of Flesh.
+			}
+
+			MythrilRipper: {
+				DisplayName: Mythril Ripper
+				Tooltip: A fast, reliable Momentum builder. First Hardmode gun.
+			}
+
+			Autoloader: {
+				DisplayName: Autoloader
+				Tooltip: Extreme fire rate. Rockets Momentum to the top.
+			}
+
+			TwinVortexSMG: {
+				DisplayName: Twin Vortex SMG
+				Tooltip: Dual SMGs: two bullets per shot at a fast rate.
+			}
+
+			Suppressor: {
+				DisplayName: Suppressor
+				Tooltip: Every hit feeds extra Momentum, reaching Dead Eye faster.
+			}
+
+			FrostSweeper: {
+				DisplayName: Frost Sweeper
+				Tooltip: Chills and frost-burns everything it sweeps across.
+			}
+
+			ChlorophyteAutogun: {
+				DisplayName: Chlorophyte Autogun
+				Tooltip: High rate, solid damage. A post-mech workhorse.
+			}
+
+			SpectralShredder: {
+				DisplayName: Spectral Shredder
+				Tooltip: Spectre-forged: heavy damage at a brutal fire rate.
+			}
+
+			VortexRipper: {
+				DisplayName: Vortex Ripper
+				Tooltip: Lunar-tier. Keeps Momentum pinned near the top.
+			}
+
+			StormMinigun: {
+				DisplayName: Storm Minigun
+				Tooltip: A true minigun: relentless volume, slight spread.
+			}
+
+			SingularityBarrage: {
+				DisplayName: Singularity Barrage
+				Tooltip:
+					'''
+					The Gunner's endgame minigun. An absurd fire rate that reaches Dead Eye
+					in a heartbeat and shreds through it.
+					'''
+			}
 		}
 
 		NPCs: {
@@ -857,6 +1024,9 @@ Mods: {
 			ElementalArsenalBolt.DisplayName: Elemental Bolt
 			CurseBolt.DisplayName: Curse Bolt
 			EnergyBolt.DisplayName: Energy Bolt
+			SpectralDragon.DisplayName: Spectral Dragon
+			StarShard.DisplayName: Star Shard
+			ConstellationArrow.DisplayName: Constellation Arrow
 			CurseOrb.DisplayName: Doom Orb
 			CursedBoltProjectile.DisplayName: Cursed Bolt Projectile
 			FighterPunchProjectile.DisplayName: Fighter Punch Projectile

@@ -1,55 +1,50 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
 {
+    // The Gunner is the rapid-fire gunslinger. It runs on MOMENTUM (0-100): every bullet that
+    // LANDS builds it, and it decays fast the moment you stop hitting (stop firing or miss). The
+    // higher the Momentum the bigger the damage/fire-rate/crit bonus, and hitting 100 triggers
+    // DEAD EYE -- a short overdrive that then drops you back to zero. Fast guns (machine guns,
+    // SMGs) build Momentum through sheer volume; slow rifles barely move it, by design -- the
+    // pure sniper fantasy is reserved for a future dedicated class. Bullet weapons only.
+    //   0-39   : no bonus
+    //   40-69  : +8% damage, +8% fire rate
+    //   70-99  : +15% damage, +15% fire rate, +5% crit
+    //   100    : DEAD EYE overdrive
     public class GunnerPlayer : ModPlayer
     {
-        // =================================================
-        // SWEET SPOT
-        // =================================================
-
-        public float SweetSpotValue;
-
-        public bool GoingRight = true;
-
-        // =================================================
-        // DEAD EYE
-        // =================================================
+        public float Momentum;
+        public const float MaxMomentum = 100f;
 
         public bool DeadEye;
-
         public int DeadEyeTimer;
 
-        public float DeadEyeEnergy;
+        private int ticksSinceHit;
 
-        public const float MaxDeadEyeEnergy = 100f;
+        public float MomentumPercent => Momentum / MaxMomentum * 100f;
 
-        // =================================================
-        // RESET
-        // =================================================
+        // 0 none, 1 warmed, 2 hot.
+        public int Tier =>
+            DeadEye ? 2 :
+            Momentum >= 70f ? 2 :
+            Momentum >= 40f ? 1 : 0;
 
         public override void ResetEffects()
         {
             if (!IsActiveGunner())
             {
-                SweetSpotValue = 0f;
-
+                Momentum = 0f;
                 DeadEye = false;
-
                 DeadEyeTimer = 0;
-
-                DeadEyeEnergy = 0f;
             }
         }
-
-        // =================================================
-        // POST UPDATE
-        // =================================================
 
         public override void PostUpdate()
         {
@@ -58,71 +53,90 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            // =============================================
-            // SWEET SPOT OSCILLATION
-            // =============================================
-
-            if (GoingRight)
-            {
-                SweetSpotValue += 0.035f;
-            }
-            else
-            {
-                SweetSpotValue -= 0.035f;
-            }
-
-            if (SweetSpotValue >= 1f)
-            {
-                SweetSpotValue = 1f;
-
-                GoingRight = false;
-            }
-
-            if (SweetSpotValue <= 0f)
-            {
-                SweetSpotValue = 0f;
-
-                GoingRight = true;
-            }
-
-            // =============================================
-            // DEAD EYE
-            // =============================================
+            ticksSinceHit++;
 
             if (DeadEye)
             {
-                DeadEyeEnergy -= 0.08f;
-
-                // =========================================
-                // PARTICLES
-                // =========================================
+                // Overdrive burns down on a timer; Momentum is pinned at the top meanwhile.
+                Momentum = MaxMomentum;
+                DeadEyeTimer--;
 
                 if (Main.rand.NextBool(3))
                 {
                     Dust.NewDust(
-                        Player.position,
-                        Player.width,
-                        Player.height,
-                        DustID.GoldFlame
-                    );
+                        Player.position, Player.width, Player.height, DustID.GoldFlame);
                 }
 
-                // =========================================
-                // END DEAD EYE
-                // =========================================
-
-                if (DeadEyeEnergy <= 0f)
+                if (DeadEyeTimer <= 0)
                 {
-                    DeadEyeEnergy = 0f;
-
                     DeadEye = false;
+                    Momentum = 0f;
+                }
+
+                return;
+            }
+
+            // Reaching the top ignites Dead Eye.
+            if (Momentum >= MaxMomentum)
+            {
+                ActivateDeadEye();
+                return;
+            }
+
+            // Momentum bleeds away once you stop landing shots.
+            if (ticksSinceHit > 30)
+            {
+                float decay = HasGun("Rapid Chamber") ? 1.0f : 1.5f;
+                Momentum -= decay;
+
+                if (Momentum < 0f)
+                {
+                    Momentum = 0f;
                 }
             }
         }
 
-        // =================================================
-        // MODIFY SHOOT STATS
-        // =================================================
+        private void ActivateDeadEye()
+        {
+            DeadEye = true;
+            DeadEyeTimer = 300 + (HasGun("Deadshot") ? 120 : 0);
+            Momentum = MaxMomentum;
+
+            CombatText.NewText(Player.Hitbox, Color.Gold, "DEAD EYE");
+
+            for (int i = 0; i < 20; i++)
+            {
+                Dust.NewDust(
+                    Player.position, Player.width, Player.height, DustID.GoldFlame);
+            }
+        }
+
+        public override void OnHitNPCWithProj(
+            Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)
+        {
+            if (!IsActiveGunner() || Player.HeldItem.useAmmo != AmmoID.Bullet)
+            {
+                return;
+            }
+
+            ticksSinceHit = 0;
+
+            if (!DeadEye)
+            {
+                // Landing a shot builds Momentum. Quick Trigger builds it faster.
+                Momentum += HasGun("Quick Trigger") ? 6f : 4f;
+
+                if (Momentum > MaxMomentum)
+                {
+                    Momentum = MaxMomentum;
+                }
+            }
+            else if (target.life <= 0 && HasKeystone("Trigger Discipline"))
+            {
+                // Trigger Discipline: kills during Dead Eye keep the rampage going.
+                DeadEyeTimer += 60;
+            }
+        }
 
         public override void ModifyShootStats(
             Item item,
@@ -132,209 +146,115 @@ namespace Eternia.Content.Players
             ref int damage,
             ref float knockback)
         {
-            if (!IsActiveGunner())
+            if (!IsActiveGunner() || item.useAmmo != AmmoID.Bullet)
             {
                 return;
             }
 
-            // =============================================
-            // ONLY BULLET WEAPONS
-            // =============================================
+            float dmgBonus = DamageBonus();
 
-            if (item.useAmmo != AmmoID.Bullet)
-            {
-                return;
-            }
-
-            // =============================================
-            // PERFECT ZONE
-            // =============================================
-
-            bool perfectZone =
-                SweetSpotValue >= 0.38f
-                && SweetSpotValue <= 0.62f;
-
-            // =============================================
-            // ACTIVATE DEAD EYE
-            // =============================================
-
-            if (perfectZone
-                && !DeadEye)
-            {
-                DeadEye = true;
-
-                DeadEyeTimer = 999999;
-
-                DeadEyeEnergy = MaxDeadEyeEnergy;
-
-                CombatText.NewText(
-                    Player.Hitbox,
-                    Color.Gold,
-                    "DEAD EYE"
-                );
-
-                // =========================================
-                // ACTIVATION FX
-                // =========================================
-
-                for (int i = 0; i < 20; i++)
-                {
-                    Dust.NewDust(
-                        Player.position,
-                        Player.width,
-                        Player.height,
-                        DustID.GoldFlame
-                    );
-                }
-            }
-
-            // =============================================
-            // DEAD EYE BONUSES
-            // =============================================
-
-            if (DeadEye)
-            {
-                damage =
-                    (int)(damage * 1.35f);
-
-                velocity *= 1.15f;
-
-                // =========================================
-                // ENERGY CONSUMPTION
-                // =========================================
-
-                float consumeAmount = 0f;
-
-                // =========================================
-                // FAST WEAPONS CONSUME MORE
-                // =========================================
-
-                if (item.useTime <= 10)
-                {
-                    consumeAmount = 8f;
-                }
-                else if (item.useTime <= 20)
-                {
-                    consumeAmount = 5f;
-                }
-                else
-                {
-                    consumeAmount = 2.5f;
-                }
-
-                DeadEyeEnergy -= consumeAmount;
-
-                if (DeadEyeEnergy <= 0f)
-                {
-                    DeadEyeEnergy = 0f;
-
-                    DeadEye = false;
-                }
-            }
+            damage = (int)(damage * (1f + dmgBonus));
+            velocity *= 1f + (DeadEye ? 0.15f : 0f);
         }
 
-        // =================================================
-        // CRIT BONUS
-        // =================================================
-
-        public override void ModifyWeaponCrit(
-            Item item,
-            ref float crit)
+        public override void ModifyWeaponCrit(Item item, ref float crit)
         {
-            if (!IsActiveGunner())
-            {
-                return;
-            }
-
-            if (item.useAmmo != AmmoID.Bullet)
+            if (!IsActiveGunner() || item.useAmmo != AmmoID.Bullet)
             {
                 return;
             }
 
             if (DeadEye)
             {
-                crit += 20f;
+                crit += HasGun("Executioner") ? 28f : 20f;
+            }
+            else if (Tier == 2)
+            {
+                crit += 5f;
             }
         }
 
-        // =================================================
-        // ATTACK SPEED
-        // =================================================
-
-        public override float UseSpeedMultiplier(
-            Item item)
+        public override float UseSpeedMultiplier(Item item)
         {
-            if (!IsActiveGunner())
+            if (!IsActiveGunner() || item.useAmmo != AmmoID.Bullet)
             {
                 return 1f;
             }
 
-            if (item.useAmmo != AmmoID.Bullet)
+            float bonus = SpeedBonus();
+
+            // Hair Trigger: sharper fire-rate scaling.
+            if (HasGun("Hair Trigger"))
             {
-                return 1f;
+                bonus *= 1.35f;
             }
 
-            // =============================================
-            // NO BONUS FOR VERY FAST WEAPONS
-            // =============================================
-
-            if (DeadEye)
-            {
-                if (item.useTime <= 10)
-                {
-                    return 1f;
-                }
-
-                return 1.15f;
-            }
-
-            return 1f;
+            return 1f + bonus;
         }
 
-        // =================================================
-        // HIT EFFECTS
-        // =================================================
-
-        public override void OnHitNPCWithProj(
-            Projectile proj,
-            NPC target,
-            NPC.HitInfo hit,
-            int damageDone)
+        private float DamageBonus()
         {
-            if (!IsActiveGunner())
+            float bonus = DeadEye ? 0.30f : Tier == 2 ? 0.15f : Tier == 1 ? 0.08f : 0f;
+
+            // Bullet Storm: bigger damage at every Momentum tier.
+            if (bonus > 0f && HasGun("Bullet Storm"))
+            {
+                bonus += 0.05f;
+            }
+
+            return bonus;
+        }
+
+        private float SpeedBonus()
+        {
+            return DeadEye ? 0.25f : Tier == 2 ? 0.15f : Tier == 1 ? 0.08f : 0f;
+        }
+
+        // Dead Eye makes bullets pierce and ignore armor (read by GunnerGlobalProjectile).
+        public int DeadEyePierce =>
+            !DeadEye ? 0 : HasGun("Full Auto") ? 2 : 1;
+
+        public int DeadEyeArmorPen =>
+            !DeadEye ? 0 : HasGun("Armor Piercing") ? 20 : 8;
+
+        // Lets a signature gun (e.g. the Suppressor) feed extra Momentum on hit. No effect
+        // during Dead Eye (Momentum is pinned there).
+        public void AddMomentum(float amount)
+        {
+            if (!IsActiveGunner() || DeadEye)
             {
                 return;
             }
 
-            if (Player.HeldItem.useAmmo
-                != AmmoID.Bullet)
-            {
-                return;
-            }
+            Momentum += amount;
 
-            if (DeadEye)
+            if (Momentum > MaxMomentum)
             {
-                for (int i = 0; i < 8; i++)
-                {
-                    Dust.NewDust(
-                        target.position,
-                        target.width,
-                        target.height,
-                        DustID.Torch
-                    );
-                }
+                Momentum = MaxMomentum;
             }
+        }
+
+        private bool HasGun(string node)
+        {
+            var soul = Player.GetModPlayer<EterniaPlayer>();
+            var stats = Player.GetModPlayer<EterniaStatsPlayer>();
+
+            return stats.HasActivePassive(soul.ActiveSoul, node);
+        }
+
+        private bool HasKeystone(string keystone)
+        {
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .UnlockedPassives.Contains(keystone);
         }
 
         public bool IsActiveGunner()
         {
-            var soul =
-                Player.GetModPlayer<EterniaPlayer>();
+            var soul = Player.GetModPlayer<EterniaPlayer>();
 
             return soul.HasClassSoul &&
                 soul.ActiveSoul == SoulId.Ranger &&
-                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
-                    "Gunner";
+                Player.GetModPlayer<SubclassPlayer>().CurrentSubclass == "Gunner";
         }
     }
 }
