@@ -173,6 +173,7 @@ namespace Eternia.Content.NPCs.Bosses
             action = Action.Reposition;
             actionTimer = 0;
             step = 0;
+            NPC.netUpdate = true; // phase flip -- resync state for MP clients
 
             SoundEngine.PlaySound(SoundID.Roar, NPC.Center);
             SoundEngine.PlaySound(SoundID.Item122, NPC.Center);
@@ -285,6 +286,7 @@ namespace Eternia.Content.NPCs.Bosses
                     {
                         Vector2 dir = (player.Center - NPC.Center).SafeNormalize(Vector2.UnitX);
                         NPC.velocity = dir * (phase == 3 ? 26f : 21f) * SpeedScale;
+                        NPC.netUpdate = true; // sharp velocity change -- sync it for MP clients
                         SoundEngine.PlaySound(SoundID.Item71, NPC.Center);
                         StepTo(1);
                     }
@@ -384,6 +386,7 @@ namespace Eternia.Content.NPCs.Bosses
                     {
                         float dir = player.Center.X > NPC.Center.X ? 1f : -1f;
                         NPC.velocity = new Vector2(dir * (phase == 3 ? 33f : 27f) * SpeedScale, 0f);
+                        NPC.netUpdate = true; // sharp velocity change -- sync it for MP clients
                         SoundEngine.PlaySound(SoundID.Item122, NPC.Center);
                         StepTo(1);
                     }

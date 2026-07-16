@@ -85,6 +85,24 @@ if ($player -notmatch "target\.active\s*=\s*false") {
     throw "A tamed creature should join you (vanish) rather than drop loot."
 }
 
+# Multiplayer-safe: only the server may remove an NPC. A client must ask the server to
+# despawn it (via the TameDespawn packet) instead of removing it locally -- otherwise the
+# creature resyncs back and can be tamed repeatedly.
+if ($player -notmatch "NetmodeID\.SinglePlayer") {
+    throw "Taming should despawn locally only in singleplayer."
+}
+
+if ($player -notmatch "TameDespawn" -or $player -notmatch "GetPacket") {
+    throw "In multiplayer, taming should ask the server to despawn the creature (TameDespawn packet)."
+}
+
+$mod = Read-File "ETERNIA.cs"
+
+if ($mod -notmatch "case EterniaMessageType\.TameDespawn" -or
+    $mod -notmatch "Main\.netMode == NetmodeID\.Server") {
+    throw "The server must handle TameDespawn and be the only side that removes the NPC."
+}
+
 # --- Discoverability: a weakened tameable creature sparkles ------------------
 
 $globalNpc = Read-File "Content\Globals\TameableGlobalNPC.cs"

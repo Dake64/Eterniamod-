@@ -10,7 +10,8 @@ namespace ETERNIA
     // Network message identifiers for this mod's ModPackets.
     public enum EterniaMessageType : byte
     {
-        AddExperience
+        AddExperience,
+        TameDespawn
     }
 
     public class ETERNIA : Mod
@@ -38,6 +39,26 @@ namespace ETERNIA
                                 Main.LocalPlayer.getRect(),
                                 Color.Gold,
                                 $"+{exp} EXP");
+                        }
+                    }
+
+                    break;
+
+                case EterniaMessageType.TameDespawn:
+                    int npcIndex = reader.ReadInt32();
+
+                    // A client tamed a creature; only the server may remove an NPC. Despawn it
+                    // WITHOUT running loot (a tamed beast joins you, it does not drop), then sync.
+                    if (Main.netMode == NetmodeID.Server &&
+                        npcIndex >= 0 && npcIndex < Main.maxNPCs)
+                    {
+                        NPC npc = Main.npc[npcIndex];
+
+                        if (npc.active)
+                        {
+                            npc.life = 0;
+                            npc.active = false;
+                            NetMessage.SendData(MessageID.SyncNPC, number: npcIndex);
                         }
                     }
 

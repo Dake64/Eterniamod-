@@ -15,6 +15,25 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-15 - Auditoria de correctness + fixes de multijugador
+
+- Objetivo: revisar el codigo de gameplay (que crecio rapido, validado solo por smoke tests de
+  presencia) buscando bugs REALES, no solo presencia.
+- Resultado (limpio): netcode del XP correcto; los 30+ campos Acc* TODOS se resetean cada frame
+  (sin bug de acumulacion); los tonicos de mecanica se aplican en PostUpdateEquips antes de que las
+  subclases lean sus Acc en PostUpdate (correcto y a prueba de orden de carga); IA del jefe sin
+  crashes/softlocks; save/load sin perdida de datos (los 2 flags eran falsos positivos: un comentario
+  y estado transitorio del Virtuoso); assets placeholder existen; grupos de receta registrados.
+- FIX 1 (MP, correctness): la doma (`BeastTamingPlayer`) hacia `target.active = false` en el CLIENTE,
+  que no es autoritativo -> la criatura se re-sincronizaba y se podia re-domar (exploit). Ahora en SP
+  despawnea directo; en MP envia un paquete nuevo `TameDespawn` y el SERVIDOR la elimina + sincroniza
+  (`ETERNIA.cs` HandlePacket). Sin loot (la bestia se une, no dropea).
+- FIX 2 (MP, pulido): los jefes Prototype no marcaban `NPC.netUpdate` en cambios bruscos de velocidad
+  -> tirones en clientes MP. Añadido en dash, embestida y cambio de fase (no cambia el single-player).
+- NO tocado (necesita datos de juego / decision de diseño): la escala de vida por rareza en jefes
+  (x1-3.2 aleatoria) y el nº de drones de Prototype-02 (hasta 7). Documentado para el playtest.
+- Verificacion: compila 0/0; suite 113/113 (BeastTaming test ampliado con la ruta MP-safe).
+
 ## 2026-07-15 - Cuatro frentes: ascension visible + tonicos de mecanica + Prototype-02 + release
 
 Cuatro cosas en un lote (pedido: "haz todo eso de los 4 puntos").

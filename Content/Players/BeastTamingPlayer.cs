@@ -8,6 +8,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
+using ETERNIA;
 using Eternia.Content.Souls;
 using Eternia.Content.Taming;
 
@@ -154,9 +155,22 @@ namespace Eternia.Content.Players
                     0f, 0f, 100, default, 1.4f);
             }
 
-            target.life = 0;
-            target.active = false;
-            target.netUpdate = true;
+            // Only the server may remove an NPC. In singleplayer, despawn directly; in multiplayer,
+            // ask the server to (otherwise the client's local despawn desyncs and the creature
+            // comes back -- which also lets it be tamed over and over).
+            if (Main.netMode == NetmodeID.SinglePlayer)
+            {
+                target.life = 0;
+                target.active = false;
+                target.netUpdate = true;
+            }
+            else
+            {
+                ModPacket packet = Mod.GetPacket();
+                packet.Write((byte)EterniaMessageType.TameDespawn);
+                packet.Write(target.whoAmI);
+                packet.Send();
+            }
 
             CombatText.NewText(
                 Player.Hitbox,
