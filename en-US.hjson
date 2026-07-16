@@ -144,7 +144,17 @@ Mods: {
 
 			SoulAlloy: {
 				DisplayName: Soul Alloy
-				Tooltip: A Soul re-forged into a stable alloy. For improving Souls -- uses still to come.
+				Tooltip: A Soul re-forged into a stable alloy. Used to ascend your own Soul.
+			}
+
+			SoulAscension: {
+				DisplayName: Soul Ascension
+				Tooltip:
+					'''
+					Permanently strengthens your active class Soul by one Ascension tier.
+					Each tier adds class damage, crit, max life and defense.
+					A Soul Reforge never undoes it. Ritual performed at a Demon Altar.
+					'''
 			}
 
 			SoulforgedSabre: {

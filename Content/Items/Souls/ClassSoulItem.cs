@@ -42,6 +42,20 @@ namespace Eternia.Content.Items.Souls
                     OverrideColor = Color.MediumPurple
                 });
 
+            int tier = Main.LocalPlayer.GetModPlayer<SoulAscensionPlayer>().SoulTier;
+
+            if (tier > 0)
+            {
+                tooltips.Add(
+                    new TooltipLine(
+                        Mod,
+                        "EterniaSoulAscension",
+                        $"Soul Ascension: Tier {tier} / {SoulAscensionPlayer.MaxTier}")
+                    {
+                        OverrideColor = new Color(255, 220, 120)
+                    });
+            }
+
             tooltips.Add(
                 new TooltipLine(
                     Mod,

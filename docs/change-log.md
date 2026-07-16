@@ -15,6 +15,26 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-15 - Sistema de Ascension de Soul (cierra el cabo del Soul Alloy)
+
+- Objetivo: darle uso al Soul Alloy que dropeaba Prototype-01 y estaba "reservado". Cierra el cabo
+  del sistema de mejora de Souls.
+- Diseno: ASCENSION DE SOUL, perfectamente on-theme (tu poder VIENE de tu Soul, asi que fortalecer
+  la Soul es el camino de poder permanente mas alla de niveles y pasivas).
+  - `SoulAscensionPlayer`: `SoulTier` (0..MaxTier=5), persistido. Cada tier da a la CLASE ACTIVA
+    (segun ActiveSoul -> DamageClass): +4% dano, +2% crit, +8 vida max, +2 defensa. Solo con
+    class Soul equipada. SEPARADO del arbol de pasivas -> un Soul Reforge (respec) NO lo toca (el
+    test lo verifica: ProgressionService no menciona SoulTier/SoulAscension).
+  - `SoulAscension` (consumible): sube 1 tier por uso hasta el cap. CanUseItem exige class Soul y
+    headroom. Feedback (CombatText + dust + sonido). Receta ritual en Altar del Demonio (como el
+    Reforge): 3 Soul Alloy + 2 Prototype Core + 8 oro. El grind natural es farmear Prototype-01.
+  - Visible: linea de tier en el tooltip del Soul de clase (ClassSoulItem) y en el propio item.
+- Tooltip de Soul Alloy actualizado ("uses still to come" -> "Used to ascend your own Soul").
+- Verificacion: compila 0/0; suite 112/112 (test nuevo SoulAscensionSourceSmokeTest).
+- Pendientes/riesgos: SIN probar en juego -- numeros (per-tier, cap 5, coste) a ojo. No hay UI
+  dedicada para ver el tier salvo los tooltips; se podria surfacear en el Stats/Soul UI o en el
+  "Read my soul" del Eternal mas adelante.
+
 ## 2026-07-15 - Boss Codex: tratamiento visual "premium" + fuentes +1 (visto en juego)
 
 - Feedback: subir un poco mas las fuentes pequenas y que el codex se vea "mucho mas visual, no una

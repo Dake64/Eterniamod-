@@ -22,6 +22,23 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-15 - Mejora de Souls = Ascension (tier permanente), no items de Soul mejorados
+
+- Estado: Aceptada.
+- Contexto: el Soul Alloy (drop de Prototype-01) quedo reservado "para mejora de Souls". Habia que
+  elegir COMO se mejora la Soul.
+- Opciones consideradas: (a) items de Soul de mayor tier que reemplazan al Soul de clase; (b) un
+  nivel de Ascension permanente por jugador. Se eligio (b) por simplicidad y por encajar con la
+  identidad (tu poder viene de la Soul; fortalecerla es el camino).
+- Decision: `SoulTier` GLOBAL por jugador (no por SoulId) -- la mayoria de personajes juegan una
+  sola clase; el tier representa "la fuerza de TU Soul" y aplica a la clase activa. Cap 5. Bonus
+  pequeno por tier a la DamageClass de la clase activa + vida/defensa. SEPARADO de pasivas/afinidades
+  para que el respec (SoulReforge) no lo borre -> es progreso permanente que "pesa".
+- Consecuencias: el Soul Alloy ya tiene sink; hay un objetivo de farmeo a largo plazo (Prototype-01).
+  Sin UI dedicada (solo tooltips) -- deuda de UX menor. Balance sin probar.
+- Archivos: Content/Players/SoulAscensionPlayer.cs, Content/Items/Souls/SoulAscension.cs,
+  Content/Items/Souls/ClassSoulItem.cs (tooltip).
+
 ## 2026-07-15 - Prototype-01, primer boss propio: arquitectura y alcance
 
 - Estado: Aceptada (diseno del usuario, implementacion mia).
