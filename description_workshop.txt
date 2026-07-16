@@ -1,17 +1,30 @@
-Eternia is an early RPG overhaul for tModLoader focused on Soul-bound class identity.
+Eternia is an RPG overhaul for tModLoader built around Soul-bound class identity.
 
 Core loop:
-- Begin with an Empty Soul, then craft it into Warrior, Mage, Ranger or Summoner.
+- Begin with an Empty Soul, then bind it to Warrior, Mage, Ranger or Summoner.
 - Level through combat EXP while a class Soul is active.
 - Spend stat points and passive points to shape your build.
-- After Wall of Flesh, your dominant passive affinity determines your promotion.
+- After the Wall of Flesh, your dominant passive affinity decides your promotion.
 
-Current promotion direction:
-- Warrior paths include Swordsman, Fighter, Guardian, Yoyo Master, Berserker and Stunner.
-- Mage paths include Elementalist, Cursed Mage, Infinity Mage and Arcane Bard.
-- Ranger paths include Energy Gunner, Archer, Gunner and Virtuoso.
-- Summoner paths include Beast Tamer, Advanced Summoner, Tech Summoner and Necromancer.
+Twelve subclasses, each with its own mechanic and full arsenal:
+- Warrior: Fighter (Combo), Swordsman (Crimson Trail), Guardian (the Aura).
+- Mage: Elementalist (Affinity), Cursed Mage (Corruption), Necromancer (Reserved Life).
+- Ranger: Energy Gunner (Temperature), Archer (Concentration), Gunner (Momentum).
+- Summoner: Beast Tamer (Ferocity), Advanced Summoner (Legion), Tech Summoner (Power Core).
+Each subclass earns its power differently -- taming beasts, fabricating drones, fusing your own
+summons, landing perfect shots, and more.
 
-Soul rules are strict by design: using the wrong weapon class while bound to a class Soul is heavily punished, and owning a class Soul without keeping one active weakens the player.
+More than progression:
+- The Awakening: a real ceremony when the Wall of Flesh grants your subclass.
+- Prototype-01 and Prototype-02: Eternia's own bosses, three-phase weapon-module machines with a
+  Soul core that ruptures as they break.
+- The Boss Codex: a bestiary that tracks your kills, fastest clears, highest rarity faced, and
+  every boss's real drops and drop rates.
+- Class potions and subclass mechanic tonics, plus Soul Ascension -- a permanent, respec-proof way
+  to strengthen your Soul itself.
 
-This is a development build focused on the foundation, UI rework, class progression and a playable vertical slice.
+Soul rules are strict by design: using the wrong weapon class while bound to a class Soul is heavily
+punished, and owning a class Soul without keeping one active weakens the player.
+
+This is an in-development build. There is placeholder art throughout and balance is still being
+tuned, but the foundation, class progression and vertical slice are playable.

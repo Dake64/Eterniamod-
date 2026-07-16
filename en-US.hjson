@@ -81,6 +81,36 @@ Mods: {
 				DisplayName: Warding Tonic
 				Description: +8 defense and 5% damage reduction. Brew before a boss.
 			}
+
+			CoolantDraughtBuff: {
+				DisplayName: Coolant Draught
+				Description: Energy Gunner: faster cooling, less heat per shot, overheat shielded.
+			}
+
+			AdrenalineDraughtBuff: {
+				DisplayName: Adrenaline Draught
+				Description: Gunner: Momentum builds faster and decays slower.
+			}
+
+			FocusDraughtBuff: {
+				DisplayName: Focus Draught
+				Description: Archer: Concentration regenerates faster and is spent more gently.
+			}
+
+			WarcryDraughtBuff: {
+				DisplayName: Warcry Draught
+				Description: Fighter: a longer Combo chain that holds together longer.
+			}
+
+			BloodlustDraughtBuff: {
+				DisplayName: Bloodlust Draught
+				Description: Beast Tamer: Ferocity surges faster and cools slower.
+			}
+
+			OverdriveDraughtBuff: {
+				DisplayName: Overdrive Draught
+				Description: Tech Summoner: the Power Core charges faster, Overdrive lasts longer.
+			}
 		}
 
 		Items: {
@@ -128,6 +158,36 @@ Mods: {
 				Tooltip: +8 defense and 5% damage reduction. Brew a few before a boss you keep dying to.
 			}
 
+			CoolantDraught: {
+				DisplayName: Coolant Draught
+				Tooltip: Energy Gunner tonic: cool faster, gain less heat per shot, shrug off one overheat.
+			}
+
+			AdrenalineDraught: {
+				DisplayName: Adrenaline Draught
+				Tooltip: Gunner tonic: Momentum builds faster and decays slower.
+			}
+
+			FocusDraught: {
+				DisplayName: Focus Draught
+				Tooltip: Archer tonic: Concentration regenerates faster and is spent more gently.
+			}
+
+			WarcryDraught: {
+				DisplayName: Warcry Draught
+				Tooltip: Fighter tonic: +5 max Combo and a longer combo window.
+			}
+
+			BloodlustDraught: {
+				DisplayName: Bloodlust Draught
+				Tooltip: Beast Tamer tonic: Ferocity surges faster and cools slower.
+			}
+
+			OverdriveDraught: {
+				DisplayName: Overdrive Draught
+				Tooltip: Tech Summoner tonic: the Power Core charges faster and Overdrive lasts longer.
+			}
+
 			CorruptedSoulCore: {
 				DisplayName: Corrupted Soul Core
 				Tooltip:
@@ -140,6 +200,25 @@ Mods: {
 			PrototypeCore: {
 				DisplayName: Prototype Core
 				Tooltip: Salvaged from Prototype-01. The material for advanced soul-tech gear.
+			}
+
+			RefinedPrototypeCore: {
+				DisplayName: Refined Prototype Core
+				Tooltip: Salvaged from Prototype-02. The material for Hardmode soul-tech gear.
+			}
+
+			AwakenedSoulCore: {
+				DisplayName: Awakened Soul Core
+				Tooltip:
+					'''
+					Reforges a Prototype Core into a live vessel and wakes the second machine.
+					Summons Prototype-02. A Hardmode craft at a Mythril/Orichalcum Anvil.
+					'''
+			}
+
+			SoulforgedGreatsaber: {
+				DisplayName: Soulforged Greatsaber
+				Tooltip: The Hardmode evolution of the Sabre. Heavier swings, heavier crescents.
 			}
 
 			SoulAlloy: {
@@ -1862,6 +1941,8 @@ Mods: {
 
 		NPCs: {
 			Prototype01.DisplayName: Prototype-01
+
+			Prototype02.DisplayName: Prototype-02
 
 			EternalNPC: {
 				DisplayName: Eternal

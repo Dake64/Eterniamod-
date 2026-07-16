@@ -121,11 +121,16 @@ namespace Eternia.Content.NPCs
                     break;
             }
 
-            // He can sense the dormant vessel and sell you the means to wake it -- a way to reach
-            // Prototype-01 without scavenging the tech yourself.
+            // He can sense the dormant vessels and sell you the means to wake them -- a way to reach
+            // the Prototypes without scavenging all the tech yourself.
             if (soul.HasClassSoul)
             {
                 Stock(items, ModContent.ItemType<CorruptedSoulCore>(), Item.buyPrice(gold: 3));
+
+                if (Main.hardMode)
+                {
+                    Stock(items, ModContent.ItemType<AwakenedSoulCore>(), Item.buyPrice(gold: 12));
+                }
             }
 
             // Once the world turns, he will sell you a way out of your build -- for a fortune.
@@ -247,6 +252,18 @@ namespace Eternia.Content.NPCs
             {
                 Main.NewText("You carry no class Soul. There is nothing in you to read.", 255, 120, 120);
                 return;
+            }
+
+            // The Eternal can feel how far you have ascended your Soul.
+            var ascension = player.GetModPlayer<SoulAscensionPlayer>();
+
+            if (ascension.SoulTier > 0)
+            {
+                Main.NewText(
+                    ascension.SoulTier >= SoulAscensionPlayer.MaxTier
+                        ? "Your Soul burns at its peak -- fully ascended."
+                        : $"Your Soul has ascended to Tier {ascension.SoulTier} of {SoulAscensionPlayer.MaxTier}. I could take it further.",
+                    255, 220, 120);
             }
 
             string affinity = sub.DominantAffinityName();

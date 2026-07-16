@@ -75,6 +75,7 @@ namespace Eternia.Content.Progression
             built = true;
 
             int prototype = ModContent.NPCType<Prototype01>();
+            int prototype2 = ModContent.NPCType<Prototype02>();
 
             List<BossCodexEntry> list = new List<BossCodexEntry>
             {
@@ -112,6 +113,12 @@ namespace Eternia.Content.Progression
                 new BossCodexEntry(NPCID.QueenSlimeBoss, "Queen Slime", true,
                     new int[] { NPCID.QueenSlimeBoss },
                     "Gelatinous gear, Volatile Gelatin"),
+
+                // Eternia's Hardmode boss: the second, sturdier Soul vessel.
+                new BossCodexEntry(prototype2, "Prototype-02", true,
+                    new int[] { prototype2 },
+                    "Refined Prototype Core, Soul Alloy, Soulforged Greatsaber"),
+
                 new BossCodexEntry(NPCID.Retinazer, "The Twins", true,
                     new int[] { NPCID.Retinazer, NPCID.Spazmatism },
                     "Souls of Sight, Hallowed Bars"),

@@ -15,6 +15,37 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-15 - Cuatro frentes: ascension visible + tonicos de mecanica + Prototype-02 + release
+
+Cuatro cosas en un lote (pedido: "haz todo eso de los 4 puntos").
+
+1) ASCENSION VISIBLE: el "Read my soul" del Eternal ahora reporta tu Soul tier (ademas del tooltip
+   del Soul de clase que ya lo mostraba).
+
+2) TONICOS DE MECANICA (6): Coolant (Energy Gunner), Adrenaline (Gunner), Focus (Archer), Warcry
+   (Fighter), Bloodlust (Beast Tamer), Overdrive (Tech Summoner). Cada uno alimenta los hooks Acc*
+   de su subclase. Se aplican en `MechanicTonicPlayer.PostUpdateEquips` (NO en el buff) porque los
+   mecanismos leen sus Acc en PostUpdate, que corre despues -> a prueba de orden de carga. Verifique
+   la DIRECCION de cada hook (mults de decay/heat/loss < 1, gains > 1) para que sean buff real.
+   Buffs = marcadores (MechanicTonicBuff), sin logica. Craft en botella.
+
+3) PROTOTYPE-02 (Hardmode): REFACTOR -> la logica del jefe se movio a `PrototypeBoss` (base abstracta
+   con hooks virtuales: BaseLife/damage/defense, ProjectileDamageScale, SpeedScale, ExtraDrones,
+   VentsInPhase2, tints, ConfigureLoot). Prototype01 y Prototype02 son subclases finas. 02: HM (24000
+   vida base, x1.7 dano de proyectil, x1.15 velocidad, +2 drones, ventea el nucleo ya en fase 2,
+   tinte rojizo/nucleo violeta). Nuevos items: RefinedPrototypeCore (mat HM), AwakenedSoulCore
+   (invocacion HM, tambien en la tienda del Eternal en HM), SoulforgedGreatsaber (arma HM, mejora del
+   Sabre). Añadido al Boss Codex (seccion Hardmode). El test BossPrototype se actualizo para leer la
+   base + cubrir ambos jefes.
+
+4) RELEASE POLISH: description.txt y description_workshop.txt reescritas al estado actual (12
+   subclases, jefes, codex, pociones, ascension), manteniendo los terminos que exige el test de
+   metadata. build.txt intacto (el test fija version = 0.1). Guia nueva: docs/progression-guide.md.
+
+- Verificacion: compila 0/0; suite 113/113 (tests nuevos: MechanicTonics; BossPrototype ampliado).
+- Pendientes/riesgos: SIN probar en juego -- todo el balance (tonicos, Prototype-02, ascension) es a
+  ojo. Prototype-02 hereda la escala de vida por rareza (mismo tema que 01). Sin arte.
+
 ## 2026-07-15 - Prototype-01 fight-ready: el Eternal vende el Corrupted Soul Core
 
 - Objetivo: poder invocar/probar a Prototype-01 sin farmear la chatarra tech de la receta.
