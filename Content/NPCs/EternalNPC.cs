@@ -9,6 +9,7 @@ using Terraria.ModLoader;
 
 using Eternia.Content.Progression;
 using Eternia.Content.Items.Accessories;
+using Eternia.Content.Items.Bosses;
 using Eternia.Content.Items.Souls;
 using Eternia.Content.Items.Weapons.Fighter;
 using Eternia.Content.Items.Weapons.Guardian;
@@ -118,6 +119,13 @@ namespace Eternia.Content.NPCs
                     Stock(items, ModContent.ItemType<TrainingWhip>());
                     Stock(items, ModContent.ItemType<SoulOfThePack>());
                     break;
+            }
+
+            // He can sense the dormant vessel and sell you the means to wake it -- a way to reach
+            // Prototype-01 without scavenging the tech yourself.
+            if (soul.HasClassSoul)
+            {
+                Stock(items, ModContent.ItemType<CorruptedSoulCore>(), Item.buyPrice(gold: 3));
             }
 
             // Once the world turns, he will sell you a way out of your build -- for a fortune.

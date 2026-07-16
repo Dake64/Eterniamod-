@@ -15,6 +15,23 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-15 - Prototype-01 fight-ready: el Eternal vende el Corrupted Soul Core
+
+- Objetivo: poder invocar/probar a Prototype-01 sin farmear la chatarra tech de la receta.
+- El Eternal (guardian de almas) ahora VENDE el Corrupted Soul Core a cualquiera con Soul de clase,
+  por 3 oro (ModifyActiveShop). Tematico (el core es un vaso de alma corrupta) y habilita el
+  playtest inmediato. La receta con chatarra tech sigue existiendo como via alternativa.
+- Revision de robustez del AI de Prototype01: sin crashes ni softlocks (cada accion termina y
+  vuelve a Reposition; las fases no pueden saltarse; TargetClosest + despawn seguros; los spawns de
+  proyectil estan guardados por netMode). No se toco el sistema de rareza (regla: no cambiar
+  sistemas existentes sin preguntar).
+- RIESGO A VIGILAR EN LA PELEA (pendiente de decision del usuario): EterniaGlobalNPC escala la vida
+  de TODOS los bosses por rareza (x1 a x3.2) -> Prototype-01 (6000 base) puede salir con ~6000 o
+  ~19000 segun la tirada, y cambia en cada intento. Para un boss puede sentirse injusto/inconsistente.
+  Opcion propuesta (si el playtest lo confirma): que la rareza en bosses sea SOLO cosmetica + codex,
+  con vida/dano deterministas.
+- Verificacion: compila 0/0; suite 112/112.
+
 ## 2026-07-15 - Sistema de Ascension de Soul (cierra el cabo del Soul Alloy)
 
 - Objetivo: darle uso al Soul Alloy que dropeaba Prototype-01 y estaba "reservado". Cierra el cabo
