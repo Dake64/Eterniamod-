@@ -22,6 +22,18 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-15 - La escala de vida por rareza en jefes SE QUEDA (jefes-elite aleatorios)
+
+- Estado: Aceptada (decision del usuario).
+- Contexto: EterniaGlobalNPC tira una rareza a cada NPC (jefes incluidos) y multiplica vida/dano/
+  defensa x1 a x3.2. En un jefe eso da vida ALEATORIA en cada invocacion (Prototype-01: ~6000 a
+  ~19000). En la auditoria del 2026-07-15 se señalo como posible problema de consistencia.
+- Decision: DEJARLO COMO ESTA. Al usuario le gusta la idea de jefes-elite con dificultad variable.
+  NO es un bug -> no volver a proponer quitarlo/capearlo en futuras auditorias salvo que el usuario
+  lo pida. El aura + el registro de "rareza mas alta" del Boss Codex ya se apoyan en esto.
+- Consecuencias: los jefes (vanilla y Prototype) tienen vida variable por diseño; el playtest de
+  balance debe asumirlo.
+
 ## 2026-07-15 - Mejora de Souls = Ascension (tier permanente), no items de Soul mejorados
 
 - Estado: Aceptada.
