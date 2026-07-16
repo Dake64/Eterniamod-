@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - PRIMER FIX DE PLAYTEST: jefes tempranos imposibles + beam inutil
+
+- Reporte del usuario (jugando de Guerrero contra el Rey Slime): "en rareza legendaria solo le
+  quitaba 1 con el proyectil y no podia acercarme". Ademas: invoco 4 slimes -> 2 Legendary, 1
+  SuperRare, 1 Mythic; NINGUNO comun ni raro.
+- Diagnostico (reproducido con numeros): un Rey Slime Legendary salia nivel ~60 ->
+  `defensa = 10*1.5 + 60/3 = 35` y `dano = 40*1.5 + 60/2 = 90`. Terraria resta defensa/2 a CADA
+  golpe: el beam (9) -> clampeado a 1; la espada (20) -> 3. Y 90 de dano mata en 2 golpes a un
+  personaje temprano. Era matematicamente imposible, no fallo del jugador.
+- CAUSA RAIZ: el nivel del enemigo salia SOLO de la rareza (20-100 para jefes), sin ninguna
+  relacion con el progreso del mundo. El PRIMER jefe del juego roleaba nivel 50-70.
+- FIX 1 - `EterniaGlobalItem.BeamDamageFactor` 0.45f -> 1f: el beam de las espadas de sangrado hace
+  el dano COMPLETO. Un beam a la mitad se clampea a 1 en cuanto el objetivo tiene defensa real, o
+  sea, la opcion a distancia era inservible. Se mantiene la constante como unico knob de tuning.
+- FIX 2 - `BossLevelProgressionScale()`: el nivel roleado de un JEFE se escala por progreso del
+  mundo (x0.2 pre-Hardmode, x0.6 Hardmode, x1.0 post-Moon Lord). Un Legendary KS pasa de nivel ~60
+  a ~12 -> defensa 19 en vez de 35. Sigue siendo elite (los multiplicadores intactos) pero jugable.
+  Solo afecta a jefes; los enemigos normales quedan igual (sus niveles ya eran bajos).
+- FIX 3 - distribucion de rareza de JEFES recalibrada. Estaba MAS generosa que la de enemigos
+  normales (solo 32% Common; 45% de los jefes salian SuperRare+). Ahora:
+  Common 58% | Rare 20% | SuperRare 11% | Legendary 6% | Mythic 3% | Ancient 1.5% | Nightmare 0.5%.
+- NO tocado: los multiplicadores de rareza (vida x1-3.2, dano, defensa) siguen -- decision del
+  usuario del 2026-07-15, que se mantiene. Ver enmienda en decision-log.
+- Verificacion: compila 0/0; suite 113/113 (EnemyRarity test ampliado: escala por progreso +
+  distribucion; SwordBeam test actualizado).
+
 ## 2026-07-15 - Auditoria de correctness + fixes de multijugador
 
 - Objetivo: revisar el codigo de gameplay (que crecio rapido, validado solo por smoke tests de

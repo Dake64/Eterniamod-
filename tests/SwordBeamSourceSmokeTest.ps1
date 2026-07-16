@@ -2,7 +2,9 @@ $ErrorActionPreference = "Stop"
 
 # The Swordsman's edge weapons throw a bleeding slash so they can hit from range
 # like most melee weapons. This pins:
-#  - every mod bleed sword (IBleedWeapon) fires a reduced-damage beam (centralized),
+#  - every mod bleed sword (IBleedWeapon) fires a beam whose damage is set centrally
+#    through BeamDamageFactor (one knob to tune; currently full sword damage, because
+#    a halved beam got floored to 1 by Terraria's defense/2 subtraction),
 #  - the beam applies bleed on projectile hit (chance for any Warrior, guaranteed +
 #    Crimson Trail for the Swordsman), mirroring the direct edge-hit hooks.
 
@@ -22,7 +24,7 @@ if ($globalItem -notmatch "public override void SetDefaults\(Item item\)" -or
 
 if ($globalItem -notmatch "ModifyShootStats" -or
     $globalItem -notmatch "BeamDamageFactor") {
-    throw "EterniaGlobalItem should reduce the thrown beam's damage (BeamDamageFactor)."
+    throw "EterniaGlobalItem should set the thrown beam's damage centrally (BeamDamageFactor)."
 }
 
 # --- Bleed applies on the beam (projectile) hit, not just the swing -------------

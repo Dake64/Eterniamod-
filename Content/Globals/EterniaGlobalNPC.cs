@@ -25,14 +25,19 @@ namespace Eternia.Content.Globals
             new EnemyRarityProfile(1f, EnemyRarity.Common, 1f, 1f, 1f, 1f, 1f, 1, 5)
         };
 
+        // Boss rarity odds. These used to be far MORE generous than the normal-enemy table
+        // (only 32% Common, and 45% of bosses rolled SuperRare or better) -- backwards, since a
+        // boss is a deliberate encounter you re-summon. Now a boss is usually Common and a high
+        // rarity is a real event.
+        //   Common 58% | Rare 20% | SuperRare 11% | Legendary 6% | Mythic 3% | Ancient 1.5% | Nightmare 0.5%
         private static readonly EnemyRarityProfile[] BossProfiles =
         {
-            new EnemyRarityProfile(0.02f, EnemyRarity.Nightmare, 3.2f, 2f, 2f, 25f, 1.6f, 80, 101),
-            new EnemyRarityProfile(0.06f, EnemyRarity.Ancient, 2.8f, 1.8f, 1.8f, 15f, 1.5f, 68, 86),
-            new EnemyRarityProfile(0.13f, EnemyRarity.Mythic, 2.4f, 1.6f, 1.6f, 9f, 1.4f, 58, 71),
-            new EnemyRarityProfile(0.25f, EnemyRarity.Legendary, 2f, 1.5f, 1.5f, 5f, 1.28f, 50, 71),
-            new EnemyRarityProfile(0.45f, EnemyRarity.SuperRare, 1.5f, 1.3f, 1.3f, 3f, 1.18f, 40, 51),
-            new EnemyRarityProfile(0.68f, EnemyRarity.Rare, 1.2f, 1.1f, 1.1f, 2f, 1.1f, 30, 41),
+            new EnemyRarityProfile(0.005f, EnemyRarity.Nightmare, 3.2f, 2f, 2f, 25f, 1.6f, 80, 101),
+            new EnemyRarityProfile(0.02f, EnemyRarity.Ancient, 2.8f, 1.8f, 1.8f, 15f, 1.5f, 68, 86),
+            new EnemyRarityProfile(0.05f, EnemyRarity.Mythic, 2.4f, 1.6f, 1.6f, 9f, 1.4f, 58, 71),
+            new EnemyRarityProfile(0.11f, EnemyRarity.Legendary, 2f, 1.5f, 1.5f, 5f, 1.28f, 50, 71),
+            new EnemyRarityProfile(0.22f, EnemyRarity.SuperRare, 1.5f, 1.3f, 1.3f, 3f, 1.18f, 40, 51),
+            new EnemyRarityProfile(0.42f, EnemyRarity.Rare, 1.2f, 1.1f, 1.1f, 2f, 1.1f, 30, 41),
             new EnemyRarityProfile(1f, EnemyRarity.Common, 1f, 1f, 1f, 1f, 1f, 20, 31)
         };
 
@@ -353,6 +358,18 @@ namespace Eternia.Content.Globals
                 $"+{exp} EXP");
         }
 
+        // How far along the world is, as a multiplier on a boss's rolled level.
+        // Pre-Hardmode bosses stay low-level; the ceiling only opens up as the world does.
+        private static float BossLevelProgressionScale()
+        {
+            if (NPC.downedMoonlord)
+            {
+                return 1f;
+            }
+
+            return Main.hardMode ? 0.6f : 0.2f;
+        }
+
         private static bool ShouldIgnore(NPC npc)
         {
             return npc.CountsAsACritter ||
@@ -396,6 +413,18 @@ namespace Eternia.Content.Globals
                 Main.rand.Next(
                     profile.MinLevel,
                     profile.MaxLevelExclusive);
+
+            // A boss's level must reflect WHERE YOU ARE, not only its rarity. Bosses roll level
+            // 20-100, so a Legendary King Slime -- the FIRST boss -- came out level ~60, which
+            // alone added ~+20 defense. Terraria subtracts defense/2 from EVERY hit, so early gear
+            // was floored to 1 damage and the fight was mathematically unwinnable. Scaling the
+            // level by world progression keeps an early boss early while the rarity multipliers
+            // still make it an elite fight.
+            if (npc.boss)
+            {
+                enemyLevel =
+                    System.Math.Max(1, (int)(enemyLevel * BossLevelProgressionScale()));
+            }
 
             npc.lifeMax =
                 (int)(npc.lifeMax * lifeMultiplier) +

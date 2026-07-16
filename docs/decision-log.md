@@ -29,10 +29,18 @@ Formato sugerido:
   defensa x1 a x3.2. En un jefe eso da vida ALEATORIA en cada invocacion (Prototype-01: ~6000 a
   ~19000). En la auditoria del 2026-07-15 se señalo como posible problema de consistencia.
 - Decision: DEJARLO COMO ESTA. Al usuario le gusta la idea de jefes-elite con dificultad variable.
-  NO es un bug -> no volver a proponer quitarlo/capearlo en futuras auditorias salvo que el usuario
-  lo pida. El aura + el registro de "rareza mas alta" del Boss Codex ya se apoyan en esto.
-- Consecuencias: los jefes (vanilla y Prototype) tienen vida variable por diseño; el playtest de
-  balance debe asumirlo.
+  NO es un bug -> no volver a proponer quitar los MULTIPLICADORES de rareza (vida/dano/defensa)
+  salvo que el usuario lo pida. El aura + el registro de "rareza mas alta" del Boss Codex se apoyan
+  en esto.
+- Consecuencias: los jefes (vanilla y Prototype) tienen vida variable por diseño.
+
+- ENMIENDA (2026-07-16, tras el playtest): los multiplicadores SIGUEN en pie, pero el playtest
+  descubrio que el problema real NO era la vida: era el NIVEL. Los jefes roleaban nivel 20-100 solo
+  por rareza, sin relacion con el progreso -> un Rey Slime Legendary (PRIMER jefe) salia nivel ~60,
+  lo que sumaba ~+20 de DEFENSA. Como Terraria resta defensa/2 a cada golpe, el equipo temprano
+  quedaba clampeado a 1 de dano: pelea matematicamente imposible. Se arreglo el nivel (atado al
+  progreso) y la distribucion (era mas generosa que la de enemigos normales). Ver change-log
+  2026-07-16. La decision de "rarezas de jefe existen y escalan" se mantiene intacta.
 
 ## 2026-07-15 - Mejora de Souls = Ascension (tier permanente), no items de Soul mejorados
 

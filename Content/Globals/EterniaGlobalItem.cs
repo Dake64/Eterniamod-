@@ -118,10 +118,14 @@ namespace Eternia.Content.Globals
         }
 
         // Every mod bleed sword throws a bleeding slash so the Swordsman can hit from
-        // range like most melee weapons do. The beam deals reduced damage (melee up
-        // close is still stronger); its bleed + Crimson Trail are applied on the
+        // range like most melee weapons do. Its bleed + Crimson Trail are applied on the
         // beam's hit by WarriorBleedPlayer / SwordsmanPlayer (OnHitNPCWithProj).
-        private const float BeamDamageFactor = 0.45f;
+        //
+        // The beam hits for the sword's FULL damage. It used to be 45%, but in play that made
+        // the ranged option worthless the moment a target had real defense (Terraria subtracts
+        // defense/2 from EVERY hit, so a halved beam gets floored to 1). Kept as one constant so
+        // the beam stays a single number to tune.
+        private const float BeamDamageFactor = 1f;
 
         public override void SetDefaults(Item item)
         {
