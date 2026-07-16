@@ -22,6 +22,58 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-15 - Prototype-01, primer boss propio: arquitectura y alcance
+
+- Estado: Aceptada (diseno del usuario, implementacion mia).
+- Contexto: el mod no tenia bosses propios; el cabo del "jefe final de Eternia" asoma en la gear
+  endgame y en la fila bloqueada del Boss Codex. El usuario entrego el diseno de "Prototype-01" y una
+  serie (01/02/Omega).
+- Decision (alcance): se construye SOLO Prototype-01 (Pre-Hardmode) completo y funcional, dejando la
+  arquitectura abierta para 02 (HM) y Omega (post-ML) como extensiones. NO se construye "The Eternal"
+  de la fila bloqueada: es otro boss (final) distinto y sigue pendiente.
+- Decision (IA): maquina de estados con campos PRIVADOS (no npc.ai[]) porque es server-authoritative
+  y los clientes derivan todo lo visual de la fraccion de vida; los proyectiles se generan solo en
+  server/SP (`Main.netMode != MultiplayerClient`). Fases por %vida (70/35). Modulos elegidos por peso
+  segun fase, sin repetir el anterior.
+- Decision (arte): SIN arte propia (como todo el mod). El cuerpo reusa el sprite del Golem vanilla
+  tintado + un nucleo de Soul dibujado en PreDraw; robusto (no crashea por frames). Se documenta como
+  placeholder explicito.
+- Decision (integracion): se apoya en los sistemas que YA existen en vez de duplicar: rareza+escala+EXP
+  de EterniaGlobalNPC, cronometraje/registro de BossLogGlobalNPC, y una entrada REAL en el BossCodex.
+- Decision (BossCodex lazy): el BossCodex paso de static ctor a init perezoso (`EnsureBuilt`) porque
+  referenciar `ModContent.NPCType<Prototype01>()` en un static ctor correria antes de cargar el mod.
+- Consecuencias: sin probar en juego (balance/IA a ojo); sin musica propia; sin treasure bag; MP sin
+  auditar. Los materiales SoulAlloy quedan sin receta de uso inmediato (reservados para mejora de Souls
+  futura) -- deuda consciente.
+- Archivos: Content/NPCs/Bosses/Prototype01.cs, Content/Projectiles/Bosses/*, Content/Items/Bosses/*,
+  Content/Items/Materials/PrototypeCore+SoulAlloy, Content/Items/Weapons/Boss/SoulforgedSabre,
+  Content/Progression/BossCodex.cs.
+
+## 2026-07-15 - Pociones de clase con hooks vanilla; Boss Codex por jugador y en singleplayer
+
+- Estado: Aceptada.
+- Contexto: el usuario pidio "pociones de clase y consumibles" y "una lista de bosses con toda
+  la info: que dropea, la rareza mas alta que te ha salido, cuanto has tardado en eliminar".
+- Decision (pociones): 8 consumibles universales que aplican su efecto via hooks VANILLA seguros
+  (`player.GetDamage/GetCritChance/GetAttackSpeed`, `manaCost`, `whipRangeMultiplier`,
+  `statDefense`, `endurance`, `lifeRegen`). Base `EterniaConsumable` + `EterniaPotionBuff`. NO se
+  usaron los hooks `Acc*` de subclase (solo benefician a 1 de 12 subclases; desnivelado) ni un
+  multiplicador de XP (tocaria el camino de red del EXP). Las 4 de clase base cubren melee/magia/
+  ranged/invocacion, asi sirven a las 3 subclases de cada alma. Pendiente opcional: tonicos de
+  mecanica (Coolant/Adrenaline/Focus...) si el usuario los quiere.
+- Decision (Boss Codex): se reutiliza el sistema de rareza EXISTENTE (`EterniaGlobalNPC.rarity`,
+  Common->Nightmare) como "la rareza mas alta que te ha salido". El registro es POR JUGADOR
+  (`BossLogPlayer`, guardado con el personaje) y de alcance SINGLEPLAYER: se graba para
+  `Main.LocalPlayer` en `OnKill` (nunca en servidor dedicado). El cronometraje usa
+  `Main.GameUpdateCount` (spawn->muerte) por instancia de NPC. Un combate se considera terminado
+  solo cuando NINGUNA pieza del grupo sigue viva (gusanos, Gemelos, manos del Moon Lord).
+- Consecuencias: multijugador es un hueco conocido y aceptado (cada cliente registra lo que ve;
+  no hay netcode para repartir el credito). El cronometraje de bosses con piezas que aparecen a
+  mitad de pelea (cabeza libre del Golem) puede quedar corto -- cosmetico, sin probar en juego.
+- Archivos: Content/Items/Consumables/*, Content/Buffs/*BrewBuff/*TonicBuff/EternalFeastBuff,
+  Content/Progression/BossCodex.cs, Content/Players/BossLogPlayer.cs,
+  Content/Globals/BossLogGlobalNPC.cs, Content/UI/BossLogUI.cs, EterniaKeybinds (tecla N).
+
 ## 2026-07-14 - Cada subclase de Invocador obtiene sus invocaciones de forma DISTINTA
 
 - Estado: Aceptada (decision del usuario).

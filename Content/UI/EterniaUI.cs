@@ -13,7 +13,8 @@ namespace Eternia.Content.UI
         {
             Soul,
             Stats,
-            Passive
+            Passive,
+            Bosses
         }
 
         public static readonly Color PanelBackground =
@@ -259,6 +260,11 @@ namespace Eternia.Content.UI
             if (panel != MajorPanel.Passive)
             {
                 PassiveUI.Visible = false;
+            }
+
+            if (panel != MajorPanel.Bosses)
+            {
+                BossLogUI.Visible = false;
             }
         }
 

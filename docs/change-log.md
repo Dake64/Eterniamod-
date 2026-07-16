@@ -15,6 +15,205 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-15 - Boss Codex: tratamiento visual "premium" + fuentes +1 (visto en juego)
+
+- Feedback: subir un poco mas las fuentes pequenas y que el codex se vea "mucho mas visual, no una
+  simple caja".
+- Fondo/marco: se deja de usar EterniaUI.DrawPanel plano -> fondo con DEGRADADO vertical, BANDA DE
+  TITULO con acento (gradiente dorado + linea/glow), ESQUINAS tipo HUD (corner brackets), borde con
+  glow suave. Lista y detalle ahora son SUB-PANELES enmarcados (DrawInsetPanel: fondo inset + linea
+  de acento + esquinas).
+- Detalle: retrato con GLOW de rareza + corner brackets, banda de rareza tras la cabecera, fila
+  seleccionada de la lista con DEGRADADO horizontal + barra de acento PULSANTE.
+- Fuentes subidas otra vez: tier de lista (0.56->0.6), nombre detalle (1.05->1.12), estado, rate de
+  slot (0.52->0.58 con badge de cantidad sobre fondo), header DROPS (0.6->0.66) con divisor.
+- Helpers nuevos (locales, sin tocar EterniaUI): DrawVGradient/DrawHGradient/DrawCornerBrackets/
+  DrawTitleBand/DrawCodexBackground/DrawInsetPanel. Panel 896x628.
+- OJO paleta: el test UIRework prohibe `Color.Black *` crudo en UI -> usar EterniaUI.PanelBackground.
+- Verificacion: compila 0/0; suite 111/111.
+
+## 2026-07-15 - Boss Codex: fuentes mas grandes + drops en CUADRICULA de slots (visto en juego)
+
+- Feedback con captura: fuentes pequenas se distinguen mal; los drops se ven "como lista".
+- Fuentes subidas: filas de la lista (nombre 0.66->0.78, tier 0.46->0.56), nombre del detalle
+  (0.92->1.05), pill de tier (0.46->0.56, mas grande), estado (0.56->0.64), tiles de stats
+  (label 0.44->0.54, valor 0.66->0.84, tile 54->62 alto), pestanas (0.56->0.64), header DROPS
+  (0.52->0.60).
+- Drops REDISENADOS de lista -> CUADRICULA de slots estilo inventario: cada drop es un slot 54px
+  con fondo + borde tenido por rareza (brilla al hover), icono del objeto centrado, badge de
+  cantidad en la esquina (ej. "8-15") y el RATE debajo del slot coloreado. Rejilla responsive
+  (columnas segun ancho); "+N more" si no cabe. Tooltip al hover con nombre + rate + cantidad.
+- Verificacion: compila 0/0; suite 111/111.
+
+## 2026-07-15 - Boss Codex: drops reales con rate + fix legibilidad de pestanas (visto en juego)
+
+- Feedback con captura (ya renderiza y se ve bien): (1) el texto de la pestana ACTIVA era negro
+  sobre dorado, ilegible; (2) que muestre los drops del boss y el rate de cada cosa.
+- Fix pestanas: la pestana activa pasa a fondo oscuro (dorado tenue) + texto BLANCO + barras de
+  acento arriba/abajo. Se lee claro y marca la seleccion.
+- Drops REALES: en vez del texto curado, el detalle lee la BASE DE DATOS de drops del juego
+  (`Main.ItemDropsDB.GetRulesForNPCID` + `ReportDroprates`) -> icono real de cada objeto + su
+  probabilidad exacta, deduplicado por item (mejor rate) y ordenado por probabilidad. Funciona para
+  TODOS los bosses vanilla Y para Prototype-01 (sus propios drops). Rate formateado (100% / 45% /
+  1/9), coloreado por probabilidad; tooltip al hover con rate y cantidad. Cacheado por seleccion.
+  Si un boss no reporta drops, cae al texto curado de la entrada.
+- Verificacion: compila 0/0; suite 111/111 (test ampliado: ItemDropsDB/ReportDroprates + iconos+rate).
+- Riesgos: sin ver la version con drops renderizada; los iconos animados usan GetFrame; la lista se
+  corta con "+N more" si no cabe (sin scroll interno en el detalle).
+
+## 2026-07-15 - Boss Codex: rediseno a maestro/detalle interactivo y visual
+
+- Pedido: "haz la interfaz del codex mas interactiva y visual".
+- De lista plana -> CODICE MAESTRO/DETALLE (`Content/UI/BossLogUI.cs` reescrito):
+  - Barra de PROGRESO general arriba (X / N vencidos).
+  - PESTANAS DE FILTRO clicables: All / Pre-HM / Hardmode / Defeated (resetean scroll).
+  - Lista izquierda con RETRATOS (boss-head vanilla via NPCID.Sets.BossHeadTextures ->
+    TextureAssets.NpcHeadBoss; fallback a icono de alma si no hay slot/no cargado), nombre, tier,
+    barra de acento por rareza/tier, y una gema de color = rareza mas alta si vencido. Filas
+    CLICABLES que seleccionan; resaltado al hover; scroll por filas.
+  - Panel de DETALLE derecho: retrato grande enmarcado, nombre, pill de tier, estado (DEFEATED/
+    Not defeated), 3 TILES de stats (Kills / Best Time / Top Rarity coloreada) y los drops.
+  - Interaccion via el patron mouseLeftRelease (como EterniaUI.DrawButton); mouseInterface para no
+    filtrar clics al mundo.
+- Verificacion: compila 0/0; suite 111/111 (BossLogSourceSmokeTest ampliado: filtros, seleccion,
+  retratos, detalle, progreso).
+- Pendientes/riesgos: SIN ver renderizado (sin captura nueva). Los retratos dependen de que las
+  texturas boss-head vanilla esten cargadas -- hay fallback a icono de alma si no. El glyph de
+  "vencido" es una gema dibujada a mano (no depende de la fuente).
+
+## 2026-07-15 - Fix: el Boss Codex se salia del panel + pulido (visto en juego)
+
+- Sintoma (reportado con captura, el mod YA carga y corre): las filas del Boss Codex se dibujaban
+  POR DEBAJO del panel, fuera de sus limites.
+- Causa: el enfoque de "mascaras" (tapar el desborde con rectangulos opacos) no puede ocultar filas
+  dibujadas FUERA del panel. Ademas dibujaba filas hasta viewBottom+RowHeight.
+- Fix: `Content/UI/BossLogUI.cs` reescrito con scroll POR FILAS ENTERAS -- solo dibuja las filas que
+  caben completas dentro del viewport (`VisibleRows`), asi NUNCA hay desborde. Sin scissor (fragil con
+  la escala de UI) ni mascaras. La rueda mueve `scrollRow` de a 1.
+- Pulido ("mejoralo"): resaltado de fila al pasar el raton, barra de acento por fila (color = rareza si
+  vencido / tier si no / oro para el misterio), stats alineadas a la derecha, borde al hover, etiqueta
+  "Pre-Hardmode"/"Hardmode" mas clara.
+- HALLAZGO IMPORTANTE: tModLoader es DUENO de `en-US.hjson` y lo REESCRIBE al cargar el mod --
+  aplano mi bloque `Prototype01: { DisplayName }` a la forma plana `Prototype01.DisplayName: ...`. El
+  contenido queda intacto y valido. Los tests de localizacion deben aceptar AMBAS formas (bloque y
+  plana); ajustado BossPrototypeSourceSmokeTest. Al editar el hjson a mano, asumir que tML puede
+  reformatearlo (las entradas de un solo campo -> plano; multi-campo -> bloque).
+- Verificacion: compila 0/0; suite 111/111.
+
+## 2026-07-15 - Prototype-01: el PRIMER boss propio de Eternia (Pre-Hardmode)
+
+- Objetivo: el usuario diseño el boss "Prototype-01" (recipiente fallido para una Soul artificial;
+  inspiracion ULTRAKILL / NieR:Automata / MGR): rapido, agresivo, con CAMBIO DE MODULOS DE ARMA y
+  3 fases que escalan al exponerse el nucleo. Se pidio una serie (01 pre-HM, 02 HM, Omega post-ML);
+  aqui se construye 01 y se deja la arquitectura para los siguientes.
+
+- Boss (`Content/NPCs/Bosses/Prototype01.cs`): ModNPC con maquina de estados server-authoritative.
+  - Fases por fraccion de vida: 1 (>70%), 2 (35-70%), 3 (<35%). Al subir de fase: invuln breve,
+    rugido, sacudida de camara, burst de dust; la fase 3 ademas ventea el nucleo. Menos defensa y
+    mas dano de contacto conforme se rompe.
+  - Modulos de arma (elegidos por peso segun fase, sin repetir): SwordDash (embestidas con crescents
+    de energia), PlasmaVolley (abanicos de plasma), LanceCharge (telegrafo + embestida larga soltando
+    plasma), DroneSpawn (misiles teledirigidos de energia, fase 2+), CoreVent (ondas expansivas +
+    estallido radial de plasma, fase 3). Reposition entre ataques.
+  - Draw PLACEHOLDER: cuerpo = sprite del Golem vanilla tintado (se enrojece al romperse) + nucleo de
+    Soul brillante dibujado sobre el pecho que florece al bajar la vida. Sin crash (no depende de art
+    propia). BossHeadTexture = icono de alma placeholder.
+  - Integra GRATIS con lo que ya existe: EterniaGlobalNPC le da rareza + escala la vida y OnKill le da
+    EXP de boss; BossLogGlobalNPC lo cronometra y lo registra; llena su entrada REAL en el Boss Codex.
+
+- Proyectiles (`Content/Projectiles/Bosses/`): PrototypePlasmaBolt, PrototypeEnergySlash,
+  PrototypeDrone (misil homing), PrototypeShockwave (anillo expansivo, solo el borde hace dano) --
+  hostiles; + SoulSlash (amistoso, para el arma que dropea). Todos reusan PNGs existentes.
+
+- Items:
+  - `CorruptedSoulCore` (invocacion): craftea en yunque con la chatarra tech que YA existe
+    (AncientBattery/EnergyCrystal/DamagedCircuit); no invoca dos a la vez.
+  - `PrototypeCore` (material, dropea 8-15) y `SoulAlloy` (material de Soul, 2-4; reservado para
+    recetas de mejora de Souls futuras).
+  - `SoulforgedSabre` (arma unica, dropea 1): espada que lanza un crescent de energia (SoulSlash);
+    tambien crafteable desde 10 PrototypeCore.
+
+- BossCodex: refactor a init PEREZOSO (`EnsureBuilt`) para poder referenciar el tipo de NPC modded
+  sin romper el static ctor; Prototype-01 insertado en orden pre-HM (antes del Muro de Carne).
+
+- Verificacion: compila 0/0; suite 111/111 (test nuevo BossPrototypeSourceSmokeTest).
+- Pendientes/riesgos: SIN probar en juego -- IA, patrones, tiempos, vida (6000 base, luego escalada
+  por EterniaGlobalNPC), dano y drops son TODO a ojo. Sin arte (placeholder Golem + nucleo). Sin
+  musica propia (usa ambiente). Sin treasure bag de expert (drops normales). Multijugador sin auditar
+  (IA server-authoritative + proyectiles server-side, deberia funcionar, pero sin probar). Prototype-02
+  (HM) y Omega (post-ML) quedan como extension futura.
+
+## 2026-07-15 - Pociones de clase / consumibles (8) + Boss Codex (registro de bosses)
+
+- Objetivo (pedido del usuario): "mete pociones de clase y consumibles y aparte una lista de
+  bosses con toda la info: que dropea, la rareza mas alta que te ha salido, cuanto has tardado".
+
+- POCIONES (8 consumibles):
+  - 4 de clase base (pre-HM): Warrior's / Arcanist's / Hunter's / Packleader's Brew -> +10-12%
+    dano + crit + velocidad de la clase correspondiente (melee/magia/ranged/invocacion). Sirven a
+    las 3 subclases de cada alma porque tocan la DamageClass base.
+  - 2 tonicos universales: Battle Tonic (pre-HM, +6% a las 4 clases) y Grand Battle Tonic (HM,
+    +10% a las 4 + crit).
+  - Eternal Feast (comida, 20 min: regen + un poco de todo) y Warding Tonic (+8 def, +5% DR, para
+    peleas de boss).
+  - Base `EterniaConsumable` (item) + `EterniaPotionBuff` (buff). Todo via hooks VANILLA seguros;
+    `Item.potion` = false (sin Potion Sickness). Recetas en Botella/Cazuela con hierbas vanilla;
+    el Grand Battle sube desde el Battle con almas de Might/Sight/Fright.
+  - Archivos: Content/Items/Consumables/*.cs (9), Content/Buffs/*Buff.cs (9). Localizados los 8.
+
+- BOSS CODEX (registro de bosses, tecla N):
+  - Reutiliza el sistema de rareza que YA existe (`EterniaGlobalNPC.rarity`, Common->Nightmare):
+    esa es "la rareza mas alta que te ha salido" por boss.
+  - `BossCodex`: 18 bosses vanilla en orden de progresion + 1 teaser BLOQUEADO ("The Eternal, not
+    yet risen") que ata el cabo suelto del jefe final que la gear endgame ya craftea. Cada entrada
+    lista TODAS las piezas del combate; una kill solo cuenta cuando cae la ULTIMA pieza (gusanos,
+    Gemelos, Moon Lord).
+  - `BossLogPlayer`: por cada boss guarda kills, mejor tiempo (el mas rapido) y rareza mas alta.
+    Persistido con el personaje.
+  - `BossLogGlobalNPC`: cronometra spawn->muerte con `Main.GameUpdateCount`, lee la rareza del
+    boss y lo registra en `Main.LocalPlayer`. Nunca en servidor dedicado.
+  - `BossLogUI`: panel scrolleable (rueda del raton), fila por boss con tier, kills, mejor tiempo
+    y etiqueta de rareza coloreada; tooltip al pasar el raton con los drops y el detalle. Integrado
+    con `EterniaUI.MajorPanel.Bosses` (cierra los otros paneles al abrirse).
+  - Keybind "Toggle Boss Codex" (N) en EterniaKeybinds + localizado.
+
+- Verificacion: compila 0/0; suite 110/110 (2 tests nuevos: ClassPotions y BossLog).
+- Pendientes/riesgos: SIN probar en juego -- todos los numeros (dano, recetas, duraciones) son a
+  ojo. Multijugador es hueco conocido (el Boss Codex es por jugador y de alcance singleplayer;
+  cada cliente registra lo que ve, sin netcode para repartir credito). Cronometraje puede quedar
+  corto en bosses con piezas que aparecen a mitad de pelea (cabeza libre del Golem). Sin arte
+  (items y buffs reusan iconos de alma placeholder).
+
+## 2026-07-14 - La Ceremonia del Despertar (animacion al recibir la subclase)
+
+- Objetivo (pedido del usuario): "me gustaria que hubiera una animacion de cuando derrotas al
+  muro de carne y recibes la subclase".
+- Correccion importante: la promocion NO era silenciosa como creia -- `PromotionRewardPlayer` ya
+  mostraba un banner "PROMOTION!" + sonido + arma de regalo (via `PromotionBannerUI`). Lo que
+  FALTABA era la animacion/build-up y, sobre todo, explicar la MECANICA que acabas de recibir
+  (te entregan un sistema de juego entero y nada en el juego lo explica).
+- Diseño: un unico momento ceremonial en 3 tiempos, sin duplicar banners:
+  1. GATHER (~90 ticks): luz de alma (dust) converge hacia ti y la pantalla se oscurece.
+  2. BURST (~12 ticks): flash blanco, rugido, onda de dust y sacudida de camara (PunchCameraModifier).
+  3. BANNER: el burst levanta `PromotionBannerUI`, ahora enriquecido -- nombra tu subclase Y su
+     mecanica insignia (COMBO, CONCENTRATION, MOMENTUM, FEROCITY, THE POWER CORE, ...) con una
+     frase-lema, todo en el color de acento de esa subclase.
+- Reconciliacion (evitar doble banner/sonido): antes `PromotionRewardPlayer` disparaba el banner
+  y el sonido directamente. Ahora dispara `AwakeningCeremony.Begin(subclass)` (sigue regalando el
+  arma). La ceremonia toca sus propios sonidos y levanta el banner en el burst -> un solo momento,
+  disparado UNA vez por la lista guardada `awardedPromotions` (mismo frame, mismo ModPlayer -> sin
+  carrera entre sistemas). `SubclassPlayer` queda puro (no conoce UI).
+- `PromotionBannerUI`: `Show(sub)` -> `Prepare(sub, mecanica, lema, color)` + `Fire()`. La ceremonia
+  hace Prepare en Begin y Fire en el burst. Banner mas alto, con linea de mecanica en blanco.
+- Archivos: `Content/Systems/AwakeningCeremony.cs` (nuevo), `Content/UI/PromotionBannerUI.cs`,
+  `Content/Players/PromotionRewardPlayer.cs`. La tabla Identity() cubre las 18 subclases (12 v1 +
+  las 6 heredadas: Berserker, Stunner, Yoyo Master, Infinity Mage, Arcane Bard, Virtuoso).
+- Verificacion: compila 0/0; suite 108/108 (test nuevo AwakeningCeremonySourceSmokeTest; actualizado
+  PromotionBannerSourceSmokeTest para el nuevo flujo -- sigue garantizando "banner, no spam de chat").
+- Pendientes/riesgos: SIN probar en juego (timing del build-up y la intensidad del flash/oscurecido
+  son a ojo). Sin arte (dust vanilla + placeholder). En saves viejos ya promovidos sin
+  `awardedPromotions`, la ceremonia se reproduce una vez al cargar (aceptable, no se repite).
+
 ## 2026-07-14 - El ETERNAL: tienda por alma + "leer tu alma" (revela tu promocion)
 
 - Contexto: el Eternal era el UNICO NPC del mod, de las poquisimas cosas que YA tienen arte

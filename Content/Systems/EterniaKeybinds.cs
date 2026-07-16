@@ -7,6 +7,7 @@ namespace Eternia
         public static ModKeybind ToggleSoulUI;
         public static ModKeybind ToggleStatsUI;
         public static ModKeybind TogglePassiveUI;
+        public static ModKeybind ToggleBossLog;
         public static ModKeybind SkillKey;
         public static ModKeybind ChangeNote;
         public static ModKeybind UltimateKey;
@@ -31,6 +32,12 @@ namespace Eternia
                     Mod,
                     "Toggle Passive UI",
                     "J"
+                );
+            ToggleBossLog =
+                KeybindLoader.RegisterKeybind(
+                    Mod,
+                    "Toggle Boss Codex",
+                    "N"
                 );
             SkillKey = KeybindLoader.RegisterKeybind(
                 Mod,
@@ -59,6 +66,7 @@ namespace Eternia
             ToggleSoulUI = null;
             ToggleStatsUI = null;
             TogglePassiveUI = null;
+            ToggleBossLog = null;
             SkillKey = null;
             ChangeNote = null;
             UltimateKey = null;

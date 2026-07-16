@@ -5,9 +5,8 @@ using Eternia.Content.Items.Weapons.Magic;
 using Eternia.Content.Items.Weapons.Promotion;
 using Eternia.Content.Items.Weapons.Summoner;
 using Eternia.Content.Progression;
-using Eternia.Content.UI;
+using Eternia.Content.Systems;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
@@ -61,8 +60,9 @@ namespace Eternia.Content.Players
             awardedPromotions.Add(subclass);
             GivePromotionReward(reward);
 
-            PromotionBannerUI.Show(subclass);
-            SoundEngine.PlaySound(SoundID.Item37);
+            // THE AWAKENING. The ceremony plays the build-up and flash, then raises the banner
+            // (naming the mechanic you just inherited) and plays its own sounds.
+            AwakeningCeremony.Begin(subclass);
         }
 
         private void GivePromotionReward(PromotionReward reward)

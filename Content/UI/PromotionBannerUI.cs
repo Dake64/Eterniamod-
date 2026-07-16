@@ -8,18 +8,39 @@ using Terraria.UI;
 
 namespace Eternia.Content.UI
 {
-    // A dramatic centered banner shown when the player promotes into a subclass.
+    // The banner half of the Awakening. The ceremony (Content.Systems.AwakeningCeremony) plays the
+    // build-up and the flash, then raises this banner as the flash clears. It names your subclass
+    // AND the signature mechanic you were just handed -- the one thing nothing else explains.
     public class PromotionBannerUI : ModSystem
     {
-        private const int DisplayTicks = 220;
+        private const int DisplayTicks = 260;
 
         private static int remainingTicks;
         private static string subclassName = string.Empty;
+        private static string mechanicLine = string.Empty;
+        private static string creedLine = "A new path awakens";
+        private static Color accent = Color.Gold;
 
-        public static void Show(string subclass)
+        // Stash what to say without raising the banner yet -- the ceremony fires it at the burst.
+        public static void Prepare(string subclass, string mechanic, string creed, Color accentColor)
         {
             subclassName = subclass;
+            mechanicLine = mechanic ?? string.Empty;
+            creedLine = string.IsNullOrEmpty(creed) ? "A new path awakens" : creed;
+            accent = accentColor;
+        }
+
+        // Raise the already-prepared banner.
+        public static void Fire()
+        {
             remainingTicks = DisplayTicks;
+        }
+
+        // Prepare and raise in one call (instant banner, no ceremony).
+        public static void Show(string subclass, string mechanic = "", string creed = "", Color? accentColor = null)
+        {
+            Prepare(subclass, mechanic, creed, accentColor ?? Color.Gold);
+            Fire();
         }
 
         public override void Unload()
@@ -89,17 +110,22 @@ namespace Eternia.Content.UI
 
             SpriteBatch spriteBatch = Main.spriteBatch;
             Texture2D pixel = TextureAssets.MagicPixel.Value;
-            Color accent = Color.Gold;
 
-            int width = 420;
-            int height = 112;
+            int width = 520;
+            int height = 152;
 
             Rectangle panel =
                 new Rectangle(
                     (Main.screenWidth - width) / 2,
-                    (int)(Main.screenHeight * 0.24f - rise),
+                    (int)(Main.screenHeight * 0.20f - rise),
                     width,
                     height);
+
+            // A faint wash of your colour over the whole screen.
+            spriteBatch.Draw(
+                pixel,
+                new Rectangle(0, 0, Main.screenWidth, Main.screenHeight),
+                accent * (0.08f * alpha));
 
             spriteBatch.Draw(pixel, panel, EterniaUI.PanelBackground * (0.93f * alpha));
             spriteBatch.Draw(pixel, new Rectangle(panel.X, panel.Y, panel.Width, 3), accent * (0.9f * alpha));
@@ -108,14 +134,14 @@ namespace Eternia.Content.UI
 
             EterniaUI.DrawCenteredText(
                 spriteBatch,
-                "PROMOTION!",
-                new Rectangle(panel.X, panel.Y + 14, panel.Width, 34),
-                accent * alpha,
-                1.05f);
+                "THE SOUL HAS CHOSEN",
+                new Rectangle(panel.X, panel.Y + 12, panel.Width, 20),
+                EterniaUI.MutedText * alpha,
+                0.55f);
 
             // Pulsing glow behind the subclass name.
             Rectangle nameRect =
-                new Rectangle(panel.X, panel.Y + 52, panel.Width, 32);
+                new Rectangle(panel.X, panel.Y + 34, panel.Width, 38);
 
             for (int i = 0; i < 6; i++)
             {
@@ -131,20 +157,31 @@ namespace Eternia.Content.UI
                         nameRect.Width,
                         nameRect.Height),
                     accent * (0.4f * alpha),
-                    1f);
+                    1.2f);
             }
 
             EterniaUI.DrawCenteredText(
                 spriteBatch,
                 subclassName,
                 nameRect,
-                Color.White * alpha,
-                1f);
+                accent * alpha,
+                1.2f);
+
+            // The mechanic you now carry -- the headline of the whole moment.
+            if (mechanicLine.Length > 0)
+            {
+                EterniaUI.DrawCenteredText(
+                    spriteBatch,
+                    mechanicLine,
+                    new Rectangle(panel.X, panel.Y + 84, panel.Width, 24),
+                    Color.White * (0.92f * alpha),
+                    0.72f);
+            }
 
             EterniaUI.DrawCenteredText(
                 spriteBatch,
-                "A new path awakens",
-                new Rectangle(panel.X, panel.Y + 88, panel.Width, 20),
+                creedLine,
+                new Rectangle(panel.X, panel.Y + 116, panel.Width, 20),
                 EterniaUI.MutedText * alpha,
                 0.55f);
 

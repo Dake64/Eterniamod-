@@ -4,6 +4,7 @@ Mods: {
 			"Toggle Soul UI.DisplayName": Toggle Soul UI
 			"Toggle Stats UI.DisplayName": Toggle Stats UI
 			"Toggle Passive UI.DisplayName": Toggle Passive UI
+			"Toggle Boss Codex.DisplayName": Toggle Boss Codex
 			"Class Skill.DisplayName": Class Skill
 			"Change Note.DisplayName": Change Note
 			"Elemental Ultimate.DisplayName": Elemental Ultimate
@@ -40,9 +41,117 @@ Mods: {
 				DisplayName: Legion
 				Description: Your legion is deployed.
 			}
+
+			WarriorsBrewBuff: {
+				DisplayName: Warrior's Brew
+				Description: +10% melee damage, +6% crit and faster swings.
+			}
+
+			ArcanistsBrewBuff: {
+				DisplayName: Arcanist's Brew
+				Description: +10% magic damage, +6% crit and cheaper spells.
+			}
+
+			HuntersBrewBuff: {
+				DisplayName: Hunter's Brew
+				Description: +10% ranged damage, +6% crit and faster attacks.
+			}
+
+			PackleadersBrewBuff: {
+				DisplayName: Packleader's Brew
+				Description: +12% summon damage, longer and faster whips.
+			}
+
+			BattleTonicBuff: {
+				DisplayName: Battle Tonic
+				Description: +6% damage for every class at once.
+			}
+
+			GrandBattleTonicBuff: {
+				DisplayName: Grand Battle Tonic
+				Description: +10% damage for every class, and +4% crit.
+			}
+
+			EternalFeastBuff: {
+				DisplayName: Eternal Feast
+				Description: Steady regeneration, a little of everything. Stay fed.
+			}
+
+			WardingTonicBuff: {
+				DisplayName: Warding Tonic
+				Description: +8 defense and 5% damage reduction. Brew before a boss.
+			}
 		}
 
 		Items: {
+			WarriorsBrew: {
+				DisplayName: Warrior's Brew
+				Tooltip: +10% melee damage, +6% crit and faster swings for every warrior soul.
+			}
+
+			ArcanistsBrew: {
+				DisplayName: Arcanist's Brew
+				Tooltip: +10% magic damage, +6% crit and cheaper spells for every mage soul.
+			}
+
+			HuntersBrew: {
+				DisplayName: Hunter's Brew
+				Tooltip: +10% ranged damage, +6% crit and faster attacks for every ranger soul.
+			}
+
+			PackleadersBrew: {
+				DisplayName: Packleader's Brew
+				Tooltip: +12% summon damage, longer and faster whips for every summoner soul.
+			}
+
+			BattleTonic: {
+				DisplayName: Battle Tonic
+				Tooltip: +6% damage for all four classes at once. Never wasted, whatever your soul.
+			}
+
+			GrandBattleTonic: {
+				DisplayName: Grand Battle Tonic
+				Tooltip:
+					'''
+					+10% damage for all four classes, and +4% crit.
+					The hardmode upgrade of the Battle Tonic.
+					'''
+			}
+
+			EternalFeast: {
+				DisplayName: Eternal Feast
+				Tooltip: A long, hearty meal: steady regeneration and a little of everything. Stay fed.
+			}
+
+			WardingTonic: {
+				DisplayName: Warding Tonic
+				Tooltip: +8 defense and 5% damage reduction. Brew a few before a boss you keep dying to.
+			}
+
+			CorruptedSoulCore: {
+				DisplayName: Corrupted Soul Core
+				Tooltip:
+					'''
+					Feeds a corrupted Soul into a dormant vessel and wakes it.
+					Summons Prototype-01. Built from salvaged tech at an anvil.
+					'''
+			}
+
+			PrototypeCore: {
+				DisplayName: Prototype Core
+				Tooltip: Salvaged from Prototype-01. The material for advanced soul-tech gear.
+			}
+
+			SoulAlloy: {
+				DisplayName: Soul Alloy
+				Tooltip: A Soul re-forged into a stable alloy. For improving Souls -- uses still to come.
+			}
+
+			SoulforgedSabre: {
+				DisplayName: Soulforged Sabre
+				Tooltip: Each swing throws an energy crescent. Forged from Prototype-01's own Soul-tech.
+			}
+
 			BloodCurse: {
 				DisplayName: Blood Curse
 				Tooltip: Adds 35 base corruption but reduces max life by 20.
@@ -1499,14 +1608,17 @@ Mods: {
 					Ferocity, the Power Core, and Command. +2 minions.
 					'''
 			}
+
 			SteelboundHelm: {
 				DisplayName: Steelbound Helm
 				Tooltip: +5% melee critical strike chance
 			}
+
 			SteelboundChest: {
 				DisplayName: Steelbound Chestplate
 				Tooltip: +7% melee damage
 			}
+
 			SteelboundGreaves: {
 				DisplayName: Steelbound Greaves
 				Tooltip: +6% melee speed and movement speed
@@ -1516,10 +1628,12 @@ Mods: {
 				DisplayName: Emberweave Hood
 				Tooltip: +6% magic critical strike chance and +40 maximum mana
 			}
+
 			EmberweaveRobe: {
 				DisplayName: Emberweave Robe
 				Tooltip: +8% magic damage and +40 maximum mana
 			}
+
 			EmberweaveLeggings: {
 				DisplayName: Emberweave Leggings
 				Tooltip: +40 maximum mana and +8% movement speed
@@ -1529,10 +1643,12 @@ Mods: {
 				DisplayName: Hunter's Hood
 				Tooltip: +6% ranged critical strike chance
 			}
+
 			HuntersGarbChest: {
 				DisplayName: Hunter's Garb
 				Tooltip: +8% ranged damage
 			}
+
 			HuntersGarbLeggings: {
 				DisplayName: Hunter's Leggings
 				Tooltip: +6% ranged speed and +8% movement speed
@@ -1542,10 +1658,12 @@ Mods: {
 				DisplayName: Packmaster's Hood
 				Tooltip: +1 minion
 			}
+
 			PackmasterChest: {
 				DisplayName: Packmaster's Hide
 				Tooltip: +10% summon damage
 			}
+
 			PackmasterLeggings: {
 				DisplayName: Packmaster's Leggings
 				Tooltip: +5% summon damage and +8% movement speed
@@ -1555,10 +1673,12 @@ Mods: {
 				DisplayName: Ironchain Helm
 				Tooltip: +8% melee critical strike chance
 			}
+
 			IronchainChest: {
 				DisplayName: Ironchain Chestplate
 				Tooltip: +10% melee damage
 			}
+
 			IronchainGreaves: {
 				DisplayName: Ironchain Greaves
 				Tooltip: +10% melee speed and +8% movement speed
@@ -1568,10 +1688,12 @@ Mods: {
 				DisplayName: Hemocarnage Helm
 				Tooltip: +10% melee critical strike chance
 			}
+
 			HemocarnageChest: {
 				DisplayName: Hemocarnage Chestplate
 				Tooltip: +12% melee damage and a little life steal
 			}
+
 			HemocarnageGreaves: {
 				DisplayName: Hemocarnage Greaves
 				Tooltip: +6% melee critical strike chance and +8% movement speed
@@ -1581,10 +1703,12 @@ Mods: {
 				DisplayName: Aegis Bulwark Helm
 				Tooltip: +4 defense
 			}
+
 			AegisBulwarkChest: {
 				DisplayName: Aegis Bulwark Plate
 				Tooltip: +6 defense and +4% damage reduction
 			}
+
 			AegisBulwarkGreaves: {
 				DisplayName: Aegis Bulwark Greaves
 				Tooltip: +4 defense and faster life regeneration
@@ -1594,10 +1718,12 @@ Mods: {
 				DisplayName: Prismatic Hood
 				Tooltip: +8% magic critical strike chance and +60 maximum mana
 			}
+
 			PrismaticRobe: {
 				DisplayName: Prismatic Vestments
 				Tooltip: +14% magic damage and +60 maximum mana
 			}
+
 			PrismaticLeggings: {
 				DisplayName: Prismatic Leggings
 				Tooltip: -10% mana cost and +8% movement speed
@@ -1607,10 +1733,12 @@ Mods: {
 				DisplayName: Blightweave Hood
 				Tooltip: +8% magic damage and +60 maximum mana
 			}
+
 			BlightweaveRobe: {
 				DisplayName: Blightweave Robe
 				Tooltip: +16% magic damage and +60 maximum mana
 			}
+
 			BlightweaveLeggings: {
 				DisplayName: Blightweave Leggings
 				Tooltip: +8% magic critical strike chance and +8% movement speed
@@ -1620,10 +1748,12 @@ Mods: {
 				DisplayName: Lich's Crown
 				Tooltip: +10% magic damage and faster mana regeneration
 			}
+
 			LichRegaliaRobe: {
 				DisplayName: Lich's Regalia
 				Tooltip: +16% magic damage and +60 maximum mana
 			}
+
 			LichRegaliaLeggings: {
 				DisplayName: Lich's Leggings
 				Tooltip: -12% mana cost and +8% movement speed
@@ -1633,10 +1763,12 @@ Mods: {
 				DisplayName: Reactor Visor
 				Tooltip: +10% ranged critical strike chance
 			}
+
 			ReactorSuitChest: {
 				DisplayName: Reactor Suit
 				Tooltip: +14% ranged damage
 			}
+
 			ReactorSuitGreaves: {
 				DisplayName: Reactor Greaves
 				Tooltip: +10% ranged speed and +8% movement speed
@@ -1646,10 +1778,12 @@ Mods: {
 				DisplayName: Hawkeye Hood
 				Tooltip: +12% ranged critical strike chance
 			}
+
 			HawkeyeGarbChest: {
 				DisplayName: Hawkeye Garb
 				Tooltip: +14% ranged damage
 			}
+
 			HawkeyeGarbLeggings: {
 				DisplayName: Hawkeye Leggings
 				Tooltip: +6% ranged critical strike chance and +8% movement speed
@@ -1659,10 +1793,12 @@ Mods: {
 				DisplayName: Gunslinger's Mask
 				Tooltip: +10% ranged speed
 			}
+
 			GunslingerRigChest: {
 				DisplayName: Gunslinger's Rig
 				Tooltip: +16% ranged damage
 			}
+
 			GunslingerRigGreaves: {
 				DisplayName: Gunslinger's Greaves
 				Tooltip: +8% ranged critical strike chance and +10% movement speed
@@ -1672,10 +1808,12 @@ Mods: {
 				DisplayName: Alphahide Hood
 				Tooltip: +1 minion and +8% summon damage
 			}
+
 			AlphahideChest: {
 				DisplayName: Alphahide Mantle
 				Tooltip: +1 minion and +14% summon damage
 			}
+
 			AlphahideGreaves: {
 				DisplayName: Alphahide Greaves
 				Tooltip: +10% whip speed and +10% movement speed
@@ -1685,10 +1823,12 @@ Mods: {
 				DisplayName: Exoframe Visor
 				Tooltip: +1 minion and +4 defense
 			}
+
 			ExoframeChest: {
 				DisplayName: Engineer's Exoframe
 				Tooltip: +1 minion and +14% summon damage
 			}
+
 			ExoframeGreaves: {
 				DisplayName: Exoframe Greaves
 				Tooltip: +4 defense and +8% movement speed
@@ -1698,10 +1838,12 @@ Mods: {
 				DisplayName: Legion Crown
 				Tooltip: +1 minion and +8% summon damage
 			}
+
 			LegionRegaliaChest: {
 				DisplayName: Legion Regalia
 				Tooltip: +1 minion and +14% summon damage
 			}
+
 			LegionRegaliaLeggings: {
 				DisplayName: Legion Leggings
 				Tooltip: +10% summon speed and +8% movement speed
@@ -1709,6 +1851,8 @@ Mods: {
 		}
 
 		NPCs: {
+			Prototype01.DisplayName: Prototype-01
+
 			EternalNPC: {
 				DisplayName: Eternal
 
@@ -1781,6 +1925,11 @@ Mods: {
 			EnergyChainBolt.DisplayName: Energy Chain Bolt
 			EnergyHomingBolt.DisplayName: Energy Homing Bolt
 			EnergyPlasmaBolt.DisplayName: Energy Plasma Bolt
+			PrototypeDrone.DisplayName: Prototype Drone
+			PrototypeEnergySlash.DisplayName: Prototype Energy Slash
+			PrototypePlasmaBolt.DisplayName: Prototype Plasma Bolt
+			PrototypeShockwave.DisplayName: Prototype Shockwave
+			SoulSlash.DisplayName: Soul Slash
 		}
 	}
 }
