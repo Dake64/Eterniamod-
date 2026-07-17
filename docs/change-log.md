@@ -15,6 +15,21 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Iconos de DEBUFF sobre los enemigos
+
+- Pedido: mostrar visualmente cuando un enemigo tiene un debuff, "como el cuadrito de tus buffs".
+- `EnemyDebuffDisplayGlobalNPC` (GlobalNPC.PostDraw): dibuja los DEBUFFS activos del enemigo como
+  iconos pequeños en fila sobre su cabeza -- el icono real del buff (`TextureAssets.Buff[type]`),
+  sobre un cuadrado oscuro con subrayado rojo (= "daño, sobre el enemigo"). Funciona con cualquier
+  debuff, vanilla o del mod (bleed, veneno, on-fire...).
+- Solo se muestran DEBUFFS (`Main.debuff[type]`), asi los buffs propios de un enemigo no ensucian.
+  Se salta critters/friendly/townNPC/muertos. Capado a 6 iconos. Colocado por encima de la insignia
+  de rareza que ya dibuja EterniaGlobalNPC, para que no se pisen.
+- Verificacion: compila 0/0; suite 116/116 (test nuevo EnemyDebuffDisplay).
+- Pendientes/riesgos: la posicion vertical (-30-cell sobre el sprite) es a ojo; en enemigos muy
+  altos o con badge de rareza grande podria acercarse. Sin ModConfig para desactivarlo (el usuario
+  declino ModConfig).
+
 ## 2026-07-16 - Minerales de HARDMODE (3) + su equipo completo
 
 - Pedido: minerales para hardmode, y armas/armaduras/accesorios de subclase pre-HM y HM.
