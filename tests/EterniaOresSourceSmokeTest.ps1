@@ -87,4 +87,37 @@ foreach ($tile in $tiers.Keys) {
     }
 }
 
+# --- Each bar must have gear to make, or the ore is a dead end ---------------
+# The whole reason these ores exist is to fill the early gap where Eternia had no armour of
+# its own. A bar with nothing to craft is the Soul Alloy trap all over again.
+
+foreach ($set in @(
+    @("Soulstone", "SoulstoneBar"),
+    @("Animite", "AnimiteBar"),
+    @("Revenite", "ReveniteBar"))) {
+
+    $armor = Read-File "Content\Items\Armor\$($set[0])Set.cs"
+
+    if ($armor -notmatch "AddIngredient<$($set[1])>") {
+        throw "$($set[0]) armour should be crafted from $($set[1]) -- otherwise the ore has no purpose."
+    }
+
+    # Class-agnostic by design: the metal answers to whatever Soul you carry, so three early
+    # sets cover all four classes instead of needing twelve.
+    if ($armor -notmatch "SoulMetalArmor") {
+        throw "$($set[0]) armour should use the class-agnostic SoulMetalArmor base."
+    }
+
+    if ($armor -notmatch "SoulAscensionPlayer\.ClassOf" -or $armor -notmatch "HasClassSoul") {
+        throw "$($set[0])'s set bonus should empower whichever class the player's Soul actually is."
+    }
+
+    foreach ($piece in @("Helm", "Chest", "Greaves")) {
+        $name = "$($set[0])$piece"
+        if ($loc -notmatch "(?ms)\b${name}:\s*\{[^}]*DisplayName:" -and $loc -notmatch "${name}\.DisplayName:") {
+            throw "en-US.hjson should localize $name."
+        }
+    }
+}
+
 Write-Host "Eternia ores source smoke test passed."

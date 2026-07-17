@@ -33,13 +33,21 @@ Formato sugerido por entrada:
 - Arte PLACEHOLDER: cada tile/mena/barra toma prestado el sprite de un mineral HARDMODE vanilla
   (Cobalt/Mythril/Adamantite) A PROPOSITO -> el jugador no los confunde con nada que vea en
   pre-hardmode. Cuando haya arte, quitar el `Texture =>` y poner el .png al lado.
-- Verificacion: compila 0/0; suite 114/114 (test nuevo EterniaOres).
+- EQUIPO (mismo lote): 3 sets de armadura, uno por mineral -> ESTO es lo que tapa el hueco.
+  - Diseño clave: son CLASS-AGNOSTIC (`SoulMetalArmor`). El metal "responde a tu Soul": el set bonus
+    potencia la DamageClass de tu alma activa (reusa `SoulAscensionPlayer.ClassOf`). Asi 3 sets
+    cubren las 4 clases en vez de necesitar 12.
+  - Soulstone (10 def, look Plata): +6% dano de tu clase.
+  - Animite (16 def, look Oro): +10% dano de tu clase, +2 def.
+  - Revenite (22 def, look Shadow): +14% dano y +5% crit de tu clase, +4 def. Ultimo antes de Molten.
+  - Piezas sueltas dan crit / dano / velocidad genericos. Recetas en Yunque.
+- Verificacion: compila 0/0; suite 114/114 (test EterniaOres cubre menas, barras, worldgen Y que
+  cada barra tenga equipo -- para no repetir la trampa del SoulAlloy).
 - PENDIENTES/RIESGOS:
   - **Solo aparecen en MUNDOS NUEVOS** (el worldgen corre al crear el mundo).
-  - **Las barras aun NO tienen equipo que fabricar** -> mismo riesgo que tuvo el SoulAlloy
-    (material sin uso). El siguiente paso natural es la armadura/armas tempranas que tapan el hueco.
   - El override `Texture => "Terraria/Images/Tiles_X"` es el punto fragil: si el mod fallara al
     cargar, es lo primero a revisar.
+  - Balance sin probar (defensas, % de los set bonus, densidad de vetas).
 
 ## 2026-07-16 - PRIMER FIX DE PLAYTEST: jefes tempranos imposibles + beam inutil
 

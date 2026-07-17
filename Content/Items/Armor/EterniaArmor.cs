@@ -47,4 +47,12 @@ namespace Eternia.Content.Items.Armor
     {
         public override string Texture => "ETERNIA/Content/Items/Souls/SummonerSoul";
     }
+
+    // Soul-metal armour is CLASS-AGNOSTIC. The metal answers to whatever Soul you carry, so one
+    // set serves all four classes and its bonus empowers whichever class you actually are. That is
+    // what lets three early sets cover the whole pre-Hardmode gap instead of needing twelve.
+    public abstract class SoulMetalArmor : EterniaArmor
+    {
+        public override string Texture => "ETERNIA/Content/Items/Souls/EmptySoul";
+    }
 }

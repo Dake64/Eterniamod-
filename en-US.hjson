@@ -251,6 +251,51 @@ Mods: {
 				Tooltip: ""
 			}
 
+			SoulstoneHelm: {
+				DisplayName: Soulstone Helm
+				Tooltip: +2% critical chance
+			}
+
+			SoulstoneChest: {
+				DisplayName: Soulstone Mail
+				Tooltip: +2% damage
+			}
+
+			SoulstoneGreaves: {
+				DisplayName: Soulstone Greaves
+				Tooltip: +5% movement speed
+			}
+
+			AnimiteHelm: {
+				DisplayName: Animite Helm
+				Tooltip: +4% critical chance
+			}
+
+			AnimiteChest: {
+				DisplayName: Animite Mail
+				Tooltip: +4% damage
+			}
+
+			AnimiteGreaves: {
+				DisplayName: Animite Greaves
+				Tooltip: +8% movement speed
+			}
+
+			ReveniteHelm: {
+				DisplayName: Revenite Helm
+				Tooltip: +6% critical chance
+			}
+
+			ReveniteChest: {
+				DisplayName: Revenite Mail
+				Tooltip: +6% damage
+			}
+
+			ReveniteGreaves: {
+				DisplayName: Revenite Greaves
+				Tooltip: +10% movement speed
+			}
+
 			SoulAlloy: {
 				DisplayName: Soul Alloy
 				Tooltip: A Soul re-forged into a stable alloy. Used to ascend your own Soul.
