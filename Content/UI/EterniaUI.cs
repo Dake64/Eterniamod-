@@ -500,7 +500,8 @@ namespace Eternia.Content.UI
             Color color,
             bool ready = false,
             string readyPrompt = null,
-            bool alwaysShow = false)
+            bool alwaysShow = false,
+            bool bloodTheme = false)
         {
             // alwaysShow keeps the gauge on screen even at 0, so a subclass's mechanic is
             // DISCOVERABLE -- the player sees the empty gauge and learns they need to fill it.
@@ -520,19 +521,22 @@ namespace Eternia.Content.UI
             bool full = clamped >= max;
             bool hot = ready || full;
 
+            float time = Main.GlobalTimeWrappedHourly;
             float pulse =
-                0.5f + 0.5f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 5f);
+                0.5f + 0.5f * (float)System.Math.Sin(time * 5f);
 
-            // A short SEGMENTED gauge -- reads as an energy meter, not a plain fill -- kept to a
-            // single compact row so it barely intrudes over the player.
+            Color bright = Color.Lerp(color, Color.White, 0.4f);
+
+            // Gauge geometry. Default is a short SEGMENTED energy meter; the blood theme uses a
+            // slightly taller vessel so the liquid, its rippling surface and the drips can read.
             const int gaugeW = 78;
-            const int gaugeH = 6;
             const int segs = 13;
             const int segGap = 1;
             int segW = (gaugeW - (segs - 1) * segGap) / segs;
-            int trueW = segs * segW + (segs - 1) * segGap;
+            int segTrueW = segs * segW + (segs - 1) * segGap;
 
-            Color bright = Color.Lerp(color, Color.White, 0.4f);
+            int trueW = bloodTheme ? gaugeW : segTrueW;
+            int gaugeH = bloodTheme ? 9 : 6;
 
             // Compact side text: the ready key when ready (the actionable bit), else the value.
             string sideText =
@@ -554,11 +558,15 @@ namespace Eternia.Content.UI
             int gaugeX = startX + (int)lw + 6;
             int gaugeY = midY - gaugeH / 2;
 
-            // Label (left), muted so it never shouts.
+            // Label (left). Muted grey by default; the blood theme bleeds it toward the
+            // resource colour so the whole readout feels of a piece.
+            Color labelColor = bloodTheme
+                ? Color.Lerp(MutedText, color, 0.55f)
+                : MutedText;
             DrawText(
                 spriteBatch, label,
                 new Vector2(startX, midY - 6),
-                MutedText * (0.9f * a), labelScale);
+                labelColor * (0.9f * a), labelScale);
 
             // Soft glow behind the gauge when it's hot.
             if (hot)
@@ -569,38 +577,47 @@ namespace Eternia.Content.UI
                     color * (0.18f * pulse * a));
             }
 
-            int fillW = (int)(trueW * percent);
-
-            for (int i = 0; i < segs; i++)
+            if (bloodTheme)
             {
-                int sx = gaugeX + i * (segW + segGap);
-                int segStart = i * (segW + segGap);
+                DrawBloodGauge(
+                    spriteBatch, pixel, gaugeX, gaugeY, trueW, gaugeH,
+                    percent, color, bright, hot, pulse, time, a);
+            }
+            else
+            {
+                int fillW = (int)(trueW * percent);
 
-                // Empty cell.
-                spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, segW, gaugeH), PanelSurface * (0.9f * a));
-
-                // Filled portion of this cell (partial fill stays smooth across the notches).
-                int inSeg = System.Math.Clamp(fillW - segStart, 0, segW);
-
-                if (inSeg > 0)
+                for (int i = 0; i < segs; i++)
                 {
-                    Color cell = hot ? Color.Lerp(color, bright, pulse) : color;
-                    spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, inSeg, gaugeH), cell * (0.95f * a));
-                    // top gloss line
-                    spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, inSeg, 1), Color.White * (0.22f * a));
+                    int sx = gaugeX + i * (segW + segGap);
+                    int segStart = i * (segW + segGap);
+
+                    // Empty cell.
+                    spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, segW, gaugeH), PanelSurface * (0.9f * a));
+
+                    // Filled portion of this cell (partial fill stays smooth across the notches).
+                    int inSeg = System.Math.Clamp(fillW - segStart, 0, segW);
+
+                    if (inSeg > 0)
+                    {
+                        Color cell = hot ? Color.Lerp(color, bright, pulse) : color;
+                        spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, inSeg, gaugeH), cell * (0.95f * a));
+                        // top gloss line
+                        spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, inSeg, 1), Color.White * (0.22f * a));
+                    }
                 }
-            }
 
-            // Bright leading edge where the fill ends.
-            if (fillW > 0 && fillW < trueW)
-            {
-                spriteBatch.Draw(pixel, new Rectangle(gaugeX + fillW - 1, gaugeY - 1, 2, gaugeH + 2), bright * (0.9f * a));
-            }
+                // Bright leading edge where the fill ends.
+                if (fillW > 0 && fillW < trueW)
+                {
+                    spriteBatch.Draw(pixel, new Rectangle(gaugeX + fillW - 1, gaugeY - 1, 2, gaugeH + 2), bright * (0.9f * a));
+                }
 
-            DrawBorder(
-                spriteBatch,
-                new Rectangle(gaugeX - 1, gaugeY - 1, trueW + 2, gaugeH + 2),
-                (hot ? Color.Lerp(color, Color.White, 0.35f) * (0.5f + 0.5f * pulse) : color * 0.5f) * a);
+                DrawBorder(
+                    spriteBatch,
+                    new Rectangle(gaugeX - 1, gaugeY - 1, trueW + 2, gaugeH + 2),
+                    (hot ? Color.Lerp(color, Color.White, 0.35f) * (0.5f + 0.5f * pulse) : color * 0.5f) * a);
+            }
 
             // Side text (right): the value, or a pulsing ready key.
             DrawText(
@@ -608,6 +625,92 @@ namespace Eternia.Content.UI
                 new Vector2(gaugeX + trueW + 6, midY - 6),
                 (ready ? bright * (0.6f + 0.4f * pulse) : Color.Lerp(color, Color.White, 0.3f)) * a,
                 labelScale);
+        }
+
+        // A visceral, blood-themed variant of the floating gauge -- built for the Swordsman's
+        // Crimson Trail. A clotted vessel holds arterial liquid with a rippling wet surface, a
+        // trembling level edge, and drips that bleed from the fill line. All motion is
+        // time-driven (no per-frame RNG) so it stays smooth and save/net-agnostic.
+        private static void DrawBloodGauge(
+            SpriteBatch spriteBatch,
+            Texture2D pixel,
+            int x, int y, int w, int h,
+            float percent,
+            Color color,
+            Color bright,
+            bool hot,
+            float pulse,
+            float time,
+            float a)
+        {
+            // Clotted vessel behind the blood.
+            Color vessel = new Color(34, 6, 9);
+            spriteBatch.Draw(pixel, new Rectangle(x, y, w, h), vessel * (0.92f * a));
+
+            int fillW = (int)System.Math.Round(w * percent);
+            fillW = System.Math.Clamp(fillW, 0, w);
+
+            if (fillW > 0)
+            {
+                // Vertical blood gradient: dark settled clot at the bottom, arterial body,
+                // a brighter band just under the surface.
+                Color bodyLo = Color.Lerp(color, new Color(58, 0, 6), 0.5f);
+                Color bodyHi = Color.Lerp(color, new Color(150, 20, 24), 0.35f);
+
+                spriteBatch.Draw(pixel, new Rectangle(x, y, fillW, h), bodyLo * (0.96f * a));
+                spriteBatch.Draw(pixel, new Rectangle(x, y, fillW, System.Math.Max(1, h / 2)), bodyHi * (0.5f * a));
+                spriteBatch.Draw(pixel, new Rectangle(x, y + h - 2, fillW, 2), new Color(40, 3, 6) * (0.7f * a));
+
+                // Rippling wet surface line across the top of the fill.
+                Color menisc = Color.Lerp(color, Color.White, hot ? 0.55f : 0.32f);
+                for (int cx = 0; cx < fillW; cx++)
+                {
+                    float s = (float)System.Math.Sin(cx * 0.5f + time * 3.2f);
+                    int yTop = y + (s > 0.25f ? 0 : 1);
+                    spriteBatch.Draw(
+                        pixel, new Rectangle(x + cx, yTop, 1, 1),
+                        menisc * ((0.45f + 0.4f * (0.5f + 0.5f * s)) * a));
+                }
+
+                // Trembling leading edge -- the level where the blood currently sits.
+                if (fillW < w)
+                {
+                    int edgeX = x + fillW - 1 + (int)System.Math.Round(System.Math.Sin(time * 4.5f));
+                    spriteBatch.Draw(pixel, new Rectangle(edgeX, y, 2, h), bright * ((hot ? 0.9f : 0.7f) * a));
+                }
+            }
+
+            // Drips bleeding from the fill line. Each has its own phase so they fall out of
+            // sync; a drip only shows if the blood actually reaches its column.
+            int dripCount = hot ? 4 : 3;
+            float fall = h + 9f;
+            for (int i = 0; i < dripCount; i++)
+            {
+                float frac = (i + 0.5f) / dripCount;
+                if (frac > percent)
+                {
+                    continue;
+                }
+
+                int dripX = x + (int)(frac * w);
+                float phaseRaw = time * (hot ? 1.1f : 0.7f) + i * 0.41f;
+                float phase = phaseRaw - (float)System.Math.Floor(phaseRaw);
+
+                int dripY = y + h - 1 + (int)(phase * fall);
+                float dropA = (1f - phase) * a;
+
+                Color drop = Color.Lerp(color, new Color(70, 0, 6), 0.4f);
+                spriteBatch.Draw(pixel, new Rectangle(dripX, dripY, 1, 2), drop * (0.85f * dropA));
+                spriteBatch.Draw(pixel, new Rectangle(dripX, dripY + 2, 1, 1), drop * (0.5f * dropA));
+            }
+
+            // Vessel outline -- clotted red, brightening to a wet pulse when ready.
+            DrawBorder(
+                spriteBatch,
+                new Rectangle(x - 1, y - 1, w + 2, h + 2),
+                (hot
+                    ? Color.Lerp(color, Color.White, 0.35f) * (0.5f + 0.5f * pulse)
+                    : new Color(120, 22, 26) * 0.7f) * a);
         }
 
         public static void DrawProgressBar(

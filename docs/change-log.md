@@ -15,6 +15,23 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Barra del Espadachin -> tema de SANGRE + tecla real en el prompt
+
+- Pedido: darle "mas interfaz como de sangre haciendo alusion" al fantasy de sangrado del
+  Espadachin (el medidor segmentado generico no evocaba nada).
+- `EterniaUI.DrawFloatingResourceBar` ahora acepta `bloodTheme` (opt-in). Con el, dibuja
+  `DrawBloodGauge`: recipiente coagulado, sangre arterial con gradiente vertical (coagulo abajo,
+  cuerpo, banda brillante bajo la superficie), superficie humeda que ONDEA (meniscus por columnas),
+  borde de nivel que TIEMBLA, y GOTAS que gotean del nivel (cada una con su fase, mas cuando esta
+  ready). Todo animado por `Main.GlobalTimeWrappedHourly` (sin RNG por frame -> suave y net-safe).
+  Las otras 11 subclases siguen con el medidor segmentado (no pasan `bloodTheme`).
+- `CrimsonTrailUI` pasa `bloodTheme: true` y ademas muestra la TECLA REAL asignada
+  (`SkillKey.GetAssignedKeys()`) en vez de un "Q" hardcodeado; si esta sin bindear muestra
+  "SET KEY". Esto ataca la queja de "pico Q y no hace nada": tModLoader NO fuerza el default de
+  una tecla de mod sobre un perfil de controles existente, asi que suele quedar sin asignar, y
+  ahora la barra lo dice en pantalla.
+- Verificacion: compila 0/0; suite 116/116. Falta feedback visual en juego (captura).
+
 ## 2026-07-16 - Barra de recurso -> MEDIDOR segmentado compacto (una sola fila)
 
 - Pedido: que la barra no se vea como "una simple barra que se llena" y que ocupe poco para no

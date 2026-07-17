@@ -56,7 +56,15 @@ namespace Eternia.Content.UI
             bool ready =
                 crimson.CrimsonTrail >= SwordsmanSkillPlayer.TechniqueCost;
 
-            // Shared polished, fading resource bar over the player.
+            // Show the REAL bound key (not a hardcoded "Q"): tModLoader does not force a mod
+            // keybind's default onto an existing controls profile, so it can sit unbound. When
+            // it is, the bar says SET KEY -- telling the player exactly why the skill "does
+            // nothing" instead of promising a key that was never assigned.
+            var keys = EterniaKeybinds.SkillKey?.GetAssignedKeys();
+            string keyLabel = keys != null && keys.Count > 0 ? keys[0] : "SET KEY";
+
+            // Blood-themed resource bar over the player: a clotted vessel of arterial blood
+            // that ripples, trembles at the level line, and drips -- fitting the bleed fantasy.
             EterniaUI.DrawFloatingResourceBar(
                 Main.spriteBatch,
                 player,
@@ -65,8 +73,9 @@ namespace Eternia.Content.UI
                 CrimsonTrailPlayer.MaxCrimsonTrail,
                 new Color(205, 35, 45),
                 ready,
-                "Q: EXECUTE",
-                alwaysShow: true);
+                keyLabel + ": EXECUTE",
+                alwaysShow: true,
+                bloodTheme: true);
 
             return true;
         }
