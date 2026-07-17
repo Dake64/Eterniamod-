@@ -499,9 +499,13 @@ namespace Eternia.Content.UI
             int max,
             Color color,
             bool ready = false,
-            string readyPrompt = null)
+            string readyPrompt = null,
+            bool alwaysShow = false)
         {
-            float target = value > 0 ? 1f : 0f;
+            // alwaysShow keeps the bar on screen even at 0, so a subclass's mechanic is DISCOVERABLE
+            // -- the player can see the empty bar and learn they need to fill it. Without it a new
+            // subclass never sees its own resource until it has already built some.
+            float target = (value > 0 || alwaysShow) ? 1f : 0f;
             resourceBarAlpha += (target - resourceBarAlpha) * 0.12f;
 
             if (resourceBarAlpha < 0.02f)

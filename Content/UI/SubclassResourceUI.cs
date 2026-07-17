@@ -64,7 +64,8 @@ namespace Eternia.Content.UI
             bool ready =
                 readyPrompt != null && value >= max;
 
-            // Shared polished, fading resource bar over the player.
+            // Shared polished resource bar over the player. alwaysShow so the mechanic is visible
+            // (and discoverable) the moment you're that subclass, not only once you've built resource.
             EterniaUI.DrawFloatingResourceBar(
                 Main.spriteBatch,
                 player,
@@ -73,7 +74,8 @@ namespace Eternia.Content.UI
                 (int)max,
                 color,
                 ready,
-                ready ? readyPrompt : null);
+                ready ? readyPrompt : null,
+                alwaysShow: true);
 
             return true;
         }

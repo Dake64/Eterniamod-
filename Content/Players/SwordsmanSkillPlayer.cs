@@ -44,17 +44,33 @@ namespace Eternia.Content.Players
             var crimson =
                 Player.GetModPlayer<CrimsonTrailPlayer>();
 
-            if (!crimson.TrySpend(TechniqueCost))
+            // Feedback when you can't fire, so the technique never feels like a dead key.
+            if (crimson.CrimsonTrail < TechniqueCost)
             {
+                if (Player.whoAmI == Main.myPlayer)
+                {
+                    CombatText.NewText(
+                        Player.Hitbox,
+                        new Color(180, 90, 90),
+                        $"Crimson Trail {crimson.CrimsonTrail}/{TechniqueCost}");
+                }
+
                 return;
             }
 
+            crimson.TrySpend(TechniqueCost);
             skillPlayer.SetCooldown(TechniqueCooldown);
 
-            PerformCrimsonExecution();
+            int hit = PerformCrimsonExecution();
+
+            if (hit == 0 && Player.whoAmI == Main.myPlayer)
+            {
+                CombatText.NewText(
+                    Player.Hitbox, new Color(150, 150, 150), "No bleeding enemies");
+            }
         }
 
-        private void PerformCrimsonExecution()
+        private int PerformCrimsonExecution()
         {
             int bleedType =
                 ModContent.BuffType<BleedDebuff>();
@@ -65,6 +81,8 @@ namespace Eternia.Content.Players
             int executeDamage = 50 + affinity * 5;
 
             SoundEngine.PlaySound(SoundID.Item71, Player.position);
+
+            int hits = 0;
 
             foreach (NPC npc in Main.npc)
             {
@@ -82,6 +100,8 @@ namespace Eternia.Content.Players
                 {
                     continue;
                 }
+
+                hits++;
 
                 int hitDirection =
                     npc.Center.X >= Player.Center.X ? 1 : -1;
@@ -107,6 +127,8 @@ namespace Eternia.Content.Players
                     Color.Red,
                     "EXECUTE!");
             }
+
+            return hits;
         }
     }
 }

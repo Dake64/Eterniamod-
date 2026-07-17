@@ -15,6 +15,23 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - PLAYTEST: la barra de recurso de subclase no se veia + Q sin feedback
+
+- Reporte (Espadachin, ya promovido): "no veo ninguna barra ni que la Q haga algo".
+- Diagnostico: (1) `DrawFloatingResourceBar` se DESVANECIA a 0 recurso -> un Espadachin nuevo con 0
+  Trail no veia NADA, asi que ni sabia que la mecanica existia. (2) La Q (SwordsmanSkillPlayer)
+  hacia `return` silencioso si Trail<50 o si no habia enemigos sangrando -> "no hace nada".
+  El sangrado y la ganancia de Trail SI funcionan (verificado); era puro problema de UX/descubrimiento.
+- Fix 1 (universal): `DrawFloatingResourceBar` tiene un `alwaysShow`. CrimsonTrailUI y
+  SubclassResourceUI lo pasan `true` -> la barra se ve SIEMPRE que esa subclase esta activa, aunque
+  el recurso este a 0. Arregla la descubribilidad de TODAS las barras (Crimson Trail, Momentum,
+  Temperatura, Concentracion, Ferocidad, Power Core...).
+- Fix 2: la Q ahora da FEEDBACK: "Crimson Trail 12/50" si te falta recurso, y "No bleeding enemies"
+  si disparas sin nada sangrando cerca. Ya no es una tecla muerta.
+- Verificacion: compila 0/0; suite 116/116.
+- Nota: si tras esto el usuario SIGUE sin ver la barra siendo Espadachin, entonces IsActiveSwordsman
+  es false (Soul de Guerrero no equipada) -> siguiente cosa a revisar.
+
 ## 2026-07-16 - PLAYTEST: nerf a los stats (daban demasiado poder muy pronto)
 
 - Reporte del usuario (Espadachin nivel 19, solo jefes): 38 Power = +11.4% daño, y se compone con

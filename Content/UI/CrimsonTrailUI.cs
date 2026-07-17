@@ -65,7 +65,8 @@ namespace Eternia.Content.UI
                 CrimsonTrailPlayer.MaxCrimsonTrail,
                 new Color(205, 35, 45),
                 ready,
-                "Q: EXECUTE");
+                "Q: EXECUTE",
+                alwaysShow: true);
 
             return true;
         }
