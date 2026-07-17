@@ -87,4 +87,34 @@ if ($global -notmatch "ModifyTooltips") {
     throw "A weapon should show its rarity and sub-stats on the tooltip."
 }
 
+# --- A rare drop announces itself --------------------------------------------
+# The point of a loot system is SEEING the drop. But if everything shines, nothing does:
+# only Rare+ glows, and only Legendary+ gets the burst + sound.
+
+if ($global -notmatch "PreDrawInWorld") {
+    throw "A rare weapon lying in the world should glow in its rarity colour."
+}
+
+if ($global -notmatch "ShineFrom" -or $global -notmatch "AnnounceFrom") {
+    throw "The shine and the arrival burst should be gated by tier, so common drops stay quiet."
+}
+
+if ($global -notmatch "AffixTier\.Rare" -or $global -notmatch "AffixTier\.Legendary") {
+    throw "Rare+ should shine and Legendary+ should announce itself."
+}
+
+if ($global -notmatch "SoundEngine\.PlaySound" -or $global -notmatch "Dust\.NewDustPerfect") {
+    throw "A Legendary+ drop should arrive with a burst and a sound."
+}
+
+# The burst must wait for the first world tick -- on a multiplayer client the roll has not
+# arrived yet during OnSpawn, so bursting there would use the wrong colour.
+if ($global -notmatch "arrivalPlayed") {
+    throw "The arrival burst should fire once, on the first world tick (after the roll has synced)."
+}
+
+if ($table -notmatch "TierIntensity" -or $table -notmatch "TierDust") {
+    throw "The affix table should drive how loudly each tier shines."
+}
+
 Write-Host "Weapon affixes source smoke test passed."

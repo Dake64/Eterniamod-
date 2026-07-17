@@ -161,6 +161,36 @@ namespace Eternia.Content.Affixes
             };
         }
 
+        // How loudly a dropped weapon announces itself. Mirrors the enemy rarity aura intensities,
+        // so a Legendary weapon on the ground reads as loudly as a Legendary enemy.
+        public static float TierIntensity(AffixTier tier)
+        {
+            return tier switch
+            {
+                AffixTier.Uncommon => 0.2f,
+                AffixTier.Rare => 0.45f,
+                AffixTier.SuperRare => 0.7f,
+                AffixTier.Legendary => 1f,
+                AffixTier.Mythic => 1.35f,
+                AffixTier.Ancient => 1.7f,
+                AffixTier.Nightmare => 2.1f,
+                _ => 0f
+            };
+        }
+
+        public static int TierDust(AffixTier tier)
+        {
+            return tier switch
+            {
+                AffixTier.Nightmare => Terraria.ID.DustID.Shadowflame,
+                AffixTier.Ancient => Terraria.ID.DustID.IceTorch,
+                AffixTier.Mythic => Terraria.ID.DustID.PurpleTorch,
+                AffixTier.Legendary => Terraria.ID.DustID.RedTorch,
+                AffixTier.SuperRare => Terraria.ID.DustID.GoldFlame,
+                _ => Terraria.ID.DustID.Enchanted_Gold
+            };
+        }
+
         // Same colours as the enemy rarity badges, so the scale reads identically everywhere.
         public static Color TierColor(AffixTier tier)
         {

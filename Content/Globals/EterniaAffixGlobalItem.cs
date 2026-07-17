@@ -1,8 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
@@ -109,6 +115,118 @@ namespace Eternia.Content.Globals
             }
 
             player.moveSpeed += Sum(AffixKind.MoveSpeed) / 100f;
+        }
+
+        // ==============================================================================
+        // A rare drop announces itself
+        // ==============================================================================
+        //
+        // A Rare+ weapon lying on the ground pulses in its rarity colour so you spot it across the
+        // screen; a Legendary+ arrives with a burst and a sound, because at 3% it IS an event.
+        // Common/Uncommon stay silent -- if everything shines, nothing does.
+
+        private const AffixTier ShineFrom = AffixTier.Rare;
+        private const AffixTier AnnounceFrom = AffixTier.Legendary;
+
+        private bool arrivalPlayed;
+
+        public override void Update(Item item, ref float gravity, ref float maxFallSpeed)
+        {
+            if (Tier < ShineFrom)
+            {
+                return;
+            }
+
+            float intensity = AffixTable.TierIntensity(Tier);
+            Color color = AffixTable.TierColor(Tier);
+
+            // The arrival burst fires on the first world tick, not OnSpawn -- by now a multiplayer
+            // client has actually received the roll, so it bursts in the RIGHT colour.
+            if (!arrivalPlayed)
+            {
+                arrivalPlayed = true;
+
+                if (!Main.dedServ && Tier >= AnnounceFrom)
+                {
+                    SoundEngine.PlaySound(SoundID.Item29, item.position);
+
+                    for (int i = 0; i < 28 + (int)(intensity * 12f); i++)
+                    {
+                        Dust d = Dust.NewDustPerfect(
+                            item.Center,
+                            AffixTable.TierDust(Tier),
+                            Main.rand.NextVector2Circular(4f, 4f) - Vector2.UnitY * 1.5f,
+                            100, color, 1.2f + intensity * 0.5f);
+
+                        d.noGravity = true;
+                    }
+                }
+            }
+
+            float pulse =
+                0.6f + 0.4f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * (2f + intensity * 2f));
+
+            Lighting.AddLight(
+                item.Center,
+                color.R / 255f * intensity * pulse * 0.6f,
+                color.G / 255f * intensity * pulse * 0.6f,
+                color.B / 255f * intensity * pulse * 0.6f);
+
+            if (!Main.dedServ && Main.rand.NextFloat() < 0.05f + intensity * 0.10f)
+            {
+                Dust d = Dust.NewDustPerfect(
+                    item.Center + Main.rand.NextVector2Circular(item.width * 0.5f, item.height * 0.5f),
+                    AffixTable.TierDust(Tier),
+                    new Vector2(0f, -Main.rand.NextFloat(0.4f, 1.2f)),
+                    120, color, 0.8f + intensity * 0.4f);
+
+                d.noGravity = true;
+            }
+        }
+
+        // A ring of tinted copies behind the sprite = the item glows. Same trick the enemy rarity
+        // aura uses, so a rare drop and a rare enemy read as the same language.
+        public override bool PreDrawInWorld(
+            Item item, SpriteBatch spriteBatch, Color lightColor, Color alphaColor,
+            ref float rotation, ref float scale, int whoAmI)
+        {
+            if (Tier < ShineFrom)
+            {
+                return true;
+            }
+
+            Texture2D texture = TextureAssets.Item[item.type].Value;
+
+            Rectangle frame =
+                Main.itemAnimations[item.type] != null
+                    ? Main.itemAnimations[item.type].GetFrame(texture)
+                    : texture.Frame();
+
+            float intensity = AffixTable.TierIntensity(Tier);
+
+            float pulse =
+                0.5f + 0.5f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * (2f + intensity * 3f));
+
+            Color glow =
+                AffixTable.TierColor(Tier) * (0.16f + intensity * 0.2f) * (0.65f + 0.35f * pulse);
+
+            Vector2 origin = frame.Size() / 2f;
+            Vector2 drawPos = item.Center - Main.screenPosition;
+
+            int copies = System.Math.Min(14, 4 + (int)(intensity * 4f));
+            float radius = (2f + intensity * 4f) * (0.7f + 0.3f * pulse);
+
+            for (int i = 0; i < copies; i++)
+            {
+                float angle =
+                    MathHelper.TwoPi * i / copies + Main.GlobalTimeWrappedHourly * intensity;
+
+                spriteBatch.Draw(
+                    texture, drawPos + angle.ToRotationVector2() * radius, frame,
+                    glow, rotation, origin, scale, SpriteEffects.None, 0f);
+            }
+
+            return true;
         }
 
         private int Sum(AffixKind kind)
