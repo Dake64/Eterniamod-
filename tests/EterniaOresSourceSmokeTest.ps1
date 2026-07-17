@@ -156,4 +156,87 @@ if ($cleaver -notmatch "IBleedWeapon") {
     throw "The Revenite Cleaver should be a bleed sword -- that is the Warrior line's identity."
 }
 
+# =============================================================================
+# HARDMODE ORES
+# =============================================================================
+
+# --- They appear only when the world turns, not at worldgen ------------------
+# A Hardmode ore seeded at worldgen would be reachable pre-Hardmode -- the whole point is that
+# it waits for the Wall of Flesh, exactly like Cobalt/Mythril/Adamantite.
+
+$trigger = Read-File "Content\Globals\HardmodeOreTriggerNPC.cs"
+
+if ($trigger -notmatch "NPCID\.WallofFlesh" -or $trigger -notmatch "SeedHardmodeOres") {
+    throw "Hardmode ores should be seeded when the Wall of Flesh falls."
+}
+
+if ($trigger -notmatch "NetmodeID\.MultiplayerClient") {
+    throw "Only the server / singleplayer may edit the world -- clients must not seed ores."
+}
+
+if ($gen -notmatch "SeedHardmodeOres" -or $gen -notmatch "HardmodeOresSeeded") {
+    throw "The ore generator should seed Hardmode ores once, guarded by a persisted world flag."
+}
+
+if ($gen -notmatch "SaveWorldData" -or $gen -notmatch "LoadWorldData") {
+    throw "The 'Hardmode ores seeded' flag must persist, or re-killing the Wall re-seeds them."
+}
+
+# --- Three Hardmode tiers, gated by pickaxe power ---------------------------
+
+$hmTiers = @{
+    "WraithiteOreTile" = 100
+    "AetheriumOreTile" = 150
+    "NullsteelOreTile" = 200
+}
+
+foreach ($tile in $hmTiers.Keys) {
+    $t = Read-File "Content\Tiles\Ores\$tile.cs"
+
+    if ($t -notmatch "EterniaOreTile") {
+        throw "$tile should extend the shared EterniaOreTile."
+    }
+
+    if ($t -notmatch "MinPickPower => $($hmTiers[$tile])") {
+        throw "$tile should require pickaxe power $($hmTiers[$tile])."
+    }
+
+    if ($gen -notmatch "$tile") {
+        throw "$tile should be seeded by SeedHardmodeOres."
+    }
+}
+
+# --- Each HM bar has armour AND a weapon (no dead-end materials) -------------
+
+foreach ($set in @("Wraithite", "Aetherium", "Nullsteel")) {
+    $bar = Read-File "Content\Items\Materials\${set}Bar.cs"
+    if ($bar -notmatch "TileID\.AdamantiteForge") {
+        throw "$set Bar should smelt at a Hardmode forge."
+    }
+
+    $armor = Read-File "Content\Items\Armor\${set}Set.cs"
+    if ($armor -notmatch "SoulMetalArmor" -or $armor -notmatch "AddIngredient<${set}Bar>") {
+        throw "$set armour should be class-agnostic and crafted from its bar."
+    }
+
+    if ($armor -notmatch "SoulAscensionPlayer\.ClassOf") {
+        throw "$set's set bonus should empower whichever class the player's Soul is."
+    }
+}
+
+# The top HM ore is a full rung: a weapon per class.
+$nullsteelWeapons = @{
+    "Content\Items\Weapons\Warrior\NullsteelReaver.cs"  = "DamageClass\.Melee"
+    "Content\Items\Weapons\Ranger\NullsteelRepeater.cs" = "DamageClass\.Ranged"
+    "Content\Items\Weapons\Magic\NullsteelScepter.cs"   = "DamageClass\.Magic"
+    "Content\Items\Weapons\Summoner\NullsteelLash.cs"   = "DamageClass\.SummonMeleeSpeed"
+}
+
+foreach ($path in $nullsteelWeapons.Keys) {
+    $w = Read-File $path
+    if ($w -notmatch $nullsteelWeapons[$path] -or $w -notmatch "AddIngredient<NullsteelBar>") {
+        throw "$([System.IO.Path]::GetFileNameWithoutExtension($path)) should be a Nullsteel weapon of its class."
+    }
+}
+
 Write-Host "Eternia ores source smoke test passed."

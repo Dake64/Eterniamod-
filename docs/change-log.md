@@ -15,6 +15,33 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Minerales de HARDMODE (3) + su equipo completo
+
+- Pedido: minerales para hardmode, y armas/armaduras/accesorios de subclase pre-HM y HM.
+  IMPORTANTE (verificado antes de construir): los accesorios (45), sets de armadura (19 -> ahora 25)
+  y armas (209) de subclase YA EXISTEN. No se duplico nada. Lo NUEVO son los minerales HM + su gear.
+- 3 minerales de hardmode, continuando la escalera de alma:
+  - **Wraithite** (pico Molten 100, look Palladium) -> caverna.
+  - **Aetherium** (pico Mythril/Oricalco 150, look Orichalcum) -> caverna profunda.
+  - **Nullsteel** (pico Pickaxe Axe 200, look Titanium) -> cerca del inframundo. Tope de la escalera.
+  - Barras: 4-5 mena, se funden en `TileID.AdamantiteForge`.
+- WORLDGEN CLAVE: los HM NO se generan al crear el mundo -> se siembran cuando cae el MURO DE CARNE
+  (`HardmodeOreTriggerNPC.OnKill` -> `EterniaOreGeneration.SeedHardmodeOres`), igual que
+  Cobalt/Mythril/Adamantite vanilla. Server/SP only. Guardado con un flag de mundo persistido
+  (`HardmodeOresSeeded` en SaveWorldData) para que re-matar el Muro no re-siembre. En MP hace
+  `SendData(WorldData)` para reenganchar clientes.
+- EQUIPO (mismo lote):
+  - 3 sets de armadura class-agnostic (SoulMetalArmor, bonus por tu Soul): Wraithite (39 def, +16%),
+    Aetherium (46 def, +22%/+6crit), Nullsteel (58 def, +30%/+10crit). Recetas en Yunque Mithril.
+  - 4 armas de Nullsteel (tope), una por clase: Reaver (melee 62, IBleedWeapon con bleed 30 -- el
+    mas alto del mod), Repeater (ranged 46), Scepter (magic 52), Lash (summon 40). Ungated.
+- Verificacion: compila 0/0; suite 115/115 (test EterniaOres ampliado con toda la parte HM).
+  RECORDATORIO hjson: la forma inline `Key: { A: x, B: y }` es MALFORMADA en Hjson (rompio el parse
+  una vez); las entradas deben ser multilinea.
+- Pendientes/riesgos: balance a ojo; los HM solo aparecen tras romper el Muro en el mundo (los ya
+  existentes en hardmode NO los tendran hasta... realmente no apareceran nunca si ya se rompio el
+  Muro antes de este update -> son para mundos que entren a HM de ahora en adelante).
+
 ## 2026-07-16 - Armas de Revenite: el mineral top pasa a ser un peldaño COMPLETO
 
 - Pedido: "haz una modificacion en la escalera de progresion y agrega armas de eso tambien".
