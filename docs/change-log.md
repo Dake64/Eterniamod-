@@ -15,6 +15,38 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - SISTEMA DE SUBSTATS (afijos) en armas -- RPG loot
+
+- Pedido: "que las substats que salen al crear un arma haya mas y tenga un sistema". Se confirmo que
+  NO habia nada propio (lo que se veia eran los PREFIJOS VANILLA). Se ofrecio A (mas prefijos
+  vanilla) vs B (sistema de afijos RPG propio); el usuario eligio B.
+- Diseño: cada arma que crafteas/compras/encuentras ROLEA UNA RAREZA, y la rareza decide CUANTAS
+  substats trae (no cuan grandes) -> una Legendary es categoricamente mejor, no una Common con
+  suerte. Misma escala Common->Nightmare que las rarezas de enemigos, con los MISMOS colores, para
+  que la escala se lea igual en todo el mod.
+  - Odds: Common 55% | Uncommon 22% | Rare 12% | SuperRare 6% | Legendary 3% | Mythic 1.4% |
+    Ancient 0.5% | Nightmare 0.1%.
+  - Nº de substats: Common 0 (queda como un arma vanilla normal, sin ruido en el tooltip),
+    Uncommon 1, Rare/SuperRare 2, Legendary 3, Mythic 4, Ancient 5, Nightmare 6.
+  - 6 afijos: dano %, crit %, penetracion de armadura, velocidad de ataque %, retroceso %,
+    velocidad de movimiento % (al empuñar). Sin repetidos en la misma arma.
+- Se aplica tambien a armas VANILLA (es un overhaul: una Terra Blade puede salir Legendary).
+- Archivos: `Content/Affixes/AffixTable.cs` (enums, odds, rangos, roll, nombres/colores) y
+  `Content/Globals/EterniaAffixGlobalItem.cs`.
+- Detalles tecnicos que importan:
+  - `AppliesToEntity` limita la instancia a ARMAS de verdad (no herramientas/accesorios/apilables)
+    -> no paga memoria por cada item del mundo.
+  - Rolea en `OnCreated` (craft/compra/bolsas) y `OnSpawn` (drops), con guarda de una sola vez.
+  - `Clone` override OBLIGATORIO: la lista de afijos es un tipo referencia; sin el, las copias
+    comparten o pierden su tirada.
+  - `SaveData`/`LoadData` (persiste con el item) y `NetSend`/`NetReceive` (o un cliente MP veria
+    un arma distinta).
+  - Efectos por hooks propios del arma: ModifyWeaponDamage/Crit/Knockback, UseSpeedMultiplier, y
+    HoldItem para penetracion + movimiento (solo con el arma en mano).
+- Verificacion: compila 0/0; suite 115/115 (test nuevo WeaponAffixes).
+- Pendientes/riesgos: SIN probar en juego. Rangos y odds a ojo. Los prefijos VANILLA siguen
+  existiendo encima (se apilan) -- si se siente excesivo, es lo primero a mirar.
+
 ## 2026-07-16 - Primeros MINERALES propios (3, tier temprano) + worldgen
 
 - Objetivo: el mod NO tenia ningun tile/mineral/bioma (cero worldgen; solo sembraba loot en cofres
