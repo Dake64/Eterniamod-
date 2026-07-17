@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Primeros MINERALES propios (3, tier temprano) + worldgen
+
+- Objetivo: el mod NO tenia ningun tile/mineral/bioma (cero worldgen; solo sembraba loot en cofres
+  vanilla). Y el playtest destapo el hueco: la unica armadura de Guerrero pre-hardmode pide 14-20
+  barras de HELLSTONE -> entre el inicio y el Infierno, Eternia no daba NADA propio.
+- 3 minerales de alma (lore: la civilizacion antigua que construyo los Prototype), escalonados por
+  PODER DE PICO para formar una escalera real:
+  - **Soulstone** - subterraneo, comun. Pico 40 (Hierro+). 3 mena -> 1 barra.
+  - **Animite** - caverna, medio. Pico 55 (Oro+). 4 mena -> 1 barra.
+  - **Revenite** - caverna profunda, raro. Pico 65 (Demonita+). 5 mena -> 1 barra. Ultimo paso
+    antes de Hellstone.
+- Archivos: Content/Tiles/Ores/ (base `EterniaOreTile` + 3), Content/Items/Placeable/ (base
+  `EterniaOreItem` + 3 menas), Content/Items/Materials/ (3 barras), Content/Systems/
+  `EterniaOreGeneration.cs` (PassLegacy insertado tras "Shinies", TileRunner por capas, escalado
+  por tamaño de mundo). Localizados items + MapEntry de los tiles.
+- Arte PLACEHOLDER: cada tile/mena/barra toma prestado el sprite de un mineral HARDMODE vanilla
+  (Cobalt/Mythril/Adamantite) A PROPOSITO -> el jugador no los confunde con nada que vea en
+  pre-hardmode. Cuando haya arte, quitar el `Texture =>` y poner el .png al lado.
+- Verificacion: compila 0/0; suite 114/114 (test nuevo EterniaOres).
+- PENDIENTES/RIESGOS:
+  - **Solo aparecen en MUNDOS NUEVOS** (el worldgen corre al crear el mundo).
+  - **Las barras aun NO tienen equipo que fabricar** -> mismo riesgo que tuvo el SoulAlloy
+    (material sin uso). El siguiente paso natural es la armadura/armas tempranas que tapan el hueco.
+  - El override `Texture => "Terraria/Images/Tiles_X"` es el punto fragil: si el mod fallara al
+    cargar, es lo primero a revisar.
+
 ## 2026-07-16 - PRIMER FIX DE PLAYTEST: jefes tempranos imposibles + beam inutil
 
 - Reporte del usuario (jugando de Guerrero contra el Rey Slime): "en rareza legendaria solo le

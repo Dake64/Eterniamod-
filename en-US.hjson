@@ -221,6 +221,36 @@ Mods: {
 				Tooltip: The Hardmode evolution of the Sabre. Heavier swings, heavier crescents.
 			}
 
+			SoulstoneOre: {
+				DisplayName: Soulstone
+				Tooltip: Soul residue soaked into common rock. Needs an Iron pickaxe.
+			}
+
+			AnimiteOre: {
+				DisplayName: Animite
+				Tooltip: A metal that holds a charge of Soul. Cavern layer; needs a Gold pickaxe.
+			}
+
+			ReveniteOre: {
+				DisplayName: Revenite
+				Tooltip: Dense soul-metal, settled near the underworld. Needs a Demonite pickaxe.
+			}
+
+			SoulstoneBar: {
+				DisplayName: Soulstone Bar
+				Tooltip: ""
+			}
+
+			AnimiteBar: {
+				DisplayName: Animite Bar
+				Tooltip: ""
+			}
+
+			ReveniteBar: {
+				DisplayName: Revenite Bar
+				Tooltip: ""
+			}
+
 			SoulAlloy: {
 				DisplayName: Soul Alloy
 				Tooltip: A Soul re-forged into a stable alloy. Used to ascend your own Soul.
@@ -1939,9 +1969,14 @@ Mods: {
 			}
 		}
 
+		Tiles: {
+			SoulstoneOreTile.MapEntry: Soulstone
+			AnimiteOreTile.MapEntry: Animite
+			ReveniteOreTile.MapEntry: Revenite
+		}
+
 		NPCs: {
 			Prototype01.DisplayName: Prototype-01
-
 			Prototype02.DisplayName: Prototype-02
 
 			EternalNPC: {
