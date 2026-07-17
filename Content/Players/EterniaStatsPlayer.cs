@@ -139,19 +139,19 @@ namespace Eternia.Content.Players
 
             Player.statLifeMax2 += Vitality * 3;
 
-            Player.endurance += Vitality * 0.001f;
+            Player.endurance += Vitality * 0.0005f;
 
             // =================================================
             // POWER
             // =================================================
 
-            Player.GetDamage(DamageClass.Generic) += Power * 0.003f;
+            Player.GetDamage(DamageClass.Generic) += Power * 0.0015f;
 
             // =================================================
             // PRECISION
             // =================================================
 
-            Player.GetCritChance(DamageClass.Generic) += Precision * 0.15f;
+            Player.GetCritChance(DamageClass.Generic) += Precision * 0.1f;
 
             // =================================================
             // AGILITY

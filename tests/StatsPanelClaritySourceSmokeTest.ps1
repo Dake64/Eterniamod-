@@ -42,8 +42,8 @@ $player = Get-Content -Raw (Join-Path $repoRoot "Content\Players\EterniaStatsPla
 
 foreach ($pair in @(
     @{ Stat = "Vitality"; Rate = "Vitality \* 3" },
-    @{ Stat = "Power"; Rate = "Power \* 0\.003f" },
-    @{ Stat = "Precision"; Rate = "Precision \* 0\.15f" },
+    @{ Stat = "Power"; Rate = "Power \* 0\.0015f" },
+    @{ Stat = "Precision"; Rate = "Precision \* 0\.1f" },
     @{ Stat = "Agility"; Rate = "Agility \* 0\.005f" },
     @{ Stat = "Focus"; Rate = "Focus \* 3" })) {
     if ($player -notmatch $pair.Rate) {

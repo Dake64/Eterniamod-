@@ -157,9 +157,9 @@ namespace Eternia.Content.UI
 
             StatRow[] rows =
             {
-                new StatRow("Vitality", stats.Vitality, "+3 max HP, +0.1% damage reduction", Color.IndianRed),
-                new StatRow("Power", stats.Power, "+0.3% all damage", Color.Orange),
-                new StatRow("Precision", stats.Precision, "+0.15% critical chance", Color.Yellow),
+                new StatRow("Vitality", stats.Vitality, "+3 max HP, +0.05% damage reduction", Color.IndianRed),
+                new StatRow("Power", stats.Power, "+0.15% all damage", Color.Orange),
+                new StatRow("Precision", stats.Precision, "+0.1% critical chance", Color.Yellow),
                 new StatRow("Agility", stats.Agility, "+0.5% move speed, +1% run speed", Color.LimeGreen),
                 new StatRow("Focus", stats.Focus, "+3 max mana, +0.5 mana regen", Color.Cyan)
             };
@@ -454,11 +454,11 @@ namespace Eternia.Content.UI
             return name switch
             {
                 "Vitality" =>
-                    $"+{value * 3} max HP, +{value * 0.1f:0.#}% damage reduction",
+                    $"+{value * 3} max HP, +{value * 0.05f:0.##}% damage reduction",
                 "Power" =>
-                    $"+{value * 0.3f:0.#}% all damage",
+                    $"+{value * 0.15f:0.##}% all damage",
                 "Precision" =>
-                    $"+{value * 0.15f:0.##}% critical chance",
+                    $"+{value * 0.1f:0.##}% critical chance",
                 "Agility" =>
                     $"+{value * 0.5f:0.#}% move speed, +{value * 1f:0.#}% run speed",
                 _ =>

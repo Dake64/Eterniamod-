@@ -15,6 +15,21 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - PLAYTEST: nerf a los stats (daban demasiado poder muy pronto)
+
+- Reporte del usuario (Espadachin nivel 19, solo jefes): 38 Power = +11.4% daño, y se compone con
+  armadura + substats -> demasiado poder para lo poco jugado. "Que las stats sean menores".
+- Nerf a los valores POR PUNTO (enfocado al dano, dejando supervivencia casi igual):
+  - Power: 0.003f -> 0.0015f  (+0.3% -> +0.15% dano por punto). 38 pts: +11.4% -> +5.7%.
+  - Precision: 0.15f -> 0.1f  (+0.15% -> +0.1% crit por punto).
+  - Vitality DR: 0.001f -> 0.0005f  (+0.1% -> +0.05% reduccion por punto). El +3 HP se mantiene.
+  - Agility y Focus sin tocar.
+- Se cambio en los TRES sitios que deben cuadrar: `EterniaStatsPlayer` (aplicacion), `StatsUI`
+  (descripcion por-punto + `CurrentEffect` totales) y el test `StatsPanelClarity` (que ancla que el
+  panel no mienta respecto al codigo). No se toco StatPointsPerLevel (3) ni la curva de XP -- el
+  usuario pidio stats menores, no menos puntos; queda como opcion si sigue sintiendo que sube rapido.
+- Verificacion: compila 0/0; suite 116/116.
+
 ## 2026-07-16 - Iconos de DEBUFF sobre los enemigos
 
 - Pedido: mostrar visualmente cuando un enemigo tiene un debuff, "como el cuadrito de tus buffs".

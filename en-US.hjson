@@ -270,10 +270,12 @@ Mods: {
 				DisplayName: Wraithite Bar
 				Tooltip: ""
 			}
+
 			AetheriumBar: {
 				DisplayName: Aetherium Bar
 				Tooltip: ""
 			}
+
 			NullsteelBar: {
 				DisplayName: Nullsteel Bar
 				Tooltip: ""
@@ -283,10 +285,12 @@ Mods: {
 				DisplayName: Wraithite Helm
 				Tooltip: +6% critical chance
 			}
+
 			WraithiteChest: {
 				DisplayName: Wraithite Mail
 				Tooltip: +7% damage
 			}
+
 			WraithiteGreaves: {
 				DisplayName: Wraithite Greaves
 				Tooltip: +3% crit and +10% movement speed
@@ -296,10 +300,12 @@ Mods: {
 				DisplayName: Aetherium Helm
 				Tooltip: +8% critical chance
 			}
+
 			AetheriumChest: {
 				DisplayName: Aetherium Mail
 				Tooltip: +9% damage
 			}
+
 			AetheriumGreaves: {
 				DisplayName: Aetherium Greaves
 				Tooltip: +4% damage and +12% movement speed
@@ -309,10 +315,12 @@ Mods: {
 				DisplayName: Nullsteel Helm
 				Tooltip: +10% critical chance
 			}
+
 			NullsteelChest: {
 				DisplayName: Nullsteel Mail
 				Tooltip: +12% damage
 			}
+
 			NullsteelGreaves: {
 				DisplayName: Nullsteel Greaves
 				Tooltip: +5% damage and +14% movement speed
