@@ -502,9 +502,8 @@ namespace Eternia.Content.UI
             string readyPrompt = null,
             bool alwaysShow = false)
         {
-            // alwaysShow keeps the bar on screen even at 0, so a subclass's mechanic is DISCOVERABLE
-            // -- the player can see the empty bar and learn they need to fill it. Without it a new
-            // subclass never sees its own resource until it has already built some.
+            // alwaysShow keeps the gauge on screen even at 0, so a subclass's mechanic is
+            // DISCOVERABLE -- the player sees the empty gauge and learns they need to fill it.
             float target = (value > 0 || alwaysShow) ? 1f : 0f;
             resourceBarAlpha += (target - resourceBarAlpha) * 0.12f;
 
@@ -518,92 +517,97 @@ namespace Eternia.Content.UI
             float a = resourceBarAlpha;
             int clamped = value < 0 ? 0 : (value > max ? max : value);
             float percent = max <= 0 ? 0f : clamped / (float)max;
-            bool nearFull = percent >= 0.8f;
+            bool full = clamped >= max;
+            bool hot = ready || full;
 
             float pulse =
-                0.5f + 0.5f * (float)System.Math.Sin(
-                    Main.GlobalTimeWrappedHourly * 4f);
+                0.5f + 0.5f * (float)System.Math.Sin(Main.GlobalTimeWrappedHourly * 5f);
 
-            const int barWidth = 118;
-            const int barHeight = 12;
+            // A short SEGMENTED gauge -- reads as an energy meter, not a plain fill -- kept to a
+            // single compact row so it barely intrudes over the player.
+            const int gaugeW = 78;
+            const int gaugeH = 6;
+            const int segs = 13;
+            const int segGap = 1;
+            int segW = (gaugeW - (segs - 1) * segGap) / segs;
+            int trueW = segs * segW + (segs - 1) * segGap;
 
-            Vector2 drawPos =
-                player.Top - Main.screenPosition + new Vector2(0f, -64f);
+            Color bright = Color.Lerp(color, Color.White, 0.4f);
 
-            drawPos = ClampWorldAnchored(drawPos, -64, -20, 128, 44);
+            // Compact side text: the ready key when ready (the actionable bit), else the value.
+            string sideText =
+                ready && readyPrompt != null
+                    ? readyPrompt.Split(':')[0].Trim()
+                    : (full ? "MAX" : clamped.ToString());
 
-            int x = (int)drawPos.X - (barWidth / 2);
-            int y = (int)drawPos.Y;
+            float labelScale = 0.46f;
+            float lw = FontAssets.MouseText.Value.MeasureString(label).X * labelScale;
+            float sw = FontAssets.MouseText.Value.MeasureString(sideText).X * labelScale;
 
-            Rectangle bar = new Rectangle(x, y, barWidth, barHeight);
+            int rowW = (int)lw + 6 + trueW + 6 + (int)sw;
 
-            if (nearFull || ready)
-            {
-                Rectangle glow = bar;
-                glow.Inflate(4, 4);
-                spriteBatch.Draw(pixel, glow, color * (0.16f * pulse * a));
-            }
+            Vector2 anchor = player.Top - Main.screenPosition + new Vector2(0f, -52f);
+            anchor = ClampWorldAnchored(anchor, -rowW / 2, -8, rowW, 20);
 
-            spriteBatch.Draw(
-                pixel,
-                new Rectangle(x - 1, y + 1, barWidth + 2, barHeight + 2),
-                PanelBackground * (0.55f * a));
+            int startX = (int)anchor.X - rowW / 2;
+            int midY = (int)anchor.Y;
+            int gaugeX = startX + (int)lw + 6;
+            int gaugeY = midY - gaugeH / 2;
 
-            spriteBatch.Draw(pixel, bar, PanelSurface * (0.95f * a));
-
-            int fillW = (int)(barWidth * percent);
-
-            if (fillW > 0)
-            {
-                spriteBatch.Draw(
-                    pixel, new Rectangle(x, y, fillW, barHeight),
-                    color * (0.9f * a));
-
-                spriteBatch.Draw(
-                    pixel, new Rectangle(x, y, fillW, 2),
-                    Color.White * (0.18f * a));
-
-                spriteBatch.Draw(
-                    pixel, new Rectangle(x + fillW - 2, y, 2, barHeight),
-                    Color.White * (0.55f * a));
-            }
-
-            Color border =
-                (nearFull || ready)
-                    ? Color.Lerp(color, Color.White, 0.35f) *
-                        ((0.55f + 0.45f * pulse) * a)
-                    : color * (0.5f * a);
-
-            DrawBorder(spriteBatch, bar, border);
-
-            string valueText =
-                max <= 20 ? $"{clamped}/{max}" : clamped.ToString();
-
-            string labelText =
-                clamped >= max ? $"{label}  MAX" : $"{label}  {valueText}";
-
-            float labelScale = 0.62f;
-
-            float labelWidth =
-                FontAssets.MouseText.Value.MeasureString(labelText).X * labelScale;
-
+            // Label (left), muted so it never shouts.
             DrawText(
-                spriteBatch,
-                labelText,
-                new Vector2(x + (barWidth - labelWidth) / 2f, y - 16),
-                Color.Lerp(color, Color.White, 0.35f) * a,
-                labelScale);
+                spriteBatch, label,
+                new Vector2(startX, midY - 6),
+                MutedText * (0.9f * a), labelScale);
 
-            if (ready && readyPrompt != null)
+            // Soft glow behind the gauge when it's hot.
+            if (hot)
             {
-                DrawPill(
-                    spriteBatch,
-                    new Rectangle(
-                        x + (barWidth - 104) / 2, y + barHeight + 4, 104, 18),
-                    readyPrompt,
-                    color,
-                    0.42f);
+                spriteBatch.Draw(
+                    pixel,
+                    new Rectangle(gaugeX - 3, gaugeY - 3, trueW + 6, gaugeH + 6),
+                    color * (0.18f * pulse * a));
             }
+
+            int fillW = (int)(trueW * percent);
+
+            for (int i = 0; i < segs; i++)
+            {
+                int sx = gaugeX + i * (segW + segGap);
+                int segStart = i * (segW + segGap);
+
+                // Empty cell.
+                spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, segW, gaugeH), PanelSurface * (0.9f * a));
+
+                // Filled portion of this cell (partial fill stays smooth across the notches).
+                int inSeg = System.Math.Clamp(fillW - segStart, 0, segW);
+
+                if (inSeg > 0)
+                {
+                    Color cell = hot ? Color.Lerp(color, bright, pulse) : color;
+                    spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, inSeg, gaugeH), cell * (0.95f * a));
+                    // top gloss line
+                    spriteBatch.Draw(pixel, new Rectangle(sx, gaugeY, inSeg, 1), Color.White * (0.22f * a));
+                }
+            }
+
+            // Bright leading edge where the fill ends.
+            if (fillW > 0 && fillW < trueW)
+            {
+                spriteBatch.Draw(pixel, new Rectangle(gaugeX + fillW - 1, gaugeY - 1, 2, gaugeH + 2), bright * (0.9f * a));
+            }
+
+            DrawBorder(
+                spriteBatch,
+                new Rectangle(gaugeX - 1, gaugeY - 1, trueW + 2, gaugeH + 2),
+                (hot ? Color.Lerp(color, Color.White, 0.35f) * (0.5f + 0.5f * pulse) : color * 0.5f) * a);
+
+            // Side text (right): the value, or a pulsing ready key.
+            DrawText(
+                spriteBatch, sideText,
+                new Vector2(gaugeX + trueW + 6, midY - 6),
+                (ready ? bright * (0.6f + 0.4f * pulse) : Color.Lerp(color, Color.White, 0.3f)) * a,
+                labelScale);
         }
 
         public static void DrawProgressBar(

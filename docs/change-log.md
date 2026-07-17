@@ -15,6 +15,20 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Barra de recurso -> MEDIDOR segmentado compacto (una sola fila)
+
+- Pedido: que la barra no se vea como "una simple barra que se llena" y que ocupe poco para no
+  molestar visualmente.
+- `EterniaUI.DrawFloatingResourceBar` rediseñado: de barra plana 118x12 con label arriba + pill
+  abajo (3 filas) -> un MEDIDOR SEGMENTADO (13 celdas con separacion) de 78x6 en UNA sola fila:
+  `LABEL  [gauge]  valor/Q`. Lee como medidor de energia de un juego de accion, no como progreso.
+  Relleno parcial suave entre celdas, borde de fuga brillante, gloss superior, y glow + pulso
+  cuando esta ready/full. El label va a la izquierda en gris tenue (no grita); a la derecha el
+  valor, o la tecla de accion (ej "Q") pulsando cuando esta listo.
+- Mucho mas compacto verticalmente (una fila ~10px vs tres filas ~44px). Sirve a TODAS las
+  subclases (comparten el helper).
+- Verificacion: compila 0/0; suite 116/116.
+
 ## 2026-07-16 - BUG GRAVE (playtest): el recurso de subclase se borraba cada frame
 
 - Reporte (Espadachin): "el Crimson Trail se mantiene en 0, sube poquito al pegar y se resetea".
