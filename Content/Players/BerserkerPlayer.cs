@@ -32,30 +32,18 @@ namespace Eternia.Content.Players
         // RESET EFFECTS
         // =================================================
 
-        public override void ResetEffects()
-        {
-            // =============================================
-            // ONLY BERSERKER
-            // =============================================
-
-            if (!IsActiveBerserker())
-            {
-                Rage = 0;
-
-                RageTimer = 0;
-
-                Overrage = false;
-            }
-        }
-
         // =================================================
         // POST UPDATE
         // =================================================
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveBerserker())
             {
+                Rage = 0;
+                RageTimer = 0;
+                Overrage = false;
                 return;
             }
 

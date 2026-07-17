@@ -15,6 +15,29 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - BUG GRAVE (playtest): el recurso de subclase se borraba cada frame
+
+- Reporte (Espadachin): "el Crimson Trail se mantiene en 0, sube poquito al pegar y se resetea".
+- CAUSA RAIZ (afectaba a 12 subclases): cada player de recurso hacia `Resource = 0` dentro de
+  `ResetEffects` si `!IsActive<Subclass>()`. Pero `ResetEffects` corre AL PRINCIPIO del frame,
+  ANTES de que el accesorio de la Soul de clase re-active la Soul (eso pasa en UpdateEquips). Asi
+  que `IsActive...()` leia false un instante CADA frame -> borraba el recurso justo despues de
+  ganarlo. El recurso ganado a mitad de frame (on-hit) se perdia al frame siguiente.
+- Por que no se habia visto: el usuario es el PRIMER playtester que usa a fondo un recurso de
+  subclase. El Crimson Trail es el mas obvio porque es puramente acumulativo (no regenera ni
+  decae), asi que el borrado era flagrante. Los demas (Momentum, Heat, Focus, Ferocidad, Combo,
+  PowerCore, Command, Rage, Charge, Crescendo, Overflow, precisionStacks) tenian el mismo bug pero
+  mas disimulado.
+- FIX (12 players): mover el borrado "si no es la subclase" de ResetEffects a PostUpdate (hook
+  tardio, cuando la Soul ya esta activa y IsActive es fiable). Los resets de campos Acc* se quedan
+  en ResetEffects (esos SI deben correr siempre). Players: Crimson(Swordsman), Gunner,
+  EnergyShooter, Archer, TechSummoner, AdvancedSummoner, Fighter, BeastTamer, ArcaneBard, Berserker,
+  InfinityMage, Stunner, YoyoMaster. Guardian no aplica (no tiene recurso acumulable).
+- Tests actualizados (anclaban la estructura buggy): CrimsonTrail (permite PostUpdate que limpia,
+  no que regenere) y SubclassRuntimeGating (el gate del recurso se comprueba en PostUpdate, no en
+  ResetEffects).
+- Verificacion: compila 0/0; suite 116/116.
+
 ## 2026-07-16 - PLAYTEST: la barra de recurso de subclase no se veia + Q sin feedback
 
 - Reporte (Espadachin, ya promovido): "no veo ninguna barra ni que la Q haga algo".

@@ -37,13 +37,6 @@ namespace Eternia.Content.Players
             AccFerocityGainMult = 1f;
             AccFerocityDecayMult = 1f;
             AccFrenzyDamage = 0f;
-
-            if (!IsActiveBeastTamer())
-            {
-                Ferocity = 0f;
-
-                FrenzyTimer = 0;
-            }
         }
 
         public override void OnHitNPCWithProj(
@@ -73,8 +66,12 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates each
+            // frame and would wipe Ferocity the instant it was earned.
             if (!IsActiveBeastTamer())
             {
+                Ferocity = 0f;
+                FrenzyTimer = 0;
                 return;
             }
 

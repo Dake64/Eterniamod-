@@ -38,19 +38,15 @@ namespace Eternia.Content.Players
             AccCommandRateMult = 1f;
             AccLegionScaleBonus = 0f;
             AccOverclockBonusTicks = 0;
-
-            if (!IsActiveAdvancedSummoner())
-            {
-                Command = 0f;
-
-                OverclockTimer = 0;
-            }
         }
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveAdvancedSummoner())
             {
+                Command = 0f;
+                OverclockTimer = 0;
                 return;
             }
 

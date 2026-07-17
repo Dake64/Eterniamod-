@@ -26,13 +26,20 @@ if ($resource -notmatch "IsActiveSwordsman\(\)") {
     throw "CrimsonTrail should only exist for an active Swordsman."
 }
 
-if ($resource -notmatch "ResetEffects" -or
-    $resource -notmatch "CrimsonTrail = 0") {
+if ($resource -notmatch "CrimsonTrail = 0") {
     throw "CrimsonTrail should reset to 0 when the player is not an active Swordsman."
 }
 
-if ($resource -match "PostUpdate") {
-    throw "CrimsonTrail must not regenerate automatically (no per-tick PostUpdate gain)."
+# The clear MUST live in PostUpdate, not ResetEffects: ResetEffects runs before the class Soul
+# re-activates each frame, so gating the wipe on IsActiveSwordsman() there wiped the resource the
+# instant it was earned (playtest bug 2026-07-16).
+if ($resource -notmatch "public override void PostUpdate") {
+    throw "CrimsonTrail should be cleared in PostUpdate (late), not ResetEffects."
+}
+
+# It must never regenerate on its own -- the only gain is Add(), called from combat hooks.
+if ($resource -match "CrimsonTrail \+=" -and $resource -notmatch "public void Add") {
+    throw "CrimsonTrail must not regenerate automatically; the only gain is Add()."
 }
 
 if ($resource -notmatch "public void Add\(" -or

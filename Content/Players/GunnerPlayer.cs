@@ -46,19 +46,18 @@ namespace Eternia.Content.Players
             AccMomentumGainMult = 1f;
             AccMomentumDecayMult = 1f;
             AccDeadEyeBonusTicks = 0;
+        }
 
+        public override void PostUpdate()
+        {
+            // Clear the resource here (late), not in ResetEffects: ResetEffects runs before the
+            // class Soul re-activates each frame, so IsActive would read false for one instant and
+            // wipe the resource the moment it was earned.
             if (!IsActiveGunner())
             {
                 Momentum = 0f;
                 DeadEye = false;
                 DeadEyeTimer = 0;
-            }
-        }
-
-        public override void PostUpdate()
-        {
-            if (!IsActiveGunner())
-            {
                 return;
             }
 

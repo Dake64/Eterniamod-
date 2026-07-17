@@ -45,18 +45,15 @@ namespace Eternia.Content.Players
             AccHeatPerShotMult = 1f;
             AccCoolRateMult = 1f;
             AccOverheatShield = false;
-
-            if (!IsActiveEnergyGunner())
-            {
-                Heat = 0f;
-                Overheated = false;
-            }
         }
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveEnergyGunner())
             {
+                Heat = 0f;
+                Overheated = false;
                 return;
             }
 

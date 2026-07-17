@@ -54,20 +54,18 @@ namespace Eternia.Content.Players
         {
             AccBonusMaxCombo = 0;
             AccBonusComboDuration = 0;
-
-            // The Combo counter exists for any Warrior; only a promotion turns it into
-            // stats, so it is cleared only when you are no longer a Warrior.
-            if (!IsActiveWarrior())
-            {
-                Combo = 0;
-                ComboTimer = 0;
-            }
         }
 
         public override void PostUpdate()
         {
+            // The Combo counter exists for any Warrior; only a promotion turns it into stats, so it
+            // is cleared only when you are no longer a Warrior. Cleared HERE (late), not in
+            // ResetEffects, which runs before the Soul re-activates each frame and would wipe the
+            // combo the instant it was built.
             if (!IsActiveWarrior())
             {
+                Combo = 0;
+                ComboTimer = 0;
                 return;
             }
 

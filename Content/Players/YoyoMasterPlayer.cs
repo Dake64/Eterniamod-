@@ -19,7 +19,9 @@ namespace Eternia.Content.Players
         // RESET
         // =================================================
 
-        public override void ResetEffects()
+        // Cleared in PostUpdate (late), not ResetEffects, which runs before the class Soul
+        // re-activates each frame -- which would wipe the stacks the instant they are earned.
+        public override void PostUpdate()
         {
             if (!IsActiveYoyoMaster())
             {

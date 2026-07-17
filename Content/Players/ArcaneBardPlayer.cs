@@ -23,16 +23,6 @@ namespace Eternia.Content.Players
 
         private int pulseTimer;
 
-        public override void ResetEffects()
-        {
-            if (!IsActiveArcaneBard())
-            {
-                Crescendo = 0f;
-
-                decayGrace = 0;
-            }
-        }
-
         private void AddCrescendo()
         {
             if (!IsActiveArcaneBard())
@@ -77,8 +67,11 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveArcaneBard())
             {
+                Crescendo = 0f;
+                decayGrace = 0;
                 return;
             }
 

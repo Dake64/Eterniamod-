@@ -21,8 +21,14 @@ namespace Eternia.Content.Players
         public override void ResetEffects()
         {
             AccTrailGainMult = 1f;
+        }
 
-            // The resource only exists for an active Swordsman.
+        // Clear the resource only when you are genuinely not a Swordsman. This MUST run late
+        // (PostUpdate), not in ResetEffects: ResetEffects runs before the class Soul accessory
+        // re-activates each frame, so IsActiveSwordsman() reads false there for one instant every
+        // frame -- which was wiping the Trail the moment it was earned.
+        public override void PostUpdate()
+        {
             if (!Player.GetModPlayer<SwordsmanPlayer>().IsActiveSwordsman())
             {
                 CrimsonTrail = 0;

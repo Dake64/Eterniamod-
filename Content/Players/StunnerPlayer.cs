@@ -21,24 +21,17 @@ namespace Eternia.Content.Players
         // RESET
         // =================================================
 
-        public override void ResetEffects()
-        {
-            if (!IsActiveStunner())
-            {
-                Charge = 0;
-
-                FullyCharged = false;
-            }
-        }
-
         // =================================================
         // POST UPDATE
         // =================================================
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveStunner())
             {
+                Charge = 0;
+                FullyCharged = false;
                 return;
             }
 

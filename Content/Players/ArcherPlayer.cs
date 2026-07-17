@@ -43,19 +43,16 @@ namespace Eternia.Content.Players
             AccFocusRegenMult = 1f;
             AccPerfectDamage = 0f;
             AccFocusLossMult = 1f;
+        }
 
+        public override void PostUpdate()
+        {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if ((!IsActiveArcher() && !IsRangerLearning()))
             {
                 Focus = 0f;
                 ShotIsPerfect = false;
                 ShotIsLegendary = false;
-            }
-        }
-
-        public override void PostUpdate()
-        {
-            if ((!IsActiveArcher() && !IsRangerLearning()))
-            {
                 return;
             }
 

@@ -27,20 +27,13 @@ namespace Eternia.Content.Players
 
         private const int OverloadCooldown = 600; // ~10s shared skill cooldown
 
-        public override void ResetEffects()
+        public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveInfinityMage())
             {
                 Overflow = 0f;
-
                 OverloadTimer = 0;
-            }
-        }
-
-        public override void PostUpdate()
-        {
-            if (!IsActiveInfinityMage())
-            {
                 return;
             }
 

@@ -109,21 +109,21 @@ foreach ($check in @(
         Content=$archer
         Helper="IsActiveArcher"
         Soul="Ranger"
-        Methods=@("ResetEffects", "PostUpdate", "CanUseItem", "ModifyWeaponDamage", "ModifyWeaponCrit", "ModifyShootStats", "OnHitNPCWithProj", "OnHurt")
+        Methods=@("PostUpdate", "CanUseItem", "ModifyWeaponDamage", "ModifyWeaponCrit", "ModifyShootStats", "OnHitNPCWithProj", "OnHurt")
     },
     @{
         Name="EnergyShooterPlayer"
         Content=$energyGunner
         Helper="IsActiveEnergyGunner"
         Soul="Ranger"
-        Methods=@("ResetEffects", "PostUpdate", "CanUseItem", "ModifyWeaponDamage", "UseSpeedMultiplier", "OnHitNPCWithProj")
+        Methods=@("PostUpdate", "CanUseItem", "ModifyWeaponDamage", "UseSpeedMultiplier", "OnHitNPCWithProj")
     },
     @{
         Name="BerserkerPlayer"
         Content=$berserker
         Helper="IsActiveBerserker"
         Soul="Warrior"
-        Methods=@("ResetEffects", "PostUpdate", "OnHitNPCWithItem", "OnHitNPCWithProj", "OnHurt")
+        Methods=@("PostUpdate", "OnHitNPCWithItem", "OnHitNPCWithProj", "OnHurt")
     })) {
     if ($check.Content -notmatch "public bool $($check.Helper)\(") {
         throw "$($check.Name) should expose $($check.Helper) for runtime subclass checks."
@@ -169,7 +169,7 @@ foreach ($check in @(
         Content=$gunner
         Helper="IsActiveGunner"
         Soul="Ranger"
-        Methods=@("ResetEffects", "PostUpdate", "ModifyShootStats", "ModifyWeaponCrit", "UseSpeedMultiplier", "OnHitNPCWithProj")
+        Methods=@("PostUpdate", "ModifyShootStats", "ModifyWeaponCrit", "UseSpeedMultiplier", "OnHitNPCWithProj")
     },
     @{
         Name="NecromancerPlayer"
@@ -183,7 +183,7 @@ foreach ($check in @(
         Content=$stunner
         Helper="IsActiveStunner"
         Soul="Warrior"
-        Methods=@("ResetEffects", "PostUpdate", "ModifyHitNPCWithItem", "OnHitNPCWithItem")
+        Methods=@("PostUpdate", "ModifyHitNPCWithItem", "OnHitNPCWithItem")
     },
     @{
         Name="SwordsmanPlayer"
@@ -197,7 +197,7 @@ foreach ($check in @(
         Content=$yoyoMaster
         Helper="IsActiveYoyoMaster"
         Soul="Warrior"
-        Methods=@("ResetEffects", "ModifyHitNPCWithProj")
+        Methods=@("PostUpdate", "ModifyHitNPCWithProj")
     })) {
     if ($check.Content -notmatch "public bool $($check.Helper)\(") {
         throw "$($check.Name) should expose $($check.Helper) for runtime subclass checks."
@@ -246,7 +246,7 @@ if ($fighter -notmatch 'public bool IsActiveFighter\(' -or
     throw "FighterPlayer.IsActiveFighter should add the Fighter subclass on top of IsActiveWarrior."
 }
 
-foreach ($m in @("ResetEffects", "PostUpdate", "AddCombo")) {
+foreach ($m in @("PostUpdate", "AddCombo")) {
     $body = [regex]::Match(
         $fighter,
         "(override .* $m|public .* $m)\([\s\S]+?\n\s*}",

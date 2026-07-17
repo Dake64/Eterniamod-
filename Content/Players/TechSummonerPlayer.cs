@@ -37,19 +37,15 @@ namespace Eternia.Content.Players
             AccCoreRateMult = 1f;
             AccOverdriveDefense = 0;
             AccOverdriveBonusTicks = 0;
-
-            if (!IsActiveTechSummoner())
-            {
-                PowerCore = 0f;
-
-                OverdriveTimer = 0;
-            }
         }
 
         public override void PostUpdate()
         {
+            // Cleared here (late), not in ResetEffects, which runs before the Soul re-activates.
             if (!IsActiveTechSummoner())
             {
+                PowerCore = 0f;
+                OverdriveTimer = 0;
                 return;
             }
 
