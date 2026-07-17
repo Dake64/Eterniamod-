@@ -120,4 +120,40 @@ foreach ($set in @(
     }
 }
 
+# --- The top ore is a full rung: armour AND a weapon for every class ---------
+# Revenite is the deepest dig before Hellstone, so it has to be worth reaching for whatever
+# class you are. These are ungated on purpose: they are pre-Wall-of-Flesh gear, so they must
+# work before a subclass even exists.
+
+$reveniteWeapons = @{
+    "Content\Items\Weapons\Warrior\ReveniteCleaver.cs"   = "DamageClass\.Melee"
+    "Content\Items\Weapons\Ranger\ReveniteLongbow.cs"    = "DamageClass\.Ranged"
+    "Content\Items\Weapons\Magic\ReveniteScepter.cs"     = "DamageClass\.Magic"
+    "Content\Items\Weapons\Summoner\ReveniteLash.cs"     = "DamageClass\.SummonMeleeSpeed"
+}
+
+foreach ($path in $reveniteWeapons.Keys) {
+    $w = Read-File $path
+    $name = [System.IO.Path]::GetFileNameWithoutExtension($path)
+
+    if ($w -notmatch $reveniteWeapons[$path]) {
+        throw "$name should be a $($reveniteWeapons[$path]) weapon -- one per class, or a class is left out."
+    }
+
+    if ($w -notmatch "AddIngredient<ReveniteBar>") {
+        throw "$name should be forged from Revenite -- that is what makes the top ore worth mining."
+    }
+
+    if ($loc -notmatch "(?ms)\b${name}:\s*\{[^}]*DisplayName:" -and $loc -notmatch "${name}\.DisplayName:") {
+        throw "en-US.hjson should localize $name."
+    }
+}
+
+# The Warrior one must carry the mod's melee identity: bleed.
+$cleaver = Read-File "Content\Items\Weapons\Warrior\ReveniteCleaver.cs"
+
+if ($cleaver -notmatch "IBleedWeapon") {
+    throw "The Revenite Cleaver should be a bleed sword -- that is the Warrior line's identity."
+}
+
 Write-Host "Eternia ores source smoke test passed."

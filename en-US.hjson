@@ -251,6 +251,26 @@ Mods: {
 				Tooltip: ""
 			}
 
+			ReveniteCleaver: {
+				DisplayName: Revenite Cleaver
+				Tooltip: The deepest wound you can open before Hardmode.
+			}
+
+			ReveniteLongbow: {
+				DisplayName: Revenite Longbow
+				Tooltip: Soul-metal limbs. Drives an arrow harder than anything at its tier.
+			}
+
+			ReveniteScepter: {
+				DisplayName: Revenite Scepter
+				Tooltip: Soul-metal conducts. The charge leaves before you finish the gesture.
+			}
+
+			ReveniteLash: {
+				DisplayName: Revenite Lash
+				Tooltip: A soul-metal cord. Your pack answers it from farther away.
+			}
+
 			SoulstoneHelm: {
 				DisplayName: Soulstone Helm
 				Tooltip: +2% critical chance

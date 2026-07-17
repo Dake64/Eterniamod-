@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Armas de Revenite: el mineral top pasa a ser un peldaño COMPLETO
+
+- Pedido: "haz una modificacion en la escalera de progresion y agrega armas de eso tambien".
+- DECISION IMPORTANTE (y su porque): NO se cambiaron las recetas existentes para exigir minerales
+  propios. Seria la "modificacion de escalera" mas obvia, pero ROMPERIA la partida en curso del
+  usuario: su mundo NO tiene los minerales (el worldgen solo corre en mundos nuevos), asi que se
+  quedaria sin poder craftear nada del mod. Se añaden como VIA PARALELA.
+- La modificacion real de la escalera: el tier Revenite (el mineral mas profundo, pico de Demonita)
+  pasa de dar solo armadura a ser un PELDAÑO COMPLETO -> armadura + 1 arma POR CLASE, en el rung
+  pre-Molten. Asi el mineral top merece la pena para cualquier clase, no solo para los que usan
+  armadura.
+- 4 armas nuevas (ungated a proposito: son equipo PRE-Muro de Carne, tienen que funcionar antes de
+  que exista una subclase):
+  - **Revenite Cleaver** (Warrior, melee 25) -- `IBleedWeapon` con BleedChance 22, LA MAS ALTA de
+    pre-hardmode (vanilla top es 18 en Death Sickle). Su identidad: pega algo menos que el Molten
+    Gutripper (27) pero abre heridas como nada. Recibe el CrimsonSlash automaticamente.
+  - **Revenite Longbow** (Ranger, ranged 19).
+  - **Revenite Scepter** (Mage, magic 21).
+  - **Revenite Lash** (Summoner, summon 16) -- reusa el whip projectile base (ungated).
+- Se descarto hacer 12 armas (3 tiers x 4 clases): duplicaria la escalera que ya existe y el mod ya
+  sufre de mucho contenido sin balancear. Soulstone/Animite ya tienen la armadura como sink.
+- Verificacion: compila 0/0; suite 115/115 (test EterniaOres ampliado: 1 arma por clase, forjada en
+  Revenite, y que la del Warrior lleve bleed).
+- Pendientes/riesgos: daños a ojo (25/19/21/16) -- se colocaron por debajo del techo de hellstone,
+  pero SIN probar. Si el usuario quiere, se pueden añadir tambien armas de Soulstone/Animite.
+
 ## 2026-07-16 - SISTEMA DE SUBSTATS (afijos) en armas -- RPG loot
 
 - Pedido: "que las substats que salen al crear un arma haya mas y tenga un sistema". Se confirmo que
