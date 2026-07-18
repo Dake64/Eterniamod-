@@ -205,8 +205,8 @@ namespace Eternia.Content.Players
             var soul =
                 Player.GetModPlayer<EterniaPlayer>();
 
-            return soul.HasClassSoul &&
-                soul.ActiveSoul == SoulId.Summoner &&
+            return soul.HasClassSoulNow &&
+                soul.EffectiveSoul == SoulId.Summoner &&
                 Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
                     "Beast Tamer";
         }

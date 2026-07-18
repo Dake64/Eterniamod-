@@ -30,7 +30,7 @@ namespace Eternia.Content.Globals
 
             var soul = player.GetModPlayer<EterniaPlayer>();
 
-            if (!soul.HasClassSoul || soul.ActiveSoul != SoulId.Summoner)
+            if (!soul.HasClassSoulNow || soul.ActiveSoul != SoulId.Summoner)
             {
                 return;
             }

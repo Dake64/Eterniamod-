@@ -33,7 +33,7 @@ $activeElementalist = [regex]::Match(
 
 if ($activeElementalist -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
     $activeElementalist -notmatch "HasClassSoul" -or
-    $activeElementalist -notmatch "ActiveSoul == SoulId\.Mage") {
+    $activeElementalist -notmatch "(Active|Effective)Soul == SoulId\.Mage") {
     throw "ElementalistPlayer.IsActiveElementalist should require an equipped Mage class Soul, not only a subclass name."
 }
 
@@ -76,7 +76,7 @@ $activeVirtuoso = [regex]::Match(
 
 if ($activeVirtuoso -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
     $activeVirtuoso -notmatch "HasClassSoul" -or
-    $activeVirtuoso -notmatch "ActiveSoul == SoulId\.Ranger") {
+    $activeVirtuoso -notmatch "(Active|Effective)Soul == SoulId\.Ranger") {
     throw "VirtuosoPlayer.IsActiveVirtuoso should require an equipped Ranger class Soul, not only a subclass name."
 }
 
@@ -99,7 +99,7 @@ $activeCursedMage = [regex]::Match(
 
 if ($activeCursedMage -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
     $activeCursedMage -notmatch "HasClassSoul" -or
-    $activeCursedMage -notmatch "ActiveSoul == SoulId\.Mage") {
+    $activeCursedMage -notmatch "(Active|Effective)Soul == SoulId\.Mage") {
     throw "CursedMagePlayer.IsActiveCursedMage should require an equipped Mage class Soul, not only a subclass name."
 }
 
@@ -136,7 +136,7 @@ foreach ($check in @(
 
     if ($helperBody -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
         $helperBody -notmatch "HasClassSoul" -or
-        $helperBody -notmatch "ActiveSoul == SoulId\.$($check.Soul)") {
+        $helperBody -notmatch "(Active|Effective)Soul == SoulId\.$($check.Soul)") {
         throw "$($check.Name).$($check.Helper) should require an equipped $($check.Soul) class Soul, not only a subclass name."
     }
 
@@ -210,7 +210,7 @@ foreach ($check in @(
 
     if ($helperBody -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
         $helperBody -notmatch "HasClassSoul" -or
-        $helperBody -notmatch "ActiveSoul == SoulId\.$($check.Soul)") {
+        $helperBody -notmatch "(Active|Effective)Soul == SoulId\.$($check.Soul)") {
         throw "$($check.Name).$($check.Helper) should require an equipped $($check.Soul) class Soul, not only a subclass name."
     }
 
@@ -237,7 +237,7 @@ $fighterWarriorBody = [regex]::Match(
 
 if ($fighterWarriorBody -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
     $fighterWarriorBody -notmatch "HasClassSoul" -or
-    $fighterWarriorBody -notmatch "ActiveSoul == SoulId\.Warrior") {
+    $fighterWarriorBody -notmatch "(Active|Effective)Soul == SoulId\.Warrior") {
     throw "FighterPlayer.IsActiveWarrior should require an equipped Warrior class Soul."
 }
 

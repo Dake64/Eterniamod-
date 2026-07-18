@@ -194,8 +194,8 @@ namespace Eternia.Content.Players
             var soul =
                 Player.GetModPlayer<EterniaPlayer>();
 
-            return soul.HasClassSoul &&
-                soul.ActiveSoul == SoulId.Mage &&
+            return soul.HasClassSoulNow &&
+                soul.EffectiveSoul == SoulId.Mage &&
                 Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
                 "Elementalist";
         }

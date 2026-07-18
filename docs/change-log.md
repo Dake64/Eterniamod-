@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - BUG GRAVE: la tecla de skill NUNCA funciono en NINGUNA subclase
+
+- Sintoma: "le pico a la q y no hace nada" con la barra al 100. Ni sonido ni texto: NADA.
+- Se descartaron una por una: keybind (confirmado "Eternia/Class Skill": ["Q"] en el perfil
+  Custom activo), build stale (se extrajo el Eternia.dll de dentro del .tmod y SI tenia el
+  codigo nuevo), mod duplicado (Eternia2 esta activo pero no contiene nada del Espadachin),
+  volumen y ShowItemText (ok).
+- CAUSA RAIZ: `EterniaPlayer.PreUpdate()` pone `ActiveSoul = SoulId.None` cada frame, y el
+  accesorio de Soul lo re-activa en `UpdateEquips`. Terraria corre `ProcessTriggers` (el input
+  de teclas) ENTRE esos dos. Asi que al picar la tecla, `ActiveSoul` valia None, todos los
+  `IsActive<Subclase>()` devolvian false y el skill hacia `return` en su PRIMERA linea, antes
+  de poder emitir ningun aviso. La barra en cambio se dibuja en la fase de draw, ya con el Soul
+  activo -> se veia perfecta al 100. Es el MISMO bug de fase que el de ResetEffects (2026-07-16),
+  pero en otro hook, y afectaba a las 12 subclases, no solo al Espadachin.
+- Arreglo (central, no parche por subclase): `EterniaPlayer` toma una INSTANTANEA del Soul ya
+  confirmado en `PostUpdateEquips` (`InputSoul`, capturada antes de cualquier early return y
+  para todos los jugadores) y expone versiones a prueba de fase:
+  `EffectiveSoul` (valor vivo si existe, si no el ultimo confirmado), `HasClassSoulNow` y
+  `HasAnySoulNow`. Los 42 sitios de gating pasaron a usarlas. Solo difieren del valor crudo
+  dentro de la ventana pre-equips donde el crudo esta espuriamente en None, asi que son
+  estrictamente mas correctas en todas partes.
+- Test nuevo `SoulInputTimingSourceSmokeTest`: exige la instantanea, que se tome en
+  PostUpdateEquips antes de cualquier return, y BARRE todo Content/ para que ningun archivo
+  vuelva a gatear con el `soul.HasClassSoul` / `soul.ActiveSoul ==` crudo.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - La Q del Espadachin ya nunca se siente muerta (playtest)
 
 - Sintoma: "le pico a la q y no hace nadaaa". La captura mostraba la tecla SI bindeada y la

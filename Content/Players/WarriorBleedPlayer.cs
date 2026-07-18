@@ -32,8 +32,8 @@ namespace Eternia.Content.Players
             var soul =
                 Player.GetModPlayer<EterniaPlayer>();
 
-            return soul.HasClassSoul &&
-                soul.ActiveSoul == SoulId.Warrior;
+            return soul.HasClassSoulNow &&
+                soul.EffectiveSoul == SoulId.Warrior;
         }
 
         public override void OnHitNPCWithItem(

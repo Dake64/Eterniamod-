@@ -70,7 +70,7 @@ namespace Eternia.Content.Players
             var soul = Player.GetModPlayer<EterniaPlayer>();
 
             // Any Summoner can tame; only a whip strike counts.
-            if (!soul.HasClassSoul || soul.ActiveSoul != SoulId.Summoner ||
+            if (!soul.HasClassSoulNow || soul.ActiveSoul != SoulId.Summoner ||
                 !ProjectileID.Sets.IsAWhip[proj.type])
             {
                 return;

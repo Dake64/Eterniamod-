@@ -19,7 +19,7 @@ namespace Eternia.Content.Items.Weapons.Promotion
             var soul =
                 player.GetModPlayer<EterniaPlayer>();
 
-            return soul.HasClassSoul &&
+            return soul.HasClassSoulNow &&
                 ClassPromotionRules.IsPromotionForSoul(
                     soul.ActiveSoul,
                     requiredSubclass) &&

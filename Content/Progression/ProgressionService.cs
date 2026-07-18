@@ -55,7 +55,7 @@ namespace Eternia.Content.Progression
             var level =
                 player.GetModPlayer<EterniaLevelPlayer>();
 
-            if (!soul.HasClassSoul ||
+            if (!soul.HasClassSoulNow ||
                 passive == null ||
                 !PassiveRegistry.IsPassiveAllowedForSoul(soul.ActiveSoul, passive) ||
                 stats.UnlockedPassives.Contains(passive.Name) ||
@@ -106,7 +106,7 @@ namespace Eternia.Content.Progression
             var stats = player.GetModPlayer<EterniaStatsPlayer>();
             var level = player.GetModPlayer<EterniaLevelPlayer>();
 
-            if (!soul.HasClassSoul || stats.UnlockedPassives.Count == 0)
+            if (!soul.HasClassSoulNow || stats.UnlockedPassives.Count == 0)
             {
                 return 0;
             }

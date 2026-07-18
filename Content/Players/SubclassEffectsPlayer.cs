@@ -266,8 +266,8 @@ namespace Eternia.Content.Players
             var soul =
                 Player.GetModPlayer<EterniaPlayer>();
 
-            return soul.HasClassSoul &&
-                soul.ActiveSoul == expectedSoul &&
+            return soul.HasClassSoulNow &&
+                soul.EffectiveSoul == expectedSoul &&
                 Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
                     expectedSubclass;
         }

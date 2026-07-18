@@ -260,8 +260,8 @@ namespace Eternia.Content.Players
         {
             var soul = Player.GetModPlayer<EterniaPlayer>();
 
-            return soul.HasClassSoul &&
-                soul.ActiveSoul == SoulId.Ranger &&
+            return soul.HasClassSoulNow &&
+                soul.EffectiveSoul == SoulId.Ranger &&
                 Player.GetModPlayer<SubclassPlayer>().CurrentSubclass == "Gunner";
         }
     }

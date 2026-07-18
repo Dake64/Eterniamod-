@@ -21,7 +21,7 @@ namespace Eternia.Content.Players
 
             var soul = Player.GetModPlayer<EterniaPlayer>();
 
-            if (!soul.HasClassSoul)
+            if (!soul.HasClassSoulNow)
             {
                 return;
             }

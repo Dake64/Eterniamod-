@@ -172,7 +172,7 @@ namespace Eternia.Content.Players
             var soulPlayer =
                 Player.GetModPlayer<EterniaPlayer>();
 
-            if (!soulPlayer.HasClassSoul)
+            if (!soulPlayer.HasClassSoulNow)
             {
                 return;
             }

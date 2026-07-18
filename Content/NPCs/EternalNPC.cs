@@ -123,7 +123,7 @@ namespace Eternia.Content.NPCs
 
             // He can sense the dormant vessels and sell you the means to wake them -- a way to reach
             // the Prototypes without scavenging all the tech yourself.
-            if (soul.HasClassSoul)
+            if (soul.HasClassSoulNow)
             {
                 Stock(items, ModContent.ItemType<CorruptedSoulCore>(), Item.buyPrice(gold: 3));
 
@@ -134,7 +134,7 @@ namespace Eternia.Content.NPCs
             }
 
             // Once the world turns, he will sell you a way out of your build -- for a fortune.
-            if (Main.hardMode && soul.HasClassSoul)
+            if (Main.hardMode && soul.HasClassSoulNow)
             {
                 Stock(items, ModContent.ItemType<SoulReforge>(), Item.buyPrice(gold: 25));
             }
@@ -173,12 +173,12 @@ namespace Eternia.Content.NPCs
                 return "I sense the emptiness within you... your soul has not yet awakened.";
             }
 
-            if (soul.ActiveSoul == SoulId.Empty)
+            if (soul.EffectiveSoul == SoulId.Empty)
             {
                 return "Your Empty Soul sustains you, but you have not yet chosen a base class.";
             }
 
-            if (!soul.HasClassSoul)
+            if (!soul.HasClassSoulNow)
             {
                 return "You already carry a Soul. Equip it before asking me for another.";
             }
@@ -248,7 +248,7 @@ namespace Eternia.Content.NPCs
             var soul = player.GetModPlayer<EterniaPlayer>();
             var sub = player.GetModPlayer<SubclassPlayer>();
 
-            if (!soul.HasClassSoul)
+            if (!soul.HasClassSoulNow)
             {
                 Main.NewText("You carry no class Soul. There is nothing in you to read.", 255, 120, 120);
                 return;

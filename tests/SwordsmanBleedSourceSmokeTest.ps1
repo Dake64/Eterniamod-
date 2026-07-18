@@ -91,7 +91,7 @@ $activeWarrior = [regex]::Match(
 
 if ($activeWarrior -notmatch "GetModPlayer<EterniaPlayer>\(\)" -or
     $activeWarrior -notmatch "HasClassSoul" -or
-    $activeWarrior -notmatch "ActiveSoul == SoulId\.Warrior") {
+    $activeWarrior -notmatch "(Active|Effective)Soul == SoulId\.Warrior") {
     throw "IsActiveWarrior should require an equipped Warrior class Soul (not a subclass name)."
 }
 

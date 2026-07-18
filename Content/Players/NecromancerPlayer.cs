@@ -156,8 +156,8 @@ namespace Eternia.Content.Players
 
             // The Necromancer is a MAGE subclass (dark magic that raises the dead), so it
             // runs on the Mage Soul.
-            return soul.HasClassSoul &&
-                soul.ActiveSoul == SoulId.Mage &&
+            return soul.HasClassSoulNow &&
+                soul.EffectiveSoul == SoulId.Mage &&
                 Player.GetModPlayer<SubclassPlayer>().CurrentSubclass ==
                     "Necromancer";
         }

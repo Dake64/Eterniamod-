@@ -16,9 +16,28 @@ namespace Eternia.Content.Players
 
         public SoulId ActiveSoul { get; private set; } = SoulId.None;
 
+        // ActiveSoul is wiped every frame in PreUpdate and re-applied by the Soul accessory
+        // during UpdateEquips. ProcessTriggers (key input) runs BETWEEN those two, so anything
+        // reading ActiveSoul at input time always saw SoulId.None -- which silently killed
+        // EVERY subclass skill key: the guard failed before any feedback could fire, while the
+        // HUD (drawn after equips) looked perfectly active. This snapshot is the last soul
+        // CONFIRMED after equips applied, and is what input-time checks must read.
+        public SoulId InputSoul { get; private set; } = SoulId.None;
+
+        // The soul as it is "right now" for any caller, whatever phase of the frame they run in:
+        // the live value once equips have applied, otherwise last frame's confirmed value.
+        public SoulId EffectiveSoul =>
+            ActiveSoul != SoulId.None ? ActiveSoul : InputSoul;
+
         public bool HasAnySoul => ActiveSoul != SoulId.None;
 
         public bool HasClassSoul => SoulRules.IsClassSoul(ActiveSoul);
+
+        // Phase-safe counterparts. Use these anywhere that can run before UpdateEquips
+        // (ProcessTriggers above all), never the raw ActiveSoul/HasClassSoul.
+        public bool HasAnySoulNow => EffectiveSoul != SoulId.None;
+
+        public bool HasClassSoulNow => SoulRules.IsClassSoul(EffectiveSoul);
 
         // Legacy facade kept while old UI/passives still read broad class flags.
         public bool hasSoul;
@@ -78,6 +97,11 @@ namespace Eternia.Content.Players
 
         public override void PostUpdateEquips()
         {
+            // Snapshot the confirmed soul FIRST, for every player and before any early return:
+            // accessories have applied by now, so this is the value input-time code must see
+            // next frame. Without it, ProcessTriggers reads the mid-frame None.
+            InputSoul = ActiveSoul;
+
             // The Soul penalty (stat debuffs + wrong-weapon KillMe) must only ever
             // apply to the local player; in multiplayer this hook runs for every
             // player on each client.

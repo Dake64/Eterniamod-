@@ -152,7 +152,7 @@ namespace Eternia.Content.UI
                 out Rectangle treeArea,
                 out bool compactLayout);
 
-            if (!soulPlayer.HasClassSoul)
+            if (!soulPlayer.HasClassSoulNow)
             {
                 DrawNoClassState(spriteBatch, sidebar, treeArea);
                 return true;

@@ -126,7 +126,7 @@ namespace Eternia.Content.UI
                 accent,
                 0.58f);
 
-            if (!soulPlayer.HasClassSoul)
+            if (!soulPlayer.HasClassSoulNow)
             {
                 EterniaUI.DrawWrappedText(
                     spriteBatch,

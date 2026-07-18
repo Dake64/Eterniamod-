@@ -31,7 +31,7 @@ namespace Eternia.Content.Items.Armor
 
             var soul = player.GetModPlayer<EterniaPlayer>();
 
-            if (soul.HasClassSoul)
+            if (soul.HasClassSoulNow)
             {
                 DamageClass dc = SoulAscensionPlayer.ClassOf(soul.ActiveSoul);
                 player.GetDamage(dc) += 0.22f;

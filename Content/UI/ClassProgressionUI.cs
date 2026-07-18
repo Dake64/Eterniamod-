@@ -44,7 +44,7 @@ namespace Eternia.Content.UI
             var soul =
                 player.GetModPlayer<EterniaPlayer>();
 
-            if (!soul.HasClassSoul)
+            if (!soul.HasClassSoulNow)
             {
                 return true;
             }

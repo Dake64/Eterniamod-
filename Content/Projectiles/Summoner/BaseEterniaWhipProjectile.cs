@@ -165,7 +165,7 @@ namespace Eternia.Content.Projectiles.Summoner
             var soul =
                 player.GetModPlayer<EterniaPlayer>();
 
-            if (!soul.HasClassSoul ||
+            if (!soul.HasClassSoulNow ||
                 soul.ActiveSoul != SoulId.Summoner)
             {
                 return false;
