@@ -15,6 +15,29 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - La Ejecucion Carmesi ahora ESCALA hasta el poder de late game
+
+- Pedido: "quiero que en un futuro ya en late game aplique sangrado a todos y con el ejecutar
+  mate a todos dentro de una zona, quiero que se sienta ese poder".
+- Correccion del owner: el Espadachin solo existe DESPUES del Muro de Carne, asi que la escalera
+  va entera dentro de hardmode (ver decision-log).
+- `SwordsmanSkillPlayer` reescrito con 3 escalones:
+  1. FINISHER (Muro)     radio 8 bloques. Solo remata lo que tu hiciste sangrar.
+  2. HEMORRAGIA (Plantera) radio 12. La ejecucion aplica sangrado a TODA la zona ella misma.
+  3. ANIQUILACION (Moon Lord) radio 20. Lo que quede bajo 25%+3%/SoulTier de vida MUERE al
+     instante (hasta 40% ascendido al maximo).
+- Jefes EXENTOS del instant-kill (`IsBossLike`): reciben la rafaga pero la pelea sigue siendo
+  pelea. Sin esto la tecla borraba a Prototype-01 y a todos los jefes vanilla.
+- El instant-kill pasa por `SimpleStrikeNPC` con dano suficiente en vez de poner life=0, para
+  que loot, credito de kill y sincronizacion multijugador se comporten.
+- Feedback por escalon: el golpe de camara crece con el tier, la rafaga de sangre pasa de 32 a
+  48 dust al aniquilar, texto "ANIQUILADO" por enemigo y "!ANIQUILACION! xN" sobre el jugador.
+  El aviso de fallo tambien cambia: "NADIE SANGRA" en tier 1, "NADIE CERCA" de tier 2 en
+  adelante (porque ya no necesitas haberlos hecho sangrar).
+- Tests: la escalera, que el radio CREZCA por escalon, que la hemorragia aplique sangrado, y
+  sobre todo que el instant-kill exente jefes.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - BUG GRAVE: la tecla de skill NUNCA funciono en NINGUNA subclase
 
 - Sintoma: "le pico a la q y no hace nada" con la barra al 100. Ni sonido ni texto: NADA.

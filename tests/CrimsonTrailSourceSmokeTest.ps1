@@ -105,11 +105,86 @@ if ($skill -notmatch "CombatText\.NewText\(Player\.Hitbox, color, text, true\)")
 
 # The target check MUST come before TrySpend: a mistimed press with nothing bleeding
 # used to burn the full 50 Trail for zero effect.
-$targetCheck = $skill.IndexOf("CountBleedingInRange() == 0")
+$targetCheck = $skill.IndexOf("CountTargetsInRange(tier, radius) == 0")
 $spend = $skill.IndexOf("TrySpend(")
 
 if ($targetCheck -lt 0 -or $spend -lt 0 -or $targetCheck -gt $spend) {
-    throw "The technique should verify a bleeding target BEFORE spending Crimson Trail."
+    throw "The technique should verify a valid target BEFORE spending Crimson Trail."
+}
+
+# --- Hardmode escalation ladder ------------------------------------------------
+# The Swordsman only exists in hardmode (subclasses resolve off Main.hardMode), so the
+# power fantasy is staged across hardmode milestones, NOT pre-hardmode -> hardmode.
+if ($skill -notmatch "TierFinisher" -or
+    $skill -notmatch "TierHemorrhage" -or
+    $skill -notmatch "TierAnnihilation") {
+    throw "Crimson Execution should define its three hardmode escalation tiers."
+}
+
+if ($skill -notmatch "NPC\.downedPlantBoss" -or
+    $skill -notmatch "NPC\.downedMoonlord") {
+    throw "The tiers should be gated on hardmode milestones (Plantera, Moon Lord)."
+}
+
+# Compare against code only -- the comments legitimately explain the Main.hardMode gate.
+$skillCode = ($skill -split "`n" | Where-Object { $_ -notmatch '^\s*//' }) -join "`n"
+
+if ($skillCode -match "Main\.hardMode") {
+    throw "Do not gate a tier on Main.hardMode: the Swordsman already requires hardmode to exist."
+}
+
+# The radius must GROW with the tier, otherwise the endgame never feels different.
+$radii = [regex]::Matches($skill, "Radius(?:Finisher|Hemorrhage|Annihilation) = (\d+)f") |
+    ForEach-Object { [int]$_.Groups[1].Value }
+
+if ($radii.Count -ne 3) {
+    throw "Each tier should declare its own execution radius."
+}
+
+if (-not ($radii[0] -lt $radii[1] -and $radii[1] -lt $radii[2])) {
+    throw "Execution radius should grow with each tier (finisher < hemorrhage < annihilation)."
+}
+
+# Hemorrhage: the execution must draw its own blood instead of only finishing existing bleeds.
+if ($skill -notmatch "tier >= TierHemorrhage" -or
+    $skill -notmatch "bleed\.ApplyBleed\(npc\)") {
+    throw "From the Hemorrhage tier the execution should apply bleed to the whole zone itself."
+}
+
+# --- The guardrail that keeps the mod playable ---------------------------------
+# Annihilation instant-kills. If bosses were not exempt, one key press would delete every
+# boss fight in the mod, Prototype-01 included.
+if ($skill -notmatch "IsBossLike") {
+    throw "Annihilation must recognise bosses so it can exempt them."
+}
+
+$bossLike = [regex]::Match(
+    $skill,
+    'static bool IsBossLike\([\s\S]+?\n\s*\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($bossLike -notmatch "npc\.boss" -or
+    $bossLike -notmatch "ShouldBeCountedAsBoss") {
+    throw "IsBossLike should cover both npc.boss and NPCID.Sets.ShouldBeCountedAsBoss."
+}
+
+$wiped = [regex]::Match(
+    $skill,
+    'bool wiped =[\s\S]+?;',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($wiped -notmatch "!IsBossLike\(npc\)") {
+    throw "The instant kill MUST exempt bosses -- otherwise the skill deletes every boss fight."
+}
+
+if ($wiped -notmatch "tier >= TierAnnihilation") {
+    throw "The instant kill should only exist at the endgame Annihilation tier."
+}
+
+# Soul Ascension is the payoff dial on the endgame tier.
+if ($skill -notmatch "SoulAscensionPlayer" -or
+    $skill -notmatch "AnnihilationThreshold") {
+    throw "The annihilation threshold should scale with Soul Ascension."
 }
 
 # --- Dedicated on-screen bar ------------------------------------------------

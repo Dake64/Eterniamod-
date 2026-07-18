@@ -22,6 +22,32 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-16 - La Ejecucion Carmesi ESCALA en 3 escalones dentro de hardmode
+
+- Estado: Aceptada (decision del usuario: "quiero que se sienta ese poder").
+- Contexto: el owner quiere que en late game la tecnica aplique sangrado a todos y limpie una
+  zona entera. Correccion importante del owner: el Espadachin NO existe antes del Muro de Carne
+  (`ClassPromotionRules.ResolveSubclass` recibe `Main.hardMode`; el panel dice "BASE CLASS"
+  antes). Por lo tanto la escalera NO puede ser pre-hardmode -> hardmode: va entera DENTRO de
+  hardmode.
+- Decision: 3 escalones colgados de hitos de hardmode.
+  1. FINISHER (Muro de Carne): radio 128px / 8 bloques. Solo remata lo que TU hiciste sangrar.
+  2. HEMORRAGIA (Plantera): radio 192px / 12 bloques. La ejecucion aplica el sangrado ella misma
+     a toda la zona -> se rompe la dependencia de marcar enemigos uno por uno.
+  3. ANIQUILACION (Moon Lord): radio 320px / 20 bloques. Todo enemigo por debajo de un % de vida
+     muere al instante. El umbral es 25% + 3% por Soul Tier (hasta 40% ascendido al maximo).
+- GUARDARRAIL INNEGOCIABLE: los jefes estan EXENTOS del instant-kill (`IsBossLike` cubre
+  `npc.boss` y `NPCID.Sets.ShouldBeCountedAsBoss`). Reciben el golpe normal. Sin esto, una sola
+  tecla borraria todos los jefes del mod, Prototype-01 incluido.
+- Consecuencias:
+  - Soul Ascension por fin tiene una recompensa que se siente (ensancha la ventana de aniquilar).
+  - El radio DEBE crecer con el escalon; el test lo verifica.
+  - No colgar ningun escalon de `Main.hardMode` (redundante: la subclase ya lo exige).
+  - El instant-kill pasa por el pipeline normal de dano (no pone life=0) para que loot, credito
+    de kill y sincronizacion en multijugador funcionen.
+- Archivos relacionados: Content/Players/SwordsmanSkillPlayer.cs,
+  tests/CrimsonTrailSourceSmokeTest.ps1.
+
 ## 2026-07-16 - La Ejecucion Carmesi SE QUEDA como finisher (no AoE, no dash)
 
 - Estado: Aceptada (decision del usuario en playtest).
