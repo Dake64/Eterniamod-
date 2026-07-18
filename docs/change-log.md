@@ -15,6 +15,31 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - La Q del Espadachin ya nunca se siente muerta (playtest)
+
+- Sintoma: "le pico a la q y no hace nadaaa". La captura mostraba la tecla SI bindeada y la
+  barra con relleno -> el keybind no era el problema.
+- Causa real: la tecnica tenia requisitos INVISIBLES (>=50 Rastro Y enemigos ya sangrando en
+  rango de 260) y el unico aviso al fallar era un CombatText diminuto, invisible en combate.
+  El jugador leia "la tecla no hace nada".
+- Decision del owner: MANTENER la tecnica como finisher (solo remata enemigos sangrando), pero
+  con aviso grande + sonido. No se convierte en AoE ni en dash.
+- `SwordsmanSkillPlayer` reescrito:
+  - Cada rama fallida ANUNCIA el motivo con CombatText dramatic (grande) + sonido:
+    "EN ENFRIAMIENTO" (MenuTick), "RASTRO x/50" (MenuClose), "NADIE SANGRA" (MenuClose).
+  - BUGFIX: antes hacia `TrySpend(50)` ANTES de saber si habia objetivo, asi que un press
+    a destiempo QUEMABA 50 de Rastro sin efecto. Ahora `CountBleedingInRange()` valida primero
+    y solo gasta si de verdad va a ejecutar.
+  - Al ejecutar: "!EJECUCION CARMESI!" + PunchCameraModifier (golpe de camara, 14 frames) +
+    estallido de sangre subido de 18 a 32 dust con velocidad y escala mayores, y el "EXECUTE!"
+    por enemigo ahora es dramatic.
+- `EterniaUI.DrawFloatingResourceBar` acepta `thresholdPercent`: dibuja la LINEA DE DISPARO
+  grabada en el recipiente (el 50% = el costo). Tenue mientras no llegas, pulso brillante en
+  cuanto la sangre la pasa -> el costo es legible de un vistazo en vez de un numero oculto.
+- Tests: `CrimsonTrailSourceSmokeTest` fija las 3 ramas de aviso, el sonido, el texto dramatic
+  y (por indice) que la validacion de objetivo ocurra ANTES del TrySpend.
+- Verificacion: compila 0/0; suite 116/116. Falta confirmacion en juego.
+
 ## 2026-07-16 - Barra del Espadachin -> tema de SANGRE + tecla real en el prompt
 
 - Pedido: darle "mas interfaz como de sangre haciendo alusion" al fantasy de sangrado del

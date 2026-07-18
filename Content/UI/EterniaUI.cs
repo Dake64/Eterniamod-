@@ -501,7 +501,8 @@ namespace Eternia.Content.UI
             bool ready = false,
             string readyPrompt = null,
             bool alwaysShow = false,
-            bool bloodTheme = false)
+            bool bloodTheme = false,
+            float thresholdPercent = -1f)
         {
             // alwaysShow keeps the gauge on screen even at 0, so a subclass's mechanic is
             // DISCOVERABLE -- the player sees the empty gauge and learns they need to fill it.
@@ -581,7 +582,7 @@ namespace Eternia.Content.UI
             {
                 DrawBloodGauge(
                     spriteBatch, pixel, gaugeX, gaugeY, trueW, gaugeH,
-                    percent, color, bright, hot, pulse, time, a);
+                    percent, color, bright, hot, pulse, time, thresholdPercent, a);
             }
             else
             {
@@ -641,6 +642,7 @@ namespace Eternia.Content.UI
             bool hot,
             float pulse,
             float time,
+            float threshold,
             float a)
         {
             // Clotted vessel behind the blood.
@@ -702,6 +704,22 @@ namespace Eternia.Content.UI
                 Color drop = Color.Lerp(color, new Color(70, 0, 6), 0.4f);
                 spriteBatch.Draw(pixel, new Rectangle(dripX, dripY, 1, 2), drop * (0.85f * dropA));
                 spriteBatch.Draw(pixel, new Rectangle(dripX, dripY + 2, 1, 1), drop * (0.5f * dropA));
+            }
+
+            // The FIRE LINE etched on the vessel: the level the blood must reach before the
+            // technique can be spent. Faint while out of reach, a bright wet pulse once the
+            // blood rises past it -- so the cost is readable at a glance, not a hidden number.
+            if (threshold > 0f && threshold < 1f)
+            {
+                int tx = x + (int)(threshold * w);
+                bool reached = percent >= threshold;
+
+                Color mark = reached
+                    ? Color.Lerp(color, Color.White, 0.65f) * (0.6f + 0.4f * pulse)
+                    : new Color(168, 168, 174) * 0.45f;
+
+                spriteBatch.Draw(pixel, new Rectangle(tx, y - 1, 1, h + 2), mark * a);
+                spriteBatch.Draw(pixel, new Rectangle(tx, y - 3, 1, 2), mark * a);
             }
 
             // Vessel outline -- clotted red, brightening to a wet pulse when ready.

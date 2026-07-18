@@ -75,7 +75,10 @@ namespace Eternia.Content.UI
                 ready,
                 keyLabel + ": EXECUTE",
                 alwaysShow: true,
-                bloodTheme: true);
+                bloodTheme: true,
+                thresholdPercent:
+                    SwordsmanSkillPlayer.TechniqueCost
+                        / (float)CrimsonTrailPlayer.MaxCrimsonTrail);
 
             return true;
         }

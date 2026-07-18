@@ -22,6 +22,24 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-16 - La Ejecucion Carmesi SE QUEDA como finisher (no AoE, no dash)
+
+- Estado: Aceptada (decision del usuario en playtest).
+- Contexto: El owner reportaba "le pico a la q y no hace nadaaa". La tecnica solo golpea
+  enemigos que YA sangran dentro de 260px y cuesta 50 Rastro; al fallar solo mostraba un
+  CombatText diminuto, asi que se leia como tecla muerta. Se ofrecieron 3 caminos:
+  (a) estallido radial que siempre sangra a todos, (b) embestida cortante hacia adelante,
+  (c) mantener el finisher pero con aviso grande + sonido.
+- Decision: opcion (c). La identidad de la tecnica es REMATAR sangrado, no ser un AoE
+  generico ni una herramienta de movilidad. El problema era de LEGIBILIDAD, no de diseno.
+- Consecuencias:
+  - No convertir la Q en AoE/dash en el futuro sin volver a preguntar.
+  - Todo press fallido debe seguir explicando su motivo de forma grande y audible.
+  - El costo debe seguir siendo visible (linea de disparo en la barra), no un numero oculto.
+  - Correccion asociada: nunca gastar Rastro si no hay objetivo valido.
+- Archivos relacionados: Content/Players/SwordsmanSkillPlayer.cs, Content/UI/CrimsonTrailUI.cs,
+  Content/UI/EterniaUI.cs, tests/CrimsonTrailSourceSmokeTest.ps1.
+
 ## 2026-07-15 - La escala de vida por rareza en jefes SE QUEDA (jefes-elite aleatorios)
 
 - Estado: Aceptada (decision del usuario).

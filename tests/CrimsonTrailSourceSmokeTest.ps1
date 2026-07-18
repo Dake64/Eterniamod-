@@ -85,6 +85,33 @@ if ($skill -notmatch "SimpleStrikeNPC" -or
     throw "The technique should deal the reborn EXECUTE burst to bleeding enemies."
 }
 
+# --- The key must never feel dead: loud feedback on EVERY failed press ---------
+# Playtest 2026-07-16: the only feedback was tiny combat text, so the player read a
+# non-firing press as "the key does nothing".
+if ($skill -notmatch "EN ENFRIAMIENTO" -or
+    $skill -notmatch "RASTRO " -or
+    $skill -notmatch "NADIE SANGRA") {
+    throw "Every failed technique press should announce WHY it did not fire."
+}
+
+if ($skill -notmatch "SoundEngine\.PlaySound\(SoundID\.MenuClose") {
+    throw "A denied technique press should play an audible sound, not just draw text."
+}
+
+# CombatText's dramatic flag is what makes the announcement big enough to notice.
+if ($skill -notmatch "CombatText\.NewText\(Player\.Hitbox, color, text, true\)") {
+    throw "Technique announcements should use dramatic (large) combat text."
+}
+
+# The target check MUST come before TrySpend: a mistimed press with nothing bleeding
+# used to burn the full 50 Trail for zero effect.
+$targetCheck = $skill.IndexOf("CountBleedingInRange() == 0")
+$spend = $skill.IndexOf("TrySpend(")
+
+if ($targetCheck -lt 0 -or $spend -lt 0 -or $targetCheck -gt $spend) {
+    throw "The technique should verify a bleeding target BEFORE spending Crimson Trail."
+}
+
 # --- Dedicated on-screen bar ------------------------------------------------
 if ($ui -notmatch "class CrimsonTrailUI\s*:\s*ModSystem" -or
     $ui -notmatch "IsActiveSwordsman\(\)" -or
