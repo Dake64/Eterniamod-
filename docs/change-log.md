@@ -15,6 +15,22 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Los avisos de la tecnica pasan a INGLES
+
+- Pedido: "el texto que sale de nadie sangra cambialo al ingles".
+- Yo habia metido esos CombatText en espanol por inercia de como conversamos, pero el mod
+  entero va en ingles (CRIMSON, EXECUTE!, SET KEY, MAX, PATH LOCKED). Se tradujeron TODOS, no
+  solo el mencionado:
+  EN ENFRIAMIENTO -> ON COOLDOWN; RASTRO x/50 -> CRIMSON x/50; NADIE SANGRA -> NOTHING BLEEDING;
+  NADIE CERCA -> NOTHING IN RANGE; !EJECUCION CARMESI! -> CRIMSON EXECUTION!;
+  !ANIQUILACION! xN -> ANNIHILATION xN; ANIQUILADO -> ANNIHILATED.
+- Beneficio extra: desaparecen los acentos, que dependian de que la fuente los soportara.
+- Test: el smoke test del Crimson Trail ahora rechaza cualquier caracter no-ASCII en
+  SwordsmanSkillPlayer, para que no vuelva a colarse texto en espanol.
+  NOTA: la primera version listaba las vocales acentuadas literalmente y el propio .ps1 se
+  corrompio (se guarda UTF-8 pero Windows PowerShell 5.1 lo lee como ANSI) rompiendo el parser.
+  Por eso la regla se expresa como rango ASCII y los tests se mantienen en ASCII puro.
+
 ## 2026-07-16 - Las barras de recurso ya no imprimen la tecla
 
 - Pedido: "quitale la q porque alguien mas le puede cambiar la tecla a otra y ya no ser la

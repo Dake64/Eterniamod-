@@ -18,7 +18,7 @@ namespace Eternia.Content.Players
     // The Swordsman only exists in hardmode (subclasses resolve off Main.hardMode), so the whole
     // power fantasy is staged across HARDMODE milestones rather than pre-HM -> HM:
     //
-    //   1 FINISHER     (Wall of Flesh)  finish only what YOU made bleed, in a tight 8 tiles.
+    //   1 FINISHER     (Wall of Flesh)  finish only what YOU made bleed.
     //   2 HEMORRHAGE   (Plantera)       the execution draws its own blood: it bleeds the whole
     //                                   zone itself, so you stop marking enemies one by one.
     //   3 ANNIHILATION (Moon Lord)      anything left under a share of its max life simply dies.
@@ -99,7 +99,7 @@ namespace Eternia.Content.Players
 
             if (!skillPlayer.CanUseSkill())
             {
-                Announce("EN ENFRIAMIENTO", new Color(170, 170, 175));
+                Announce("ON COOLDOWN", new Color(170, 170, 175));
                 SoundEngine.PlaySound(SoundID.MenuTick, Player.position);
                 return;
             }
@@ -107,7 +107,7 @@ namespace Eternia.Content.Players
             if (crimson.CrimsonTrail < TechniqueCost)
             {
                 Announce(
-                    $"RASTRO {crimson.CrimsonTrail}/{TechniqueCost}",
+                    $"CRIMSON {crimson.CrimsonTrail}/{TechniqueCost}",
                     new Color(200, 70, 70));
                 SoundEngine.PlaySound(SoundID.MenuClose, Player.position);
                 return;
@@ -120,7 +120,7 @@ namespace Eternia.Content.Players
             if (CountTargetsInRange(tier, radius) == 0)
             {
                 Announce(
-                    tier >= TierHemorrhage ? "NADIE CERCA" : "NADIE SANGRA",
+                    tier >= TierHemorrhage ? "NOTHING IN RANGE" : "NOTHING BLEEDING",
                     new Color(200, 70, 70));
                 SoundEngine.PlaySound(SoundID.MenuClose, Player.position);
                 return;
@@ -135,11 +135,11 @@ namespace Eternia.Content.Players
 
             if (annihilated > 0)
             {
-                Announce($"¡ANIQUILACIÓN! x{annihilated}", new Color(255, 40, 55));
+                Announce($"ANNIHILATION x{annihilated}", new Color(255, 40, 55));
             }
             else
             {
-                Announce("¡EJECUCIÓN CARMESÍ!", new Color(255, 60, 70));
+                Announce("CRIMSON EXECUTION!", new Color(255, 60, 70));
             }
 
             // The camera punch grows with the tier, so the endgame version lands like a truck.
@@ -282,7 +282,7 @@ namespace Eternia.Content.Players
                 CombatText.NewText(
                     npc.Hitbox,
                     wiped ? new Color(255, 30, 40) : Color.Red,
-                    wiped ? "ANIQUILADO" : "EXECUTE!",
+                    wiped ? "ANNIHILATED" : "EXECUTE!",
                     true);
             }
 

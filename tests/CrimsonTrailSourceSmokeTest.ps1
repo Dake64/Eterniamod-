@@ -88,10 +88,18 @@ if ($skill -notmatch "SimpleStrikeNPC" -or
 # --- The key must never feel dead: loud feedback on EVERY failed press ---------
 # Playtest 2026-07-16: the only feedback was tiny combat text, so the player read a
 # non-firing press as "the key does nothing".
-if ($skill -notmatch "EN ENFRIAMIENTO" -or
-    $skill -notmatch "RASTRO " -or
-    $skill -notmatch "NADIE SANGRA") {
+if ($skill -notmatch "ON COOLDOWN" -or
+    $skill -notmatch "CRIMSON \{" -or
+    $skill -notmatch "NOTHING BLEEDING") {
     throw "Every failed technique press should announce WHY it did not fire."
+}
+
+# The mod ships in English; player-facing strings must not drift into another language just
+# because the author and I discuss it in Spanish. Matched as "any non-ASCII character" rather
+# than by listing accented letters, so this file stays pure ASCII and cannot be corrupted by
+# the UTF-8/ANSI mismatch in Windows PowerShell 5.1.
+if ($skill -match '[^\x00-\x7F]') {
+    throw "SwordsmanSkillPlayer contains non-ASCII text; player-facing strings should be English."
 }
 
 if ($skill -notmatch "SoundEngine\.PlaySound\(SoundID\.MenuClose") {
