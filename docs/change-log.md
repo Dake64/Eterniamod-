@@ -15,6 +15,28 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - La ceremonia del Muro ahora ENSENA la mecanica, no solo la nombra
+
+- Pedido: "como el jugador se dara cuenta de la mecanica de la subclase... algo te diga su
+  mecanica" al recibirla tras el Muro de Carne.
+- Estado previo: la ceremonia YA nombraba la mecanica y daba una frase de sabor (Espadachin:
+  "CRIMSON TRAIL" / "Open the wound, then bank the blood."). Evocador, pero no ensenaba NADA
+  practico: ni que se llena con armas de filo, ni que se gasta con la tecla de skill.
+- Ahora `Identity` devuelve una 4a pieza, `how`: una instruccion concreta por subclase (que la
+  llena y que la gasta) para las 17. Ej. Espadachin: "Bleed foes with edge weapons to bank
+  Crimson Trail, then press Q to execute everything bleeding nearby."
+- `{KEY}` se sustituye por la tecla REALMENTE asignada en ese momento. Si esta sin bindear la
+  linea lo dice: "the Class Skill key (UNBOUND - set it in Controls)" -- justo cuando importa,
+  porque una tecla sin asignar hace que toda la mecanica parezca rota.
+- El banner crecio de 152 a 200px de alto y de 260 a 420 ticks (7s) para que de tiempo a LEER,
+  con la instruccion envuelta y centrada bajo el credo.
+- Ademas se repite en el CHAT (`Main.NewText`): el banner se desvanece y el Muro muere en pleno
+  caos, asi que es facilisimo perderse la unica explicacion del juego. En el chat se puede
+  volver a leer cuando sea.
+- Test: verifica que las 17 subclases tengan las 3 cadenas (mecanica + credo + instruccion),
+  que se use la tecla real y no una letra fija, y que la leccion llegue al chat.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - Los avisos de la tecnica pasan a INGLES
 
 - Pedido: "el texto que sale de nadie sangra cambialo al ingles".

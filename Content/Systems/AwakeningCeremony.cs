@@ -39,87 +39,130 @@ namespace Eternia.Content.Systems
 
         public static void Begin(string promotedSubclass)
         {
-            (string mechanic, string creed, Color color) = Identity(promotedSubclass);
+            (string mechanic, string creed, string how, Color color) = Identity(promotedSubclass);
             accent = color;
             elapsed = 1;
 
+            how = how.Replace("{KEY}", SkillKeyLabel());
+
             // The banner is raised at the BURST, not now -- it slides in as the flash clears.
             // We stash what to say via PromotionBannerUI so the moment it fires it already knows.
-            PromotionBannerUI.Prepare(promotedSubclass, mechanic, creed, color);
+            PromotionBannerUI.Prepare(promotedSubclass, mechanic, creed, how, color);
+
+            // The banner fades, and the Wall of Flesh dies in the middle of chaos -- it is very
+            // easy to miss the one explanation the game ever gives. Repeat it in chat, where it
+            // can be scrolled back to at any time.
+            Main.NewText($"You are now a {promotedSubclass}. Your mechanic: {mechanic}.", color);
+            Main.NewText(how, Color.Lerp(color, Color.White, 0.55f));
 
             SoundEngine.PlaySound(SoundID.Item29, Main.LocalPlayer.position);
         }
 
+        // Instructions name the real bound key, resolved at the moment of promotion. If it is
+        // unbound the line says so outright -- that is exactly when the player needs to know,
+        // since an unbound skill key makes the whole mechanic look broken.
+        private static string SkillKeyLabel()
+        {
+            var keys = EterniaKeybinds.SkillKey?.GetAssignedKeys();
+
+            return keys != null && keys.Count > 0
+                ? keys[0]
+                : "the Class Skill key (UNBOUND - set it in Controls)";
+        }
+
         public override void Unload() => elapsed = 0;
 
-        // What you just became, and the mechanic you were handed with it.
-        private static (string mechanic, string creed, Color accent) Identity(string name)
+        // What you just became, the mechanic you were handed, and -- crucially -- HOW TO USE IT.
+        // The creed is flavour; the third line is the only instruction the game ever gives, so
+        // it must be concrete: what builds the resource, and what spends it. "{KEY}" is replaced
+        // with the player's actual Class Skill binding.
+        private static (string mechanic, string creed, string how, Color accent) Identity(string name)
         {
             return name switch
             {
                 // WARRIOR
                 "Fighter" => ("COMBO",
                     "Every blow feeds the chain. Never let it break.",
+                    "Land fist hits without pausing to build Combo, then press {KEY} to cash it in.",
                     new Color(255, 160, 60)),
                 "Swordsman" => ("CRIMSON TRAIL",
                     "Open the wound, then bank the blood.",
+                    "Bleed foes with edge weapons to bank Crimson Trail, then press {KEY} to execute everything bleeding nearby.",
                     new Color(220, 60, 70)),
                 "Guardian" => ("THE AURA",
                     "Your shield is the weapon. Your defense is the damage.",
+                    "Wear a shield: your Defence radiates as an aura that wounds whatever closes in.",
                     new Color(150, 200, 255)),
                 "Berserker" => ("RAGE",
                     "Pay in blood. Swing harder.",
+                    "Trade life for Rage as you fight, then spend it with {KEY} for a brutal swing.",
                     new Color(210, 50, 50)),
                 "Stunner" => ("IMPACT",
                     "Every hit staggers. Keep them reeling.",
+                    "Hold a melee weapon to build Charge; a full charge staggers and breaks armour.",
                     new Color(255, 215, 90)),
                 "Yoyo Master" => ("THE STRING",
                     "The reach is yours to command.",
+                    "Keep a yoyo on target to stack Precision; at five stacks a True Strike fires by itself.",
                     new Color(120, 220, 200)),
 
                 // MAGE
                 "Elementalist" => ("AFFINITY",
                     "Five elements answer. Only one at a time.",
+                    "Cast an element to raise its Affinity; the dominant one powers your Ultimate.",
                     new Color(180, 140, 255)),
                 "Cursed Mage" => ("CORRUPTION",
                     "Your power and your poison are the same thing.",
+                    "Your spells build Corruption; release it with the Cursed Burst key before it turns on you.",
                     new Color(170, 90, 210)),
                 "Necromancer" => ("RESERVED LIFE",
                     "The dead serve. Your own blood pays them.",
+                    "Every minion reserves part of your maximum life -- a bigger army leaves you frailer.",
                     new Color(150, 220, 170)),
                 "Infinity Mage" => ("INFINITY",
                     "Cast without end. Let the mana loop.",
+                    "Cast to build Overflow, then press {KEY} to Overload and burn it all at once.",
                     new Color(120, 200, 255)),
                 "Arcane Bard" => ("THE REFRAIN",
                     "Keep the song alive and it repays you.",
+                    "Keep casting without pause to raise the Crescendo; it peaks on its own.",
                     new Color(255, 170, 220)),
 
                 // RANGER
                 "Energy Gunner" => ("TEMPERATURE",
                     "Ride the red. Overheat and it burns you.",
+                    "Firing raises Heat: hotter hits harder, but overheat and the weapon burns you.",
                     new Color(120, 230, 255)),
                 "Archer" => ("CONCENTRATION",
                     "Patience, then one perfect shot.",
+                    "Hold still to build Concentration; a focused arrow becomes a perfect shot.",
                     new Color(255, 200, 90)),
                 "Gunner" => ("MOMENTUM",
                     "Never stop. Never miss. Never cool down.",
+                    "Keep firing and moving to build Momentum until your aim locks into Dead Eye.",
                     new Color(255, 140, 60)),
                 "Virtuoso" => ("THE VOLLEY",
                     "One draw, many arrows. Fill the sky.",
+                    "Build your draw, then press {KEY} to loose a full volley instead of one arrow.",
                     new Color(150, 230, 170)),
 
                 // SUMMONER
                 "Beast Tamer" => ("FEROCITY",
                     "The pack feeds on your fury. Let it roar.",
+                    "Your pack's kills feed Ferocity; press {KEY} to roar and send them into a frenzy.",
                     new Color(255, 150, 40)),
                 "Advanced Summoner" => ("LEGION",
                     "A full roster is a stronger roster. Fill the field.",
+                    "A fuller roster builds Command; press {KEY} to overclock the whole legion at once.",
                     new Color(200, 120, 255)),
                 "Tech Summoner" => ("THE POWER CORE",
                     "Charge the core. Then let it overdrive.",
+                    "Your drones charge the Power Core; press {KEY} to spend it on an overdrive burst.",
                     new Color(120, 220, 255)),
 
-                _ => ("YOUR PATH", "The Soul has chosen.", Color.Gold)
+                _ => ("YOUR PATH", "The Soul has chosen.",
+                    "Open your class panel to see what your Soul now grants.",
+                    Color.Gold)
             };
         }
 

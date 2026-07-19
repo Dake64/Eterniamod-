@@ -13,20 +13,24 @@ namespace Eternia.Content.UI
     // AND the signature mechanic you were just handed -- the one thing nothing else explains.
     public class PromotionBannerUI : ModSystem
     {
-        private const int DisplayTicks = 260;
+        // Long enough to actually READ the how-it-works line, not just glimpse the name.
+        private const int DisplayTicks = 420;
 
         private static int remainingTicks;
         private static string subclassName = string.Empty;
         private static string mechanicLine = string.Empty;
         private static string creedLine = "A new path awakens";
+        private static string howLine = string.Empty;
         private static Color accent = Color.Gold;
 
         // Stash what to say without raising the banner yet -- the ceremony fires it at the burst.
-        public static void Prepare(string subclass, string mechanic, string creed, Color accentColor)
+        public static void Prepare(
+            string subclass, string mechanic, string creed, string how, Color accentColor)
         {
             subclassName = subclass;
             mechanicLine = mechanic ?? string.Empty;
             creedLine = string.IsNullOrEmpty(creed) ? "A new path awakens" : creed;
+            howLine = how ?? string.Empty;
             accent = accentColor;
         }
 
@@ -37,9 +41,11 @@ namespace Eternia.Content.UI
         }
 
         // Prepare and raise in one call (instant banner, no ceremony).
-        public static void Show(string subclass, string mechanic = "", string creed = "", Color? accentColor = null)
+        public static void Show(
+            string subclass, string mechanic = "", string creed = "", string how = "",
+            Color? accentColor = null)
         {
-            Prepare(subclass, mechanic, creed, accentColor ?? Color.Gold);
+            Prepare(subclass, mechanic, creed, how, accentColor ?? Color.Gold);
             Fire();
         }
 
@@ -112,7 +118,10 @@ namespace Eternia.Content.UI
             Texture2D pixel = TextureAssets.MagicPixel.Value;
 
             int width = 520;
-            int height = 152;
+
+            // Tall enough for the how-it-works instruction under the creed: the creed is
+            // flavour, but this is the only place the game ever teaches the mechanic.
+            int height = 200;
 
             Rectangle panel =
                 new Rectangle(
@@ -184,6 +193,27 @@ namespace Eternia.Content.UI
                 new Rectangle(panel.X, panel.Y + 116, panel.Width, 20),
                 EterniaUI.MutedText * alpha,
                 0.55f);
+
+            // HOW IT WORKS. The creed above is flavour; this is the actual lesson, and the
+            // only moment the game explains the system it just handed you. Wrapped and
+            // centred, tinted toward your colour so it reads as instruction, not decoration.
+            if (howLine.Length > 0)
+            {
+                int y = panel.Y + 146;
+
+                foreach (string line in
+                    EterniaUI.WrapText(howLine, panel.Width - 48, 0.52f))
+                {
+                    EterniaUI.DrawCenteredText(
+                        spriteBatch,
+                        line,
+                        new Rectangle(panel.X, y, panel.Width, 18),
+                        Color.Lerp(accent, Color.White, 0.55f) * (0.9f * alpha),
+                        0.52f);
+
+                    y += 18;
+                }
+            }
 
             return true;
         }

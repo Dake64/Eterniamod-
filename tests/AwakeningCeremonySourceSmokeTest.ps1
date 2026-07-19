@@ -66,7 +66,7 @@ $subclasses = @(
 
 $identity = [regex]::Match(
     $ceremony,
-    "private static \(string mechanic, string creed, Color accent\) Identity\(string name\)[\s\S]*?\n        \}",
+    "private static \(string mechanic, string creed, string how, Color accent\) Identity\(string name\)[\s\S]*?\n        \}",
     [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
 
 if ([string]::IsNullOrEmpty($identity)) {
@@ -77,6 +77,47 @@ foreach ($s in $subclasses) {
     if ($identity -notmatch "`"$s`"\s*=>") {
         throw "'$s' has no Awakening identity -- it would be handed a mechanic with no explanation."
     }
+}
+
+
+# --- The ceremony must TEACH, not just name ------------------------------------
+# Playtest concern: "como el jugador se dara cuenta de la mecanica de la subclase".
+# Naming the mechanic ("CRIMSON TRAIL") and a creed is flavour; without a concrete
+# how-to the player is handed a system nothing in the game explains.
+$banner = Read-File "Content\UI\PromotionBannerUI.cs"
+
+# Every arm of the table is (mechanic, creed, how, colour): count the entries and make
+# sure none was left with only flavour text.
+$arms = [regex]::Matches($identity, '"[^"]+" =>')
+
+if ($arms.Count -lt 17) {
+    throw "Identity should cover every subclass (found $($arms.Count), expected 17+)."
+}
+
+$colours = [regex]::Matches($identity, 'new Color\(')
+
+if ($arms.Count -ne $colours.Count) {
+    throw "Every subclass arm should carry its own accent colour."
+}
+
+# Three quoted strings per arm (mechanic + creed + how). Two would mean a missing lesson.
+$quoted = [regex]::Matches($identity, '"[^"]{4,}"')
+
+if ($quoted.Count -lt ($arms.Count * 3)) {
+    throw ("Each subclass needs a how-it-works line as well as a mechanic name and creed " +
+        "(found $($quoted.Count) strings for $($arms.Count) subclasses).")
+}
+
+if ($ceremony -notmatch "\{KEY\}" -or $ceremony -notmatch "SkillKeyLabel") {
+    throw "Instructions should name the player's REAL skill key, not a hardcoded letter."
+}
+
+if ($ceremony -notmatch "Main\.NewText") {
+    throw "The lesson should also go to chat: the banner fades and can be missed entirely."
+}
+
+if ($banner -notmatch "howLine") {
+    throw "PromotionBannerUI should render the how-it-works line."
 }
 
 Write-Host "Awakening ceremony source smoke test passed."
