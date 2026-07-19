@@ -35,12 +35,13 @@ namespace Eternia.Content.Players
         public const int TierHemorrhage = 2;
         public const int TierAnnihilation = 3;
 
-        // Tuned by playtest: 8 tiles was cramped to fight inside, 12 still a touch short. The
-        // endgame stays at 28 (already ~half a screen) so the ladder keeps an even ~1.4x step
-        // instead of inflating the zone wipe every time the base tier gets nudged.
-        private const float RadiusFinisher = 224f;      // 14 tiles
-        private const float RadiusHemorrhage = 320f;    // 20 tiles
-        private const float RadiusAnnihilation = 448f;  // 28 tiles
+        // Tuned across several playtests, all upward: 8 tiles was cramped, 12 and 14 still short.
+        // The base tier now sits ABOVE the original 16 -- the owner plays this as a crowd tool,
+        // not a tight melee finisher. Kept at an even ~1.4x step. 40 tiles is about the practical
+        // ceiling: past that the targets are off-screen anyway.
+        private const float RadiusFinisher = 320f;      // 20 tiles
+        private const float RadiusHemorrhage = 448f;    // 28 tiles
+        private const float RadiusAnnihilation = 640f;  // 40 tiles
 
         public static int CurrentTier()
         {

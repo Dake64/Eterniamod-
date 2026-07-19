@@ -15,15 +15,16 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
-## 2026-07-16 - Radios de la Ejecucion Carmesi subidos (playtest, 2 pasadas)
+## 2026-07-16 - Radios de la Ejecucion Carmesi subidos (playtest, 3 pasadas, todas al alza)
 
-- Playtest: el escalon 1 con 8 bloques se sentia apretado para pelear dentro; a 12 seguia
-  quedandose corto.
-- Valores finales: FINISHER 8 -> 12 -> 14 bloques (224px), HEMORRAGIA 12 -> 18 -> 20 (320px),
-  ANIQUILACION 20 -> 28 (448px).
-- En la 2a pasada el escalon 3 se dejo QUIETO en 28: ya son ~media pantalla, y subirlo cada vez
-  que se ajusta el escalon base inflaba el endgame sin necesidad. La escalera queda con un paso
-  parejo de ~x1.4.
+- Playtest: 8 bloques se sentia apretado, 12 y 14 seguian quedandose cortos. Tres peticiones
+  seguidas de mas radio.
+- LECCION DE DISENO: mi premisa inicial estaba mal. Baje el radio de 16 a 8 buscando "identidad
+  melee" (obligar a meterse), pero el owner NO juega esta tecnica asi: la usa como herramienta
+  de control de grupos. El escalon base quedo POR ENCIMA del 16 original.
+- Valores finales: FINISHER 20 bloques (320px), HEMORRAGIA 28 (448px), ANIQUILACION 40 (640px).
+  Paso parejo de ~x1.4.
+- 40 bloques es el techo practico: mas alla los objetivos ya estan fuera de pantalla.
 - Verificacion: compila 0/0; suite 117/117.
 
 ## 2026-07-16 - La Ejecucion Carmesi ahora ESCALA hasta el poder de late game
