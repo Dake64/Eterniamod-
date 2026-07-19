@@ -4,6 +4,7 @@ using Eternia.Content.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -89,9 +90,14 @@ namespace Eternia.Content.Globals
                 RollRarityProfile(npc));
 
             applied = true;
+        }
 
-            // Singleplayer announces the moment it is rolled; a server stays silent and its
-            // clients announce from ReceiveExtraAI instead.
+        // Announce from OnSpawn, NEVER from SetDefaults: tModLoader also runs SetDefaults on the
+        // SAMPLE instance it builds for every NPC type (bestiary/ContentSamples), and those are
+        // not in the world. Announcing there fired the banner for a boss that had not spawned --
+        // "RARE" on screen with nothing around. OnSpawn only runs for a real world entry.
+        public override void OnSpawn(NPC npc, IEntitySource source)
+        {
             AnnounceNotableBoss(npc);
         }
 
@@ -139,7 +145,18 @@ namespace Eternia.Content.Globals
                 || !npc.boss
                 || rarity == EnemyRarity.Common
                 || Main.netMode == NetmodeID.Server
-                || Main.dedServ)
+                || Main.dedServ
+                || Main.gameMenu
+                || !npc.active)
+            {
+                return;
+            }
+
+            // The decisive check: a real world NPC occupies its own slot in Main.npc. A sample
+            // or prototype instance does not, so this rejects anything that never spawned.
+            if (npc.whoAmI < 0
+                || npc.whoAmI >= Main.maxNPCs
+                || Main.npc[npc.whoAmI] != npc)
             {
                 return;
             }
