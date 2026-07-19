@@ -17,7 +17,7 @@ $src = Get-Content -Raw $ui
 # It draws a bar as an interface layer (same pattern as the other resource UIs).
 if ($src -notmatch "ModifyInterfaceLayers" -or
     $src -notmatch "DrawFloatingResourceBar" -or
-    $src -notmatch "ShouldDrawPlayerUI") {
+    $src -notmatch "ShouldDraw(PlayerUI|WorldOverlay)") {
     throw "SubclassResourceUI should draw a resource bar via ModifyInterfaceLayers/DrawFloatingResourceBar."
 }
 

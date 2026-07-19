@@ -236,12 +236,33 @@ namespace Eternia.Content.UI
                 anchor.Y + (clamped.Y - bounds.Y));
         }
 
+        // Any of the mod's full-size panels being open. They cover the middle of the screen,
+        // which is exactly where the floating over-the-player readouts live.
+        public static bool AnyMajorPanelOpen()
+        {
+            return SoulUISystem.Visible ||
+                StatsUI.Visible ||
+                PassiveUI.Visible ||
+                BossLogUI.Visible;
+        }
+
+        // "The player exists and is in the world." The major panels gate themselves on this,
+        // so it must NOT consider whether a panel is open -- doing that made every panel hide
+        // itself the instant it was opened.
         public static bool ShouldDrawPlayerUI(Player player)
         {
             return !Main.gameMenu &&
                 player != null &&
                 player.active &&
                 !player.dead;
+        }
+
+        // Gate for readouts drawn over the player IN THE WORLD (resource bars and the like).
+        // Those sit in the middle of the screen, so an open panel has to hide them: they were
+        // being drawn on top of the Boss Codex, which drawing order alone never prevented.
+        public static bool ShouldDrawWorldOverlay(Player player)
+        {
+            return ShouldDrawPlayerUI(player) && !AnyMajorPanelOpen();
         }
 
         public static void CloseMajorPanelsExcept(
