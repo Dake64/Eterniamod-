@@ -104,8 +104,11 @@ namespace Eternia.Content.UI
             SpriteBatch spriteBatch = Main.spriteBatch;
             Texture2D pixel = TextureAssets.MagicPixel.Value;
 
-            const int width = 560;
-            const int height = 214;
+            // Sized around the type, not the other way round: the reading is meant to be read
+            // from a normal seating distance, so every line got a size bump and the panel grew
+            // to match rather than cramming bigger text into the old box.
+            const int width = 680;
+            const int height = 268;
 
             var panel = new Rectangle(
                 (Main.screenWidth - width) / 2,
@@ -124,47 +127,47 @@ namespace Eternia.Content.UI
             EterniaUI.DrawCenteredText(
                 spriteBatch,
                 "THE ETERNAL READS YOUR SOUL",
-                new Rectangle(panel.X, panel.Y + 12, panel.Width, 18),
+                new Rectangle(panel.X, panel.Y + 14, panel.Width, 22),
                 EterniaUI.MutedText * alpha,
-                0.5f);
+                0.62f);
 
             EterniaUI.DrawCenteredText(
                 spriteBatch,
                 subclass,
-                new Rectangle(panel.X, panel.Y + 32, panel.Width, 30),
+                new Rectangle(panel.X, panel.Y + 42, panel.Width, 38),
                 accent * alpha,
-                0.95f);
+                1.2f);
 
             EterniaUI.DrawCenteredText(
                 spriteBatch,
                 sealedBy,
-                new Rectangle(panel.X, panel.Y + 64, panel.Width, 18),
+                new Rectangle(panel.X, panel.Y + 84, panel.Width, 22),
                 EterniaUI.MutedText * alpha,
-                0.5f);
+                0.62f);
 
             // --- The mechanic and its rung, drawn as pips -------------------------------
             EterniaUI.DrawCenteredText(
                 spriteBatch,
                 mechanic,
-                new Rectangle(panel.X, panel.Y + 90, panel.Width, 22),
+                new Rectangle(panel.X, panel.Y + 116, panel.Width, 28),
                 Color.White * (0.95f * alpha),
-                0.68f);
+                0.88f);
 
             DrawTierPips(spriteBatch, pixel, panel, alpha, pulse);
 
             // --- What the next milestone brings ----------------------------------------
-            int y = panel.Y + 148;
+            int y = panel.Y + 192;
 
-            foreach (string line in EterniaUI.WrapText(growth, panel.Width - 56, 0.5f))
+            foreach (string line in EterniaUI.WrapText(growth, panel.Width - 64, 0.64f))
             {
                 EterniaUI.DrawCenteredText(
                     spriteBatch,
                     line,
-                    new Rectangle(panel.X, y, panel.Width, 18),
-                    Color.Lerp(accent, Color.White, 0.55f) * (0.9f * alpha),
-                    0.5f);
+                    new Rectangle(panel.X, y, panel.Width, 22),
+                    Color.Lerp(accent, Color.White, 0.55f) * (0.92f * alpha),
+                    0.64f);
 
-                y += 17;
+                y += 22;
             }
 
             return true;
@@ -179,12 +182,12 @@ namespace Eternia.Content.UI
             float alpha,
             float pulse)
         {
-            const int pipSize = 9;
-            const int gap = 14;
+            const int pipSize = 13;
+            const int gap = 20;
 
             int totalW = maxTier * pipSize + (maxTier - 1) * gap;
             int startX = panel.X + (panel.Width - totalW) / 2;
-            int pipY = panel.Y + 120;
+            int pipY = panel.Y + 156;
 
             for (int i = 0; i < maxTier; i++)
             {
