@@ -80,6 +80,19 @@ foreach ($hook in @("OnHitNPCWithItem", "OnHitNPCWithProj")) {
     if ($bail -lt 0 -or $grant -lt 0 -or $bail -gt $grant) {
         throw "$hook should bail on a non-bleeding target before granting Crimson Trail."
     }
+
+    # These hooks fire once PER ENEMY STRUCK, so a wide swing through a crowd banked once per
+    # enemy it clipped -- +30 from a single swing, which is what made hordes fill instantly.
+    $window = $body.IndexOf("CanBankTrail()")
+
+    if ($window -lt 0 -or $window -gt $grant) {
+        throw "$hook should pass the per-swing window before granting, or a cleave banks per enemy."
+    }
+}
+
+if ($swordsman -notmatch "MaxTrailGainsPerWindow" -or
+    $swordsman -notmatch "TrailWindowFrames") {
+    throw "The per-swing cap should stay tunable through named constants."
 }
 
 # The old first-blood bonus paid DOUBLE for opening a wound -- the exact opposite of the rule.

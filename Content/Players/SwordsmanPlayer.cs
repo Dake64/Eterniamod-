@@ -29,6 +29,35 @@ namespace Eternia.Content.Players
 
         private int bleedIncomeTimer;
 
+        // OnHitNPCWithItem fires once PER ENEMY STRUCK, so a wide swing through five bleeding
+        // enemies banked five times over -- +30 from a single swing, which is why hordes filled
+        // the bar instantly while a boss crawled. A short window caps how many of those hits can
+        // pay, so cleaving a crowd is still worth more than hitting one target, just not fivefold.
+        // A lone boss is completely unaffected: its swings are far further apart than the window.
+        private const int TrailWindowFrames = 10;
+        private const int MaxTrailGainsPerWindow = 2;
+
+        private int trailWindowTimer;
+        private int trailGainsInWindow;
+
+        private bool CanBankTrail()
+        {
+            if (trailWindowTimer <= 0)
+            {
+                trailWindowTimer = TrailWindowFrames;
+                trailGainsInWindow = 0;
+            }
+
+            if (trailGainsInWindow >= MaxTrailGainsPerWindow)
+            {
+                return false;
+            }
+
+            trailGainsInWindow++;
+
+            return true;
+        }
+
         // The Swordsman is the bleed MASTER: their edge-weapon hits always inflict
         // bleed, bypassing the hidden chance other Warriors roll. Every edge hit also
         // feeds the Crimson Trail resource, which is spent by the Swordsman technique.
@@ -55,6 +84,12 @@ namespace Eternia.Content.Players
 
             // The opening strike only draws the wound -- it banks nothing.
             if (!wasBleeding)
+            {
+                return;
+            }
+
+            // A wide swing through a crowd must not bank once per enemy it clips.
+            if (!CanBankTrail())
             {
                 return;
             }
@@ -102,6 +137,12 @@ namespace Eternia.Content.Players
                 return;
             }
 
+            // A wide swing through a crowd must not bank once per enemy it clips.
+            if (!CanBankTrail())
+            {
+                return;
+            }
+
             int milestoneBonus =
                 Player.GetModPlayer<MilestonePlayer>().Milestones;
 
@@ -140,6 +181,11 @@ namespace Eternia.Content.Players
 
         public override void PostUpdate()
         {
+            if (trailWindowTimer > 0)
+            {
+                trailWindowTimer--;
+            }
+
             if (!IsActiveSwordsman())
             {
                 bleedIncomeTimer = 0;
