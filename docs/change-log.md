@@ -15,6 +15,29 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Las barras de recurso ya no imprimen la tecla
+
+- Pedido: "quitale la q porque alguien mas le puede cambiar la tecla a otra y ya no ser la
+  misma".
+- La barra del Espadachin ya leia la tecla REAL (`GetAssignedKeys()`), asi que no mentia. Pero
+  el pedido destapo algo peor: `SubclassResourceUI` SI tenia la Q hardcodeada para las otras
+  subclases ("Q: ROAR", "Q: OVERDRIVE", "Q: OVERCLOCK", "Q: OVERLOAD"). Esas si se quedaban
+  desactualizadas al rebindear.
+- Decision: NINGUNA barra imprime teclas. El lado derecho muestra siempre TU numero de recurso,
+  que ademas es mas util. El estado "listo" ya se comunica de sobra con la linea de disparo
+  pulsando, el glow y el color caliente.
+- `readyPrompt` (string) se reemplazo por `warning` (string, normalmente null) en
+  `DrawFloatingResourceBar`; en `SubclassResourceUI` el out-param paso de `string readyPrompt`
+  a `bool hasTechnique` (solo servia como bandera de "tiene tecnica activable"; el nombre de la
+  habilidad NUNCA se llegaba a mostrar porque el codigo hacia Split(':')[0]).
+- Se conserva un unico caso: si la tecla de skill esta SIN ASIGNAR, la barra dice "SET KEY",
+  porque eso es un estado roto de verdad y si no el jugador no tiene forma de enterarse.
+- Test nuevo en `SubclassResourceUISourceSmokeTest`: barre Content/UI y prohibe teclas
+  hardcodeadas. Cazo una tercera que se me habia pasado. Nota: la primera version de la regex
+  daba falso positivo con `"RAGE: {valor}"`; se apreto a 1-2 caracteres, que es lo que
+  distingue un nombre de tecla de una etiqueta.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - El sangrado ahora prende en TODO, gusanos mecanicos incluidos
 
 - Pedido: "quiero que el sangrado del Espadachin se le pueda aplicar a todos y tambien al

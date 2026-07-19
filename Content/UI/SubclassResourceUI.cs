@@ -16,8 +16,9 @@ namespace Eternia.Content.UI
     // Beast Tamer (Ferocity), Advanced Summoner (Command), Tech Summoner (Power
     // Core) and Yoyo Master (Precision stacks). One consolidated ModSystem, in the
     // spirit of BaseClassResourceUI: it shows the active subclass's bar and a
-    // "Q: ..." prompt when the technique is ready. Only one is ever active at once,
-    // and none of the six shares a slot with the Swordsman's Crimson Trail bar.
+    // technique-ready highlight. The bar never prints the skill key -- players rebind it, and a
+    // printed key silently goes stale. Only one is ever active at once, and none of the six
+    // shares a slot with the Swordsman's Crimson Trail bar.
     public class SubclassResourceUI : ModSystem
     {
         private const int BarWidth = 132;
@@ -56,13 +57,13 @@ namespace Eternia.Content.UI
                 out float value,
                 out float max,
                 out Color color,
-                out string readyPrompt))
+                out bool hasTechnique))
             {
                 return true;
             }
 
             bool ready =
-                readyPrompt != null && value >= max;
+                hasTechnique && value >= max;
 
             // Shared polished resource bar over the player. alwaysShow so the mechanic is visible
             // (and discoverable) the moment you're that subclass, not only once you've built resource.
@@ -74,7 +75,7 @@ namespace Eternia.Content.UI
                 (int)max,
                 color,
                 ready,
-                ready ? readyPrompt : null,
+                null,
                 alwaysShow: true);
 
             return true;
@@ -86,13 +87,13 @@ namespace Eternia.Content.UI
             out float value,
             out float max,
             out Color color,
-            out string readyPrompt)
+            out bool hasTechnique)
         {
             label = string.Empty;
             value = 0f;
             max = 0f;
             color = Color.White;
-            readyPrompt = null;
+            hasTechnique = false;
 
             var infinity = player.GetModPlayer<InfinityMagePlayer>();
             if (infinity.IsActiveInfinityMage())
@@ -101,7 +102,7 @@ namespace Eternia.Content.UI
                 value = infinity.Overflow;
                 max = InfinityMagePlayer.MaxOverflow;
                 color = new Color(120, 180, 255);
-                readyPrompt = "Q: OVERLOAD";
+                hasTechnique = true;
                 return true;
             }
 
@@ -112,7 +113,7 @@ namespace Eternia.Content.UI
                 value = bard.Crescendo;
                 max = ArcaneBardPlayer.MaxCrescendo;
                 color = new Color(120, 230, 140);
-                readyPrompt = null; // no active technique; the song peaks passively
+                hasTechnique = false; // the song peaks passively; no key to press
                 return true;
             }
 
@@ -123,7 +124,7 @@ namespace Eternia.Content.UI
                 value = beast.Ferocity;
                 max = BeastTamerPlayer.MaxFerocity;
                 color = new Color(255, 150, 40);
-                readyPrompt = "Q: ROAR";
+                hasTechnique = true;
                 return true;
             }
 
@@ -134,7 +135,7 @@ namespace Eternia.Content.UI
                 value = advanced.Command;
                 max = AdvancedSummonerPlayer.MaxCommand;
                 color = new Color(200, 120, 255);
-                readyPrompt = "Q: OVERCLOCK";
+                hasTechnique = true;
                 return true;
             }
 
@@ -145,7 +146,7 @@ namespace Eternia.Content.UI
                 value = tech.PowerCore;
                 max = TechSummonerPlayer.MaxPowerCore;
                 color = new Color(120, 220, 255);
-                readyPrompt = "Q: OVERDRIVE";
+                hasTechnique = true;
                 return true;
             }
 
@@ -156,7 +157,7 @@ namespace Eternia.Content.UI
                 value = yoyo.precisionStacks;
                 max = 5f;
                 color = new Color(255, 225, 70);
-                readyPrompt = null; // True Strike auto-fires at 5 stacks
+                hasTechnique = false; // True Strike auto-fires at 5 stacks
                 return true;
             }
 

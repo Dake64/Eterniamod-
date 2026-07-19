@@ -56,12 +56,13 @@ namespace Eternia.Content.UI
             bool ready =
                 crimson.CrimsonTrail >= SwordsmanSkillPlayer.TechniqueCost;
 
-            // Show the REAL bound key (not a hardcoded "Q"): tModLoader does not force a mod
-            // keybind's default onto an existing controls profile, so it can sit unbound. When
-            // it is, the bar says SET KEY -- telling the player exactly why the skill "does
-            // nothing" instead of promising a key that was never assigned.
+            // The bar never prints the skill key: players rebind it, and a printed key goes
+            // stale without anyone noticing. The one thing worth surfacing is the genuinely
+            // broken state -- tModLoader does not force a mod keybind's default onto an
+            // existing controls profile, so it can sit unbound and the skill just "does
+            // nothing". Only then does the bar say so.
             var keys = EterniaKeybinds.SkillKey?.GetAssignedKeys();
-            string keyLabel = keys != null && keys.Count > 0 ? keys[0] : "SET KEY";
+            string warning = keys == null || keys.Count == 0 ? "SET KEY" : null;
 
             // Blood-themed resource bar over the player: a clotted vessel of arterial blood
             // that ripples, trembles at the level line, and drips -- fitting the bleed fantasy.
@@ -73,7 +74,7 @@ namespace Eternia.Content.UI
                 CrimsonTrailPlayer.MaxCrimsonTrail,
                 new Color(205, 35, 45),
                 ready,
-                keyLabel + ": EXECUTE",
+                warning,
                 alwaysShow: true,
                 bloodTheme: true,
                 thresholdPercent:

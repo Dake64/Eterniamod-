@@ -487,7 +487,7 @@ namespace Eternia.Content.UI
         // Shared floating resource bar that hovers over the player. It fades in/out
         // with the value (so it never sits permanently at 0), draws a polished fill
         // with a bright leading edge + gloss, pulses a glow when nearly full, and can
-        // show an optional "Q: ..." ready pill. Only one class/subclass resource is
+        // show an optional warning in place of the value. Only one class/subclass resource is
         // ever active at a time, so one shared fade alpha is enough for all callers.
         private static float resourceBarAlpha;
 
@@ -499,7 +499,7 @@ namespace Eternia.Content.UI
             int max,
             Color color,
             bool ready = false,
-            string readyPrompt = null,
+            string warning = null,
             bool alwaysShow = false,
             bool bloodTheme = false,
             float thresholdPercent = -1f)
@@ -539,11 +539,12 @@ namespace Eternia.Content.UI
             int trueW = bloodTheme ? gaugeW : segTrueW;
             int gaugeH = bloodTheme ? 9 : 6;
 
-            // Compact side text: the ready key when ready (the actionable bit), else the value.
+            // Compact side text: always YOUR resource number. It deliberately never shows the
+            // skill key -- players rebind, and a printed key silently goes stale. "Ready" is
+            // already unmistakable from the pulsing fire line, the glow and the hot colour.
+            // The only exception is a genuine broken state passed in as a warning.
             string sideText =
-                ready && readyPrompt != null
-                    ? readyPrompt.Split(':')[0].Trim()
-                    : (full ? "MAX" : clamped.ToString());
+                warning ?? (full ? "MAX" : clamped.ToString());
 
             float labelScale = 0.46f;
             float lw = FontAssets.MouseText.Value.MeasureString(label).X * labelScale;
