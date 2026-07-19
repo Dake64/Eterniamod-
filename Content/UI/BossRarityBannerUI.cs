@@ -54,6 +54,133 @@ namespace Eternia.Content.UI
                 Main.LocalPlayer.position);
         }
 
+        // Deterministic 0..1 noise. The banner must look identical on every client and across
+        // a resume, so nothing here may touch Main.rand.
+        private static float Hash01(int i, float salt)
+        {
+            double v = System.Math.Sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+
+            return (float)(v - System.Math.Floor(v));
+        }
+
+        // Motes of ash drifting upward. They give the empty air depth and motion, which is what
+        // separates "a title card" from "the room is wrong".
+        private static void DrawEmbers(
+            SpriteBatch spriteBatch, Texture2D pixel, float time, float amount)
+        {
+            if (amount <= 0.01f)
+            {
+                return;
+            }
+
+            int count = 22 + (int)(power * 42f);
+
+            for (int i = 0; i < count; i++)
+            {
+                float speed = 0.05f + Hash01(i, 3f) * 0.14f;
+                float phase = Hash01(i, 7f);
+
+                float travel = (time * speed + phase) % 1f;
+
+                float x = Hash01(i, 1f) * Main.screenWidth
+                    + (float)System.Math.Sin(time * 0.8f + i) * 14f;
+
+                float y = Main.screenHeight * (1f - travel);
+
+                // Fade in from the bottom and out at the top so none of them pop.
+                float life = (float)System.Math.Sin(travel * System.Math.PI);
+
+                int size = 1 + (int)(Hash01(i, 11f) * 2f);
+
+                spriteBatch.Draw(
+                    pixel,
+                    new Rectangle((int)x, (int)y, size, size),
+                    accent * (life * 0.55f * amount));
+            }
+        }
+
+        // Thin streaks racing across the frame while the dread builds -- pressure, movement,
+        // something coming.
+        private static void DrawStreaks(
+            SpriteBatch spriteBatch, Texture2D pixel, float time, float dread)
+        {
+            int count = (int)(power * 7f);
+
+            for (int i = 0; i < count; i++)
+            {
+                float phase = Hash01(i, 23f);
+                float t = (time * (0.5f + Hash01(i, 29f)) + phase) % 1f;
+
+                int w = 60 + (int)(Hash01(i, 31f) * 260f);
+                int x = (int)(t * (Main.screenWidth + w)) - w;
+                int y = (int)(Hash01(i, 37f) * Main.screenHeight);
+
+                spriteBatch.Draw(
+                    pixel,
+                    new Rectangle(x, y, w, 1),
+                    accent * (0.22f * dread * (float)System.Math.Sin(t * System.Math.PI)));
+            }
+        }
+
+        // An expanding hollow frame at the moment of impact.
+        private static void DrawShockwave(
+            SpriteBatch spriteBatch, Texture2D pixel, int sinceSlam, int centerX, int centerY)
+        {
+            for (int ring = 0; ring < 3; ring++)
+            {
+                int t = sinceSlam - ring * 5;
+
+                if (t < 0 || t > 26)
+                {
+                    continue;
+                }
+
+                float p = t / 26f;
+                int halfW = (int)(60 + p * (Main.screenWidth * 0.55f));
+                int halfH = (int)(20 + p * 190f);
+
+                Color c = accent * ((1f - p) * 0.5f);
+
+                var r = new Rectangle(
+                    centerX - halfW, centerY - halfH, halfW * 2, halfH * 2);
+
+                spriteBatch.Draw(pixel, new Rectangle(r.X, r.Y, r.Width, 2), c);
+                spriteBatch.Draw(pixel, new Rectangle(r.X, r.Bottom - 2, r.Width, 2), c);
+                spriteBatch.Draw(pixel, new Rectangle(r.X, r.Y, 2, r.Height), c);
+                spriteBatch.Draw(pixel, new Rectangle(r.Right - 2, r.Y, 2, r.Height), c);
+            }
+        }
+
+        // Corner brackets closing around the name, like something being locked onto.
+        private static void DrawBrackets(
+            SpriteBatch spriteBatch, Texture2D pixel,
+            int centerX, int centerY, float settle, float alpha)
+        {
+            int reach = (int)(190 + power * 150f);
+            int inset = (int)((1f - settle) * 90f);
+
+            int left = centerX - reach + inset;
+            int right = centerX + reach - inset;
+            int top = centerY - 40;
+            int bottom = centerY + 40;
+
+            int len = 26 + (int)(power * 20f);
+            Color c = accent * (0.8f * alpha);
+
+            // Top-left, top-right, bottom-left, bottom-right.
+            spriteBatch.Draw(pixel, new Rectangle(left, top, len, 2), c);
+            spriteBatch.Draw(pixel, new Rectangle(left, top, 2, len / 2), c);
+
+            spriteBatch.Draw(pixel, new Rectangle(right - len, top, len, 2), c);
+            spriteBatch.Draw(pixel, new Rectangle(right - 2, top, 2, len / 2), c);
+
+            spriteBatch.Draw(pixel, new Rectangle(left, bottom, len, 2), c);
+            spriteBatch.Draw(pixel, new Rectangle(left, bottom - len / 2, 2, len / 2), c);
+
+            spriteBatch.Draw(pixel, new Rectangle(right - len, bottom, len, 2), c);
+            spriteBatch.Draw(pixel, new Rectangle(right - 2, bottom - len / 2, 2, len / 2), c);
+        }
+
         // Fired at the slam, once the dread has had time to sit.
         private static void Impact()
         {
@@ -183,11 +310,16 @@ namespace Eternia.Content.UI
                     accent * (0.14f * power * fade));
             }
 
-            // Before the name lands, that is all there is: silence and a closing frame.
+            DrawStreaks(spriteBatch, pixel, time, dread * fade);
+            DrawEmbers(spriteBatch, pixel, time, dread * fade);
+
+            // Before the name lands, that is all there is: a closing frame, ash and streaks.
             if (elapsed < SlamAt)
             {
                 return true;
             }
+
+            DrawShockwave(spriteBatch, pixel, elapsed - SlamAt, centerX, centerY);
 
             // --- SLAM + HOLD -------------------------------------------------------------
             float alpha = slam * fade;
@@ -231,6 +363,8 @@ namespace Eternia.Content.UI
                 Main.screenWidth,
                 44);
 
+            DrawBrackets(spriteBatch, pixel, centerX, centerY, settle, alpha);
+
             int glowLayers = 4 + (int)(power * 4f);
 
             for (int i = 0; i < glowLayers; i++)
@@ -250,6 +384,23 @@ namespace Eternia.Content.UI
                     nameScale);
             }
 
+            // Chromatic split: the red and cyan ghosts drift apart with the roll, so the worst
+            // rarities look like a signal breaking up rather than a title being displayed.
+            float split = power * (2.5f + 2f * pulse);
+
+            if (split > 0.5f)
+            {
+                EterniaUI.DrawCenteredText(
+                    spriteBatch, rarityText,
+                    new Rectangle(nameRect.X - (int)split, nameRect.Y, nameRect.Width, nameRect.Height),
+                    new Color(255, 40, 40) * (0.55f * alpha), nameScale);
+
+                EterniaUI.DrawCenteredText(
+                    spriteBatch, rarityText,
+                    new Rectangle(nameRect.X + (int)split, nameRect.Y, nameRect.Width, nameRect.Height),
+                    new Color(40, 230, 255) * (0.55f * alpha), nameScale);
+            }
+
             EterniaUI.DrawCenteredText(
                 spriteBatch,
                 rarityText,
@@ -259,13 +410,25 @@ namespace Eternia.Content.UI
 
             if (bossName.Length > 0)
             {
+                // A hairline rule under the name, opening outward with the reveal, so the boss
+                // name reads as a caption rather than a second floating title.
+                int ruleW = (int)(150f * settle);
+
+                spriteBatch.Draw(
+                    pixel,
+                    new Rectangle(centerX - ruleW, centerY + 38, ruleW * 2, 1),
+                    accent * (0.5f * alpha));
+
                 EterniaUI.DrawCenteredText(
                     spriteBatch,
                     bossName,
-                    new Rectangle(0, centerY + 44, Main.screenWidth, 24),
-                    Color.White * (0.75f * alpha * settle),
-                    0.66f);
+                    new Rectangle(0, centerY + 46, Main.screenWidth, 24),
+                    Color.White * (0.8f * alpha * settle),
+                    0.68f);
             }
+
+            // Ash keeps drifting through the hold, not just the build-up.
+            DrawEmbers(spriteBatch, pixel, time, 0.7f * fade);
 
             return true;
         }
