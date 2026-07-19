@@ -5,6 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 using Eternia.Content.Systems;
 
@@ -227,6 +228,22 @@ namespace Eternia.Content.Players
 
             // Attunement accessories let you flow between elements faster.
             cd -= AccSwitchCooldownCut;
+
+            // The elements stop resisting the change of hands:
+            //   DEEPENED  (Plantera)  switching costs half as long.
+            //   PERFECTED (Moon Lord) no cooldown at all -- you flow between all five freely,
+            //                         which is the whole point of being an Elementalist.
+            int tier = MechanicTier.Current();
+
+            if (tier >= MechanicTier.Perfected)
+            {
+                return 0;
+            }
+
+            if (tier >= MechanicTier.Deepened)
+            {
+                cd /= 2;
+            }
 
             return System.Math.Max(8, cd);
         }

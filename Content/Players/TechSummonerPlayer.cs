@@ -6,6 +6,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -106,6 +107,21 @@ namespace Eternia.Content.Players
                 // Combat Protocol (keystone): the shield holds far better.
                 Player.statDefense +=
                     (HasKeystone("Combat Protocol") ? 28 : 15) + AccOverdriveDefense;
+
+                // The protocol keeps escalating:
+                //   DEEPENED  (Plantera)  the drones also swing faster while overdriven.
+                //   PERFECTED (Moon Lord) the damage spike roughly doubles on top of that.
+                int tier = MechanicTier.Current();
+
+                if (tier >= MechanicTier.Deepened)
+                {
+                    Player.GetAttackSpeed(DamageClass.Summon) += 0.20f;
+                }
+
+                if (tier >= MechanicTier.Perfected)
+                {
+                    Player.GetDamage(DamageClass.Summon) += 0.30f;
+                }
             }
         }
 

@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -217,10 +218,24 @@ namespace Eternia.Content.Players
                 }
             }
 
-            // Consume Concentration. A Perfect Shot burns almost the whole bar (back to ~10).
+            // Consume Concentration. A Perfect Shot burns almost the whole bar (back to ~10)
+            // -- until Concentration learns to feed itself:
+            //   DEEPENED  (Plantera)  a Perfect Shot leaves half the bar standing, so perfects
+            //                         begin to CHAIN instead of resetting you to nothing.
+            //   PERFECTED (Moon Lord) a Legendary shot costs nothing at all.
             if (ShotIsPerfect)
             {
-                Focus = 10f;
+                int tier = IsActiveArcher()
+                    ? MechanicTier.Current()
+                    : MechanicTier.Awakened;
+
+                Focus = tier switch
+                {
+                    >= MechanicTier.Perfected when ShotIsLegendary => MaxFocus,
+                    >= MechanicTier.Perfected => MaxFocus * 0.6f,
+                    >= MechanicTier.Deepened => MaxFocus * 0.5f,
+                    _ => 10f,
+                };
             }
             else
             {

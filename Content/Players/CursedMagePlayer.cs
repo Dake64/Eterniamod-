@@ -5,6 +5,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -208,8 +209,26 @@ namespace Eternia.Content.Players
                 burstMult *= 1.5f;
             }
 
+            // The curse learns to detonate cleaner and wider:
+            //   DEEPENED  (Plantera)  half again the blast, and it reaches noticeably further.
+            //   PERFECTED (Moon Lord) double the blast over a far wider ring, so discharging a
+            //                         dangerous Corruption load clears the room that caused it.
+            int tier = MechanicTier.Current();
+
+            if (tier >= MechanicTier.Perfected)
+            {
+                burstMult *= 2f;
+            }
+            else if (tier >= MechanicTier.Deepened)
+            {
+                burstMult *= 1.5f;
+            }
+
             int damage = (int)((40 + corruption * 4) * burstMult);
-            float radius = 220f + corruption;
+
+            float radius =
+                (220f + corruption) * (tier >= MechanicTier.Perfected ? 1.6f
+                    : tier >= MechanicTier.Deepened ? 1.3f : 1f);
 
             CombatText.NewText(
                 Player.Hitbox,

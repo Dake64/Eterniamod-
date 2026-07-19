@@ -6,6 +6,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -157,9 +158,21 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            skill.SetCooldown(OverclockCooldown);
+            // The legion learns to hold its orders:
+            //   DEEPENED  (Plantera)  half the Command survives the order and the wait halves,
+            //                         so Overclock becomes a rhythm, not a once-a-fight button.
+            //   PERFECTED (Moon Lord) giving the order costs no Command at all.
+            int tier = MechanicTier.Current();
 
-            Command = 0f;
+            skill.SetCooldown(
+                tier >= MechanicTier.Deepened ? OverclockCooldown / 2 : OverclockCooldown);
+
+            Command = tier switch
+            {
+                >= MechanicTier.Perfected => Command,
+                >= MechanicTier.Deepened => Command * 0.5f,
+                _ => 0f,
+            };
 
             // Overdrive: the Overclock window lasts longer.
             OverclockTimer = OverclockDuration

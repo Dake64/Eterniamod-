@@ -32,7 +32,11 @@ if ($player -notmatch "OnHitNPCWithProj" -or $player -notmatch "Momentum\s*\+=")
     throw "Landing a bullet should build Momentum."
 }
 
-if ($player -notmatch "ticksSinceHit\s*>\s*30" -or $player -notmatch "Momentum\s*-=") {
+# The grace before Momentum bleeds is 30 ticks at the base tier and doubles at the
+# milestones, so the literal 30 now lives in the tier expression.
+if ($player -notmatch "MechanicTier\.Deepened \? 60 : 30" -or
+    $player -notmatch "ticksSinceHit\s*>\s*grace" -or
+    $player -notmatch "Momentum\s*-=") {
     throw "Momentum should decay once you stop landing shots."
 }
 

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -154,6 +155,18 @@ namespace Eternia.Content.Players
         // PLAY MELODY
         // =================================================
 
+        // A refrain holds longer as the world hardens: 10s -> 15s -> 20s. The Virtuoso spends
+        // real time performing, so the reward for that time is what grows.
+        private static int MelodyDuration()
+        {
+            return MechanicTier.Current() switch
+            {
+                >= MechanicTier.Perfected => 1200,
+                >= MechanicTier.Deepened => 900,
+                _ => 600,
+            };
+        }
+
         private void PlayMelody()
         {
             if (Notes.Count < 3)
@@ -170,7 +183,14 @@ namespace Eternia.Content.Players
 
             if (melody == "Do-Re-Mi")
             {
-                DamageBuffTimer = 600;
+                DamageBuffTimer = MelodyDuration();
+
+                // PERFECTED: the Virtuoso plays in harmony -- a single melody now carries
+                // BOTH refrains, so you stop having to choose between war and speed.
+                if (MechanicTier.Current() >= MechanicTier.Perfected)
+                {
+                    SpeedBuffTimer = DamageBuffTimer;
+                }
 
                 for (int i = 0; i < 15; i++)
                 {
@@ -195,7 +215,12 @@ namespace Eternia.Content.Players
 
             else if (melody == "Mi-Re-Do")
             {
-                SpeedBuffTimer = 600;
+                SpeedBuffTimer = MelodyDuration();
+
+                if (MechanicTier.Current() >= MechanicTier.Perfected)
+                {
+                    DamageBuffTimer = SpeedBuffTimer;
+                }
 
                 for (int i = 0; i < 15; i++)
                 {

@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -91,11 +92,24 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            // Momentum bleeds away once you stop landing shots.
-            if (ticksSinceHit > 30)
+            // Momentum bleeds away once you stop landing shots -- but the rhythm gets harder
+            // to break:
+            //   DEEPENED  (Plantera)  twice the grace before it starts bleeding, so reloading
+            //                         or repositioning no longer undoes your build-up.
+            //   PERFECTED (Moon Lord) the top half NEVER bleeds. You stop falling out of form.
+            int tier = MechanicTier.Current();
+            int grace = tier >= MechanicTier.Deepened ? 60 : 30;
+            float momentumFloor = tier >= MechanicTier.Perfected ? MaxMomentum * 0.5f : 0f;
+
+            if (ticksSinceHit > grace && Momentum > momentumFloor)
             {
                 float decay = HasGun("Rapid Chamber") ? 1.0f : 1.5f;
                 Momentum -= decay * AccMomentumDecayMult;
+
+                if (Momentum < momentumFloor)
+                {
+                    Momentum = momentumFloor;
+                }
 
                 if (Momentum < 0f)
                 {

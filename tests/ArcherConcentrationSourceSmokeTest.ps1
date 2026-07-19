@@ -72,8 +72,14 @@ if ($player -notmatch "crit\s*\+=\s*25f") {
 }
 
 # Perfect Shot burns almost the whole bar (back to ~10).
-if ($player -notmatch "Focus\s*=\s*10f") {
-    throw "A Perfect Shot should leave the bar near 10."
+# A Perfect Shot still empties the bar back to ~10 at the base tier; the milestone tiers
+# leave progressively more standing so perfects can chain. The `_ =>` arm is the base case.
+if ($player -notmatch "_\s*=>\s*10f") {
+    throw "A Perfect Shot should leave the bar near 10 at the base tier."
+}
+
+if ($player -notmatch "MechanicTier\.") {
+    throw "Concentration should grow with the hardmode milestones."
 }
 
 # --- Hawkeye ultimate: every 8th Perfect Shot is a Legendary Shot ------------

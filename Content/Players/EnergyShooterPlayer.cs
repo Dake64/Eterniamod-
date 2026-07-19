@@ -5,6 +5,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -71,10 +72,25 @@ namespace Eternia.Content.Players
                 }
             }
 
-            // Overheated weapons stay locked until they cool to a safe temperature.
-            if (Overheated && Heat <= MaxHeat * 0.3f)
+            // Overheated weapons stay locked until they cool to a safe temperature -- but the
+            // engine learns to VENT instead of seize:
+            //   AWAKENED  (Muro)      locked until it falls to 30%.
+            //   DEEPENED  (Plantera)  released at 60%: an overheat costs a moment, not a fight.
+            //   PERFECTED (Moon Lord) it never seizes at all. Hitting the ceiling vents straight
+            //                         back down and you keep firing.
+            if (Overheated)
             {
-                Overheated = false;
+                int tier = MechanicTier.Current();
+
+                if (tier >= MechanicTier.Perfected)
+                {
+                    Heat = MaxHeat * 0.4f;
+                    Overheated = false;
+                }
+                else if (Heat <= MaxHeat * (tier >= MechanicTier.Deepened ? 0.6f : 0.3f))
+                {
+                    Overheated = false;
+                }
             }
 
             // FX: smoke while overheated, sparks while in the critical zone.

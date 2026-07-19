@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -81,11 +82,24 @@ namespace Eternia.Content.Players
             }
             else if (Crescendo > 0f)
             {
-                Crescendo -= 0.4f;
+                // The song becomes harder to lose:
+                //   DEEPENED  (Plantera)  it fades at half speed -- a pause no longer undoes
+                //                         the whole performance.
+                //   PERFECTED (Moon Lord) once the song reaches its peak it HOLDS there. The
+                //                         refrain no longer has to be rebuilt from silence.
+                int tier = MechanicTier.Current();
 
-                if (Crescendo < 0f)
+                bool holdingPeak =
+                    tier >= MechanicTier.Perfected && Crescendo >= MaxCrescendo;
+
+                if (!holdingPeak)
                 {
-                    Crescendo = 0f;
+                    Crescendo -= tier >= MechanicTier.Deepened ? 0.2f : 0.4f;
+
+                    if (Crescendo < 0f)
+                    {
+                        Crescendo = 0f;
+                    }
                 }
             }
 

@@ -6,6 +6,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -128,11 +129,27 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            skill.SetCooldown(OverloadCooldown);
+            // The loop tightens as the world hardens:
+            //   AWAKENED  (Muro)      Overload burns the whole reservoir and locks for 10s.
+            //   DEEPENED  (Plantera)  half the Overflow survives the cast and the lock halves,
+            //                         so Overload stops being a once-a-fight button.
+            //   PERFECTED (Moon Lord) the reservoir is untouched and it runs half again as
+            //                         long -- the mana truly loops.
+            int tier = MechanicTier.Current();
 
-            Overflow = 0f;
+            skill.SetCooldown(
+                tier >= MechanicTier.Deepened ? OverloadCooldown / 2 : OverloadCooldown);
 
-            OverloadTimer = OverloadDuration;
+            Overflow = tier switch
+            {
+                >= MechanicTier.Perfected => Overflow,
+                >= MechanicTier.Deepened => Overflow * 0.5f,
+                _ => 0f,
+            };
+
+            OverloadTimer = tier >= MechanicTier.Perfected
+                ? OverloadDuration * 3 / 2
+                : OverloadDuration;
 
             SoundEngine.PlaySound(SoundID.Item29, Player.position);
 

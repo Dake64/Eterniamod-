@@ -15,6 +15,45 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Las 17 subclases tienen MEJORAS REALES por hito, no solo numeros
+
+- Pedido: "hazlo con todos". La escalera anterior solo movia numeros; el Espadachin era el
+  unico con una transformacion de verdad. Ahora todas cambian de COMPORTAMIENTO.
+- GUERRERO
+  - Peleador: la cadena deja de romperse entera. Plantera -> un fallo solo la parte a la mitad;
+    Moon Lord -> pierde un tercio y al maximo la ventana deja de correr.
+  - Guardian: Plantera -> devuelve el golpe COMPLETO (antes la mitad) y aturde; Moon Lord ->
+    el contragolpe supera la herida (x1.5) y alcanza 60% mas lejos.
+  - Berserker: el drenaje de vida del Overrage se reduce a la mitad (Plantera) y DESAPARECE
+    (Moon Lord). Deja de ser una cuenta atras hacia tu propia muerte.
+  - Stunner: el aturdimiento se CONTAGIA a los enemigos que rodean al objetivo, y dura mas.
+- MAGO
+  - Elementalista: cambiar de elemento cuesta la mitad (Plantera) y luego NADA (Moon Lord).
+  - Cursed Mage: la explosion del Burst x1.5 y luego x2, con radio mucho mayor.
+  - Nigromante: los muertos reclaman un tercio menos de vida, y luego casi la mitad.
+  - Infinity Mage: la mitad del Overflow sobrevive al Overload y el bloqueo se parte por dos;
+    en Moon Lord el deposito queda INTACTO y el Overload dura 50% mas.
+  - Arcane Bard: la cancion se desvanece a la mitad de velocidad, y en el pico ya no baja.
+- RANGER
+  - Energy Gunner: el sobrecalentamiento libera al 60% (antes 30%) y en Moon Lord ya no
+    bloquea: ventila solo y sigues disparando.
+  - Arquero: un Perfect Shot deja media barra en pie (antes ~10), asi que los perfectos
+    ENCADENAN; en Moon Lord un Legendary no cuesta nada.
+  - Gunner: el doble de gracia antes de perder Momentum, y en Moon Lord la mitad superior
+    nunca baja.
+  - Virtuoso: las melodias duran 15s y luego 20s, y en Moon Lord una sola melodia da AMBOS
+    refranes a la vez.
+- SUMMONER
+  - Domador: la Ferocidad se enfria a la mitad, y en Moon Lord nunca baja del 50%.
+  - Advanced Summoner: la mitad del Command sobrevive a la orden y luego no cuesta nada.
+  - Tech Summoner: los drones atacan mas rapido en Overdrive, y el pico de dano casi se dobla.
+- El tier 1 queda INTACTO en todos los casos: el balance que se juega hoy no cambia hasta
+  Plantera. Se verifico en los tres tests que fijaban el comportamiento base.
+- Tres tests quedaron obsoletos porque fijaban el codigo literal (Focus = 10f, el 0.3f del
+  overheat, el `ticksSinceHit > 30`). Se actualizaron para exigir el MISMO comportamiento base
+  dentro de la expresion por tier, no para relajarlos.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - TODAS las subclases escalan con los hitos, no solo el Espadachin
 
 - Pedido: "puedes hacer lo mismo para las demas subclases que su mecanica igual mejore".

@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Necromancy;
 using Eternia.Content.Projectiles.Necromancer;
 using Eternia.Content.Souls;
@@ -50,8 +51,22 @@ namespace Eternia.Content.Players
                 ActiveGrimoire = held;
             }
 
-            // Accessories (phylacteries, bone conduits...) ease the toll of the undead.
-            float reserveMult = (ActiveGrimoire?.ReserveMult ?? 1f) * AccReserveMult;
+            // Accessories (phylacteries, bone conduits...) ease the toll of the undead -- and
+            // so does mastery over death itself:
+            //   DEEPENED  (Plantera)  the dead claim a third less of your life.
+            //   PERFECTED (Moon Lord) they claim barely half. A full army stops meaning a
+            //                         near-empty health bar, which is the whole fantasy.
+            int tier = MechanicTier.Current();
+
+            float tierRelief = tier switch
+            {
+                >= MechanicTier.Perfected => 0.55f,
+                >= MechanicTier.Deepened => 0.67f,
+                _ => 1f,
+            };
+
+            float reserveMult =
+                (ActiveGrimoire?.ReserveMult ?? 1f) * AccReserveMult * tierRelief;
             float manaMult = (ActiveGrimoire?.ManaMult ?? 1f) * AccManaDrainMult;
 
             float reserve = 0f;

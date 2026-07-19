@@ -6,6 +6,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -78,8 +79,27 @@ namespace Eternia.Content.Players
             // The pack calms down if it stops connecting (never mid-frenzy).
             if (FrenzyTimer <= 0 && Ferocity > 0f)
             {
-                // Feral Roar: the fury lingers -- Ferocity fades more slowly.
-                Ferocity -= (HasBeast("Feral Roar") ? 0.08f : 0.15f) * AccFerocityDecayMult;
+                // Feral Roar: the fury lingers -- Ferocity fades more slowly. The pack's
+                // blood also stays up between fights as the world hardens:
+                //   DEEPENED  (Plantera)  Ferocity cools at half speed.
+                //   PERFECTED (Moon Lord) it never falls below half -- the pack stays hungry,
+                //                         so you start every fight already dangerous.
+                int tier = MechanicTier.Current();
+
+                float ferocityFloor =
+                    tier >= MechanicTier.Perfected ? MaxFerocity * 0.5f : 0f;
+
+                if (Ferocity > ferocityFloor)
+                {
+                    Ferocity -= (HasBeast("Feral Roar") ? 0.08f : 0.15f)
+                        * AccFerocityDecayMult
+                        * (tier >= MechanicTier.Deepened ? 0.5f : 1f);
+
+                    if (Ferocity < ferocityFloor)
+                    {
+                        Ferocity = ferocityFloor;
+                    }
+                }
 
                 if (Ferocity < 0f)
                 {

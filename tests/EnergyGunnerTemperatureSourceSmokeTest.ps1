@@ -66,7 +66,9 @@ if ($player -notmatch "if\s*\(Overheated\)\s*[\r\n]+\s*\{\s*[\r\n]+\s*return fal
 }
 
 # Overheated weapon stays locked until it cools to a safe temperature.
-if ($player -notmatch "Overheated\s*&&\s*Heat\s*<=\s*MaxHeat\s*\*\s*0\.3f") {
+# Base tier still locks until 30% of MaxHeat; the milestone tiers release earlier and
+# eventually vent instead of seizing. 0.3f remains the untiered fallback.
+if ($player -notmatch "MaxHeat\s*\*\s*\(tier >= MechanicTier\.Deepened \? 0\.6f : 0\.3f\)") {
     throw "An overheated weapon should stay locked until it cools to a safe fraction of MaxHeat."
 }
 
