@@ -1019,13 +1019,23 @@ namespace Eternia.Content.UI
             Texture2D pixel =
                 TextureAssets.MagicPixel.Value;
 
+            // Brightness has to MEAN something: owned is brightest, then affordable, then
+            // priced-out, then locked. It used to darken owned nodes while washing available
+            // ones toward the panel, so the ladder was not monotonic and you could not read
+            // your own progress off the tree at a glance.
             Color fill =
                 state switch
                 {
-                    PassiveState.Unlocked => Color.Lerp(accent, Color.Black, 0.35f),
-                    PassiveState.Available => Color.Lerp(accent, EterniaUI.PanelSurface, 0.58f),
-                    PassiveState.NoPoints => new Color(44, 38, 54),
-                    _ => new Color(35, 39, 47)
+                    PassiveState.Unlocked => Color.Lerp(accent, Color.White, 0.10f),
+                    PassiveState.Available => Color.Lerp(accent, EterniaUI.PanelSurface, 0.55f),
+
+                    // Amber, deliberately a different HUE. "You qualify, you just cannot
+                    // afford it" is a different kind of no from "not yet", and the old tint
+                    // (44,38,54) sat so close to the locked (35,39,47) that the difference
+                    // read as a rendering glitch instead of information.
+                    PassiveState.NoPoints => new Color(74, 58, 30),
+
+                    _ => new Color(28, 31, 38)
                 };
 
             // RPG flourish: soft halo behind owned/available nodes, a gentle pulse
@@ -1056,11 +1066,15 @@ namespace Eternia.Content.UI
             EterniaUI.DrawBorder(spriteBatch, innerBevel, Color.White * 0.10f);
 
             Color frame =
-                state == PassiveState.Available
-                    ? accent * (0.5f + 0.4f * pulse)
-                    : state == PassiveState.Unlocked
-                        ? accent * 0.85f
-                        : accent * 0.4f;
+                state switch
+                {
+                    // The pulse is what draws the eye to what you can take right now; it does
+                    // the attention-grabbing so owned nodes don't have to compete for it.
+                    PassiveState.Available => accent * (0.5f + 0.4f * pulse),
+                    PassiveState.Unlocked => Color.Lerp(accent, Color.White, 0.25f),
+                    PassiveState.NoPoints => new Color(214, 162, 74) * 0.75f,
+                    _ => accent * 0.35f
+                };
 
             EterniaUI.DrawBorder(spriteBatch, rect, frame);
 
