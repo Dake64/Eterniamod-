@@ -1,5 +1,7 @@
 ﻿using Terraria;
 using Terraria.ID;
+using Microsoft.Xna.Framework;
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 using Terraria.ModLoader;
 
@@ -136,10 +138,41 @@ namespace Eternia.Content.Players
 
             if (FullyCharged)
             {
+                int tier = MechanicTier.Current();
+
                 int stunDuration =
                     HasActivePassive("Concussion")
                         ? 180
                         : 120;
+
+                // The stagger sinks deeper as the world hardens:
+                //   DEEPENED  (Plantera)  the stun lasts half again as long, and spreads to
+                //                         everything crowding the target -- one charged blow
+                //                         freezes a whole pack, not a single enemy.
+                //   PERFECTED (Moon Lord) it lasts twice as long and reaches further.
+                if (tier >= MechanicTier.Deepened)
+                {
+                    stunDuration = tier >= MechanicTier.Perfected
+                        ? stunDuration * 2
+                        : stunDuration * 3 / 2;
+
+                    float splashRange = tier >= MechanicTier.Perfected ? 260f : 160f;
+
+                    foreach (NPC other in Main.npc)
+                    {
+                        if (!other.active
+                            || other.friendly
+                            || other.whoAmI == target.whoAmI
+                            || Vector2.Distance(other.Center, target.Center) > splashRange)
+                        {
+                            continue;
+                        }
+
+                        other.GetGlobalNPC<
+                                Eternia.Content.NPCs.StunnedNPC>()
+                            .stunTimer = stunDuration;
+                    }
+                }
 
                 // =========================================
                 // SLOW EFFECT

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -70,10 +71,26 @@ namespace Eternia.Content.Players
             // =============================================
             // REFLECT DAMAGE
             // =============================================
+            //
+            // The wall learns to answer harder as the world hardens:
+            //   AWAKENED  (Muro)      it returns half of what struck you.
+            //   DEEPENED  (Plantera)  it returns the blow in FULL, and the answer staggers
+            //                         whatever it touches -- attackers bounce off you.
+            //   PERFECTED (Moon Lord) the answer exceeds the wound and reaches much further.
+
+            int tier = MechanicTier.Current();
 
             int reflectDamage =
-                (info.Damage / 2)
-                + ((Player.statDefense));
+                (tier >= MechanicTier.Deepened ? info.Damage : info.Damage / 2)
+                + Player.statDefense;
+
+            if (tier >= MechanicTier.Perfected)
+            {
+                reflectDamage = (int)(reflectDamage * 1.5f);
+            }
+
+            float reflectRange =
+                ReflectRadius * (tier >= MechanicTier.Perfected ? 1.6f : 1f);
 
             // =============================================
             // SEARCH ENEMIES
@@ -108,12 +125,20 @@ namespace Eternia.Content.Players
                 // INSIDE AURA
                 // =========================================
 
-                if (distance <= ReflectRadius)
+                if (distance <= reflectRange)
                 {
                     npc.SimpleStrikeNPC(
                         reflectDamage,
                         0
                     );
+
+                    // Deepened onward the answer also staggers, so a crowd that piles onto
+                    // the Guardian keeps getting knocked out of its own rhythm.
+                    if (tier >= MechanicTier.Deepened)
+                    {
+                        npc.GetGlobalNPC<Eternia.Content.NPCs.StunnedNPC>()
+                            .stunTimer = tier >= MechanicTier.Perfected ? 120 : 60;
+                    }
 
                     // =====================================
                     // VISUAL FX

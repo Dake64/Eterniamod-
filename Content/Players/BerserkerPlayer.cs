@@ -1,6 +1,7 @@
 ﻿using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -172,14 +173,30 @@ namespace Eternia.Content.Players
                 Player.moveSpeed += 0.25f;
 
                 // LIFE DRAIN
+                //
+                // Bleeding yourself is the price of Overrage, and the price falls as the
+                // world hardens:
+                //   AWAKENED  (Muro)      1 life every half second.
+                //   DEEPENED  (Plantera)  half that -- Overrage lasts twice as long.
+                //   PERFECTED (Moon Lord) the rage sustains itself. No drain at all, so
+                //                         Overrage stops being a countdown to your own death.
 
-                if (Main.GameUpdateCount % 30 == 0)
+                int tier = MechanicTier.Current();
+
+                if (tier < MechanicTier.Perfected)
                 {
-                    Player.statLife--;
+                    bool drainTick = tier >= MechanicTier.Deepened
+                        ? Main.GameUpdateCount % 60 == 0
+                        : Main.GameUpdateCount % 30 == 0;
 
-                    if (Player.statLife <= 1)
+                    if (drainTick)
                     {
-                        Player.statLife = 1;
+                        Player.statLife--;
+
+                        if (Player.statLife <= 1)
+                        {
+                            Player.statLife = 1;
+                        }
                     }
                 }
 

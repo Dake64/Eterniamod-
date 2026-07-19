@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using Eternia.Content.Progression;
 using Eternia.Content.Souls;
 
 namespace Eternia.Content.Players
@@ -69,15 +70,37 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            // Decay the whole Combo if you stop swinging (counter behaviour, always).
+            // Decay if you stop swinging. For a plain Warrior the whole Combo is lost, and that
+            // is also the promoted Peleador's starting deal -- but the chain LEARNS to hold:
+            //
+            //   DEEPENED  (Plantera)  a missed beat only frays the chain in half, instead of
+            //                         erasing it. You stop being punished for one bad moment.
+            //   PERFECTED (Moon Lord) it frays by a third, and holding the peak no longer burns
+            //                         the window at all -- max Combo lasts as long as you keep it.
             if (Combo > 0)
             {
-                ComboTimer--;
+                int tier = IsActiveFighter()
+                    ? MechanicTier.Current()
+                    : MechanicTier.Awakened;
+
+                bool holdingPeak =
+                    tier >= MechanicTier.Perfected && Combo >= EffectiveMaxCombo;
+
+                if (!holdingPeak)
+                {
+                    ComboTimer--;
+                }
 
                 if (ComboTimer <= 0)
                 {
-                    Combo = 0;
-                    ComboTimer = 0;
+                    Combo = tier switch
+                    {
+                        >= MechanicTier.Perfected => Combo * 2 / 3,
+                        >= MechanicTier.Deepened => Combo / 2,
+                        _ => 0,
+                    };
+
+                    ComboTimer = Combo > 0 ? EffectiveComboDuration : 0;
                 }
             }
 
