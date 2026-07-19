@@ -67,6 +67,9 @@ namespace Eternia.Content.Globals
 
         private bool applied;
 
+        // One announcement per boss instance, however many times its rarity is synced.
+        private bool announced;
+
         public override void SetDefaults(NPC npc)
         {
             if (ShouldIgnore(npc))
@@ -86,6 +89,10 @@ namespace Eternia.Content.Globals
                 RollRarityProfile(npc));
 
             applied = true;
+
+            // Singleplayer announces the moment it is rolled; a server stays silent and its
+            // clients announce from ReceiveExtraAI instead.
+            AnnounceNotableBoss(npc);
         }
 
         public override void SendExtraAI(
@@ -118,6 +125,36 @@ namespace Eternia.Content.Globals
                 npc.scale *= scaleMultiplier;
                 applied = true;
             }
+
+            // A multiplayer client only learns the rarity here, so this is the earliest it can
+            // announce one.
+            AnnounceNotableBoss(npc);
+        }
+
+        // A boss's rarity is the most interesting thing about the fight you are walking into,
+        // and the little tag over its head is easy to miss at the exact moment it spawns.
+        private void AnnounceNotableBoss(NPC npc)
+        {
+            if (announced
+                || !npc.boss
+                || rarity == EnemyRarity.Common
+                || Main.netMode == NetmodeID.Server
+                || Main.dedServ)
+            {
+                return;
+            }
+
+            announced = true;
+
+            // 0..1 up the ladder, so the banner's drama tracks the roll.
+            float rarityPower =
+                (float)(int)rarity / (float)(int)EnemyRarity.Nightmare;
+
+            Content.UI.BossRarityBannerUI.Show(
+                GetRarityText(rarity).ToUpperInvariant(),
+                npc.FullName,
+                GetRarityColor(rarity),
+                rarityPower);
         }
 
         public override bool PreDraw(
@@ -542,7 +579,7 @@ namespace Eternia.Content.Globals
                 scale);
         }
 
-        private static string GetRarityText(EnemyRarity enemyRarity)
+        public static string GetRarityText(EnemyRarity enemyRarity)
         {
             return enemyRarity switch
             {
@@ -557,7 +594,7 @@ namespace Eternia.Content.Globals
             };
         }
 
-        private static Color GetRarityColor(EnemyRarity enemyRarity)
+        public static Color GetRarityColor(EnemyRarity enemyRarity)
         {
             return enemyRarity switch
             {
@@ -572,7 +609,7 @@ namespace Eternia.Content.Globals
             };
         }
 
-        private static float GetRarityIntensity(EnemyRarity enemyRarity)
+        public static float GetRarityIntensity(EnemyRarity enemyRarity)
         {
             return enemyRarity switch
             {

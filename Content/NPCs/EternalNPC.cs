@@ -287,26 +287,17 @@ namespace Eternia.Content.NPCs
             // mechanic keeps growing, so a promoted player reads it as a fixed reward.
             if (Main.hardMode && sub.CurrentSubclass != baseClass)
             {
-                Main.NewText(
-                    $"You awakened as {sub.CurrentSubclass}. Your {affinity} affinity ({value}) sealed it.",
-                    accent.R, accent.G, accent.B);
-
-                string mechanic =
-                    AwakeningCeremony.MechanicOf(sub.CurrentSubclass);
-
-                int tier = MechanicTier.Current();
-
-                // "(1 of 3)" is the part that actually lands: it says there ARE more steps,
-                // which the tier name alone never communicated.
-                Main.NewText(
-                    $"{mechanic} stands {MechanicTier.Name(tier).ToUpper()} " +
-                    $"({tier} of {MechanicTier.Perfected}). Every point of {affinity} deepens it, " +
-                    "as does what you wear.",
-                    accent.R, accent.G, accent.B);
-
-                Main.NewText(
+                // A panel rather than chat lines: this is the one screen that explains your
+                // build, and chat is where combat spam lives. The rung is drawn as pips there,
+                // which reads faster than any wording of "1 of 3".
+                Content.UI.SoulReadingUI.Show(
+                    sub.CurrentSubclass,
+                    AwakeningCeremony.MechanicOf(sub.CurrentSubclass),
+                    $"{affinity} affinity ({value}) sealed this path",
                     MechanicGrowthLine(sub.CurrentSubclass),
-                    255, 220, 120);
+                    MechanicTier.Current(),
+                    MechanicTier.Perfected,
+                    accent);
 
                 Main.NewText(
                     "A Soul Reforge would undo it -- and cost you dearly.",

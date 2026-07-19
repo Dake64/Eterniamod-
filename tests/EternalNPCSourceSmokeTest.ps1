@@ -90,10 +90,26 @@ if ($eternal -notmatch "AwakeningCeremony\.MechanicOf") {
     throw "The Eternal should name your mechanic via AwakeningCeremony, not a second copy of that table."
 }
 
-# "(1 of 3)" is what actually tells the player more steps exist; the tier NAME alone never did.
-if ($eternal -notmatch "MechanicTier\.Name" -or
-    $eternal -notmatch "of \{MechanicTier\.Perfected\}") {
-    throw "Reading a promoted soul should show which rung of the ladder you stand on, out of how many."
+# The reading must show which rung you are on AND how many exist -- otherwise the player has
+# no way to know the mechanic still grows. It is a panel with pips now, not chat text.
+if ($eternal -notmatch "SoulReadingUI\.Show") {
+    throw "Reading a promoted soul should open the soul-reading panel, not dump lines into chat."
+}
+
+if ($eternal -notmatch "MechanicTier\.Current\(\)" -or
+    $eternal -notmatch "MechanicTier\.Perfected") {
+    throw "The reading should pass both your current rung and the top of the ladder."
+}
+
+$reading = Read-File "Content\UI\SoulReadingUI.cs"
+
+if ($reading -notmatch "DrawTierPips") {
+    throw "The panel should draw the rung as pips -- that is what reads at a glance."
+}
+
+# Pips only communicate progression if the unearned ones are still drawn.
+if ($reading -notmatch "bool earned" -or $reading -notmatch "maxTier") {
+    throw "The pips should show unearned rungs too, or they cannot imply what is still ahead."
 }
 
 if ($eternal -notmatch "MechanicGrowthLine") {
