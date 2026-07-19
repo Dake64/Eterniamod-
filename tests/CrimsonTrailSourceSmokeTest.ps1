@@ -59,6 +59,34 @@ if ($swordsman -notmatch "GetModPlayer<CrimsonTrailPlayer>\(\)" -or
     throw "SwordsmanPlayer should grant Crimson Trail on bleed hits."
 }
 
+# Trail is banked ONLY from blood already running: the strike that opens a wound earns
+# nothing. Both entry points (direct strike and the thrown slash) must bail on !wasBleeding
+# BEFORE granting, or the subclass goes back to paying most for hit-and-move-on crowd farming.
+$grants = [regex]::Matches($swordsman, 'if \(!wasBleeding\)')
+
+if ($grants.Count -lt 2) {
+    throw "Both the direct hit and the slash should refuse Trail when the target was not already bleeding."
+}
+
+foreach ($hook in @("OnHitNPCWithItem", "OnHitNPCWithProj")) {
+    $body = [regex]::Match(
+        $swordsman,
+        "public override void $hook\([\s\S]+?\n\s{8}\}",
+        [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+    $bail = $body.IndexOf("if (!wasBleeding)")
+    $grant = $body.IndexOf(".Add(")
+
+    if ($bail -lt 0 -or $grant -lt 0 -or $bail -gt $grant) {
+        throw "$hook should bail on a non-bleeding target before granting Crimson Trail."
+    }
+}
+
+# The old first-blood bonus paid DOUBLE for opening a wound -- the exact opposite of the rule.
+if ($swordsman -match "FirstBloodGain") {
+    throw "The first-blood bonus contradicts banking from existing bleed; it should stay removed."
+}
+
 # --- Spent only by a Skill-key technique ------------------------------------
 if ($skill -notmatch "ProcessTriggers") {
     throw "SwordsmanSkillPlayer should handle the technique in ProcessTriggers."

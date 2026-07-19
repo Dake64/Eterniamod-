@@ -8,9 +8,11 @@ namespace Eternia.Content.Players
 {
     public class SwordsmanPlayer : ModPlayer
     {
-        // Crimson Trail earned for drawing first blood vs. sustaining an existing bleed.
-        private const int FirstBloodGain = 12;
-        private const int SustainGain = 6;
+        // Crimson Trail is banked from blood that is ALREADY running. The strike that opens a
+        // wound earns nothing; every strike after it collects. That is the Swordsman's creed --
+        // "open the wound, then bank the blood" -- and the old split rewarded the opposite, paying
+        // double for first blood and turning the subclass into a hit-and-move-on crowd farmer.
+        private const int TrailPerBleedingHit = 6;
 
         // The Swordsman is the bleed MASTER: their edge-weapon hits always inflict
         // bleed, bypassing the hidden chance other Warriors roll. Every edge hit also
@@ -36,13 +38,18 @@ namespace Eternia.Content.Players
 
             Player.GetModPlayer<WarriorBleedPlayer>().ApplyBleed(target);
 
-            // Reward drawing first blood more than sustaining an existing bleed.
+            // The opening strike only draws the wound -- it banks nothing.
+            if (!wasBleeding)
+            {
+                return;
+            }
+
             // Milestones deepen the mechanic: extra Crimson Trail gained per hit.
             int milestoneBonus =
                 Player.GetModPlayer<MilestonePlayer>().Milestones;
 
             Player.GetModPlayer<CrimsonTrailPlayer>()
-                .Add((wasBleeding ? SustainGain : FirstBloodGain) + milestoneBonus);
+                .Add(TrailPerBleedingHit + milestoneBonus);
         }
 
         // The Swordsman's bleeding slash also inflicts guaranteed bleed and feeds
@@ -74,11 +81,17 @@ namespace Eternia.Content.Players
 
             Player.GetModPlayer<WarriorBleedPlayer>().ApplyBleed(target);
 
+            // Same rule as a direct strike: the slash that opens the wound banks nothing.
+            if (!wasBleeding)
+            {
+                return;
+            }
+
             int milestoneBonus =
                 Player.GetModPlayer<MilestonePlayer>().Milestones;
 
             Player.GetModPlayer<CrimsonTrailPlayer>()
-                .Add((wasBleeding ? SustainGain : FirstBloodGain) + milestoneBonus);
+                .Add(TrailPerBleedingHit + milestoneBonus);
         }
 
         public bool IsActiveSwordsman()
