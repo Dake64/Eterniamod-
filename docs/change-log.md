@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - El Rastro Carmesi se carga con la SANGRE, no con los golpes
+
+- Dos cambios pedidos en playtest, en este orden:
+  1. "que solo gane cuando ya este sangrando el enemigo"
+  2. "quiero q cada tick del sangrado cargue la barra"
+- ANTES: 12 por primera sangre / 6 por mantener. Contradecia el credo del Espadachin
+  ("open the wound, then bank the blood") y ademas castigaba la pelea para la que existe la
+  tecnica: un jefe solo, siempre ya sangrando, siempre en la tarifa BAJA. Lo mas rentable era
+  barrer enemigos nuevos y seguir de largo.
+- AHORA hay dos fuentes:
+  - Golpe a enemigo QUE YA SANGRA: +6 (+Milestones, x multiplicadores). El golpe que abre la
+    herida no banca nada. Aplica igual al golpe directo y al proyectil.
+  - INGRESO PASIVO: cada segundo, +1 por cada enemigo que siga sangrando POR TU herida
+    (se usa el `BleedOwner` que ya existia, asi que en multijugador la sangre de otro Guerrero
+    es su ingreso). La barra por fin se mueve mientras esquivas sin poder pegar.
+- TOPE de 8 enemigos contados en el ingreso pasivo. No es paranoia: en el escalon HEMORRAGIA
+  una sola pulsacion hace sangrar 28 bloques, asi que en un evento con 30+ enemigos serian
+  +30/s -- la barra se llenaria mas rapido que el propio cooldown de la tecnica y quedaria
+  reducida a un boton mantenido.
+- Efecto neto: contra grupos carga MAS LENTO que antes (era ~5 golpes, ahora ~9); contra jefe
+  carga alrededor del doble de rapido gracias al ingreso pasivo. Esa inversion era el objetivo.
+- Tests: fijan que ambos hooks salgan antes de conceder si el objetivo no sangraba, que el
+  bonus de primera sangre siga eliminado, que solo paguen tus propias heridas, y que el
+  ingreso pasivo tenga tope.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - Las 17 subclases tienen MEJORAS REALES por hito, no solo numeros
 
 - Pedido: "hazlo con todos". La escalera anterior solo movia numeros; el Espadachin era el
