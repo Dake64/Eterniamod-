@@ -8,6 +8,7 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 
 using Eternia.Content.Progression;
+using Eternia.Content.Systems;
 using Eternia.Content.Items.Accessories;
 using Eternia.Content.Items.Bosses;
 using Eternia.Content.Items.Souls;
@@ -281,12 +282,27 @@ namespace Eternia.Content.NPCs
                 return;
             }
 
-            // Already promoted: tell them what sealed it.
+            // Already promoted: tell them what sealed it, then -- the part that matters -- that
+            // their mechanic is NOT finished. Nothing else in the game says the subclass
+            // mechanic keeps growing, so a promoted player reads it as a fixed reward.
             if (Main.hardMode && sub.CurrentSubclass != baseClass)
             {
                 Main.NewText(
                     $"You awakened as {sub.CurrentSubclass}. Your {affinity} affinity ({value}) sealed it.",
                     accent.R, accent.G, accent.B);
+
+                string mechanic =
+                    AwakeningCeremony.MechanicOf(sub.CurrentSubclass);
+
+                Main.NewText(
+                    $"But {mechanic} is not finished. Every point you feed {affinity} deepens it, " +
+                    "and what you wear can feed it further.",
+                    accent.R, accent.G, accent.B);
+
+                foreach (string line in MechanicGrowthHints(sub.CurrentSubclass))
+                {
+                    Main.NewText(line, 255, 220, 120);
+                }
 
                 Main.NewText(
                     "A Soul Reforge would undo it -- and cost you dearly.",
@@ -304,6 +320,41 @@ namespace Eternia.Content.NPCs
                     ? $"Feed it further and you will awaken as {sub.PredictedSubclass()}."
                     : $"If the Wall of Flesh fell today, you would awaken as {sub.PredictedSubclass()}.",
                 accent.R, accent.G, accent.B);
+        }
+
+        // World milestones that visibly upgrade a subclass mechanic later on, phrased as the
+        // next thing to look forward to. Only subclasses that genuinely HAVE staged upgrades
+        // appear here -- promising growth that isn't implemented would be worse than silence.
+        private static string[] MechanicGrowthHints(string subclass)
+        {
+            if (subclass != "Swordsman")
+            {
+                return System.Array.Empty<string>();
+            }
+
+            if (!NPC.downedPlantBoss)
+            {
+                return new[]
+                {
+                    "When Plantera falls, your execution will open its own wounds -- it will no " +
+                    "longer need you to bleed them first, and it will reach further."
+                };
+            }
+
+            if (!NPC.downedMoonlord)
+            {
+                return new[]
+                {
+                    "Plantera's death widened your reach. When the Moon Lord falls, your " +
+                    "execution will stop wounding the dying and simply erase them."
+                };
+            }
+
+            return new[]
+            {
+                "Your execution has reached its final form: all that still bleeds within the " +
+                "zone dies outright. Only ascending your Soul widens that mercy further."
+            };
         }
 
         private static void GiveEmptySoul(Player player)

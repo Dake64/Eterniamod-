@@ -80,4 +80,43 @@ if ($predict -notmatch "ResolveSubclass" -or $predict -notmatch "true") {
     throw "PredictedSubclass must resolve as if Hardmode had arrived, or it cannot foretell anything."
 }
 
+# --- Reading a PROMOTED soul must not be a dead end ---------------------------
+# It used to say what sealed your subclass and then only that a Reforge would undo it,
+# which reads as "this is finished". Nothing else in the game tells you the subclass
+# mechanic keeps growing.
+$eternal = Read-File "Content\NPCs\EternalNPC.cs"
+
+if ($eternal -notmatch "AwakeningCeremony\.MechanicOf") {
+    throw "The Eternal should name your mechanic via AwakeningCeremony, not a second copy of that table."
+}
+
+if ($eternal -notmatch "is not finished") {
+    throw "Reading a promoted soul should say the mechanic still grows, not just how it was sealed."
+}
+
+if ($eternal -notmatch "MechanicGrowthHints") {
+    throw "The Eternal should hint at the milestones that upgrade the mechanic."
+}
+
+$hints = [regex]::Match(
+    $eternal,
+    'private static string\[\] MechanicGrowthHints\([\s\S]+?\n\s{8}\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($hints -notmatch "downedPlantBoss" -or $hints -notmatch "downedMoonlord") {
+    throw "Growth hints should track the real world milestones that stage the upgrades."
+}
+
+# Only subclasses that genuinely have staged upgrades may be promised any.
+if ($hints -notmatch "Array\.Empty") {
+    throw "Subclasses without staged upgrades must be promised nothing, not invented growth."
+}
+
+# The ceremony is the single source of truth for mechanic names.
+$ceremony = Read-File "Content\Systems\AwakeningCeremony.cs"
+
+if ($ceremony -notmatch "public static string MechanicOf") {
+    throw "AwakeningCeremony should expose MechanicOf so the Eternal need not duplicate the table."
+}
+
 Write-Host "Eternal NPC source smoke test passed."

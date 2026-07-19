@@ -72,6 +72,10 @@ namespace Eternia.Content.Systems
 
         public override void Unload() => elapsed = 0;
 
+        // The name of the mechanic a subclass carries. Exposed so the Eternal can talk about
+        // your mechanic by name without a second copy of this table drifting out of sync.
+        public static string MechanicOf(string subclass) => Identity(subclass).mechanic;
+
         // What you just became, the mechanic you were handed, and -- crucially -- HOW TO USE IT.
         // The creed is flavour; the third line is the only instruction the game ever gives, so
         // it must be concrete: what builds the resource, and what spends it. "{KEY}" is replaced

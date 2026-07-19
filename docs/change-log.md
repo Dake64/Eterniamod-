@@ -15,6 +15,25 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - El Eternal ahora explica que tu mecanica SIGUE CRECIENDO
+
+- Pedido: "me gustaria que el eternal el npc te diga como mejorar tu mecanica de subclase para
+  que tengas la idea que tambien sube de nivel y mejora".
+- Estado previo: "Read my soul" con el jugador ya promovido decia que subclase eres, que
+  afinidad la sello, y acto seguido "A Soul Reforge would undo it". Un callejon sin salida: se
+  lee como "esto ya esta terminado". Nada en el juego dice que la mecanica siga escalando.
+- Ahora, al leer un alma promovida, el Eternal anade:
+  1. "But {MECANICA} is not finished. Every point you feed {afinidad} deepens it, and what you
+     wear can feed it further." -- usa la afinidad REAL que sello tu subclase y su valor actual.
+  2. Pistas de los hitos del mundo que mejoran la mecanica, segun lo ya derrotado.
+- `AwakeningCeremony.MechanicOf(subclase)` expuesto para nombrar la mecanica SIN duplicar la
+  tabla de la ceremonia (una sola fuente de verdad).
+- HONESTIDAD: `MechanicGrowthHints` solo devuelve pistas para el Espadachin, que es la unica
+  subclase con mejoras por hito realmente implementadas (Plantera -> Hemorragia,
+  Moon Lord -> Aniquilacion). Las demas devuelven vacio: prometer crecimiento no implementado
+  seria peor que callar. El test verifica justo eso (exige `Array.Empty`).
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - La ceremonia del Muro ahora ENSENA la mecanica, no solo la nombra
 
 - Pedido: "como el jugador se dara cuenta de la mecanica de la subclase... algo te diga su
