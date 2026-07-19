@@ -4,14 +4,12 @@ namespace Eternia
 {
     public class EterniaKeybinds : ModSystem
     {
-        // One door into every panel. The per-panel keys below still work as direct shortcuts,
-        // so nobody's muscle memory breaks -- this just means you no longer NEED four of them.
+        // The ONE door into every panel. There used to be a separate key per panel (Soul,
+        // Stats, Passives, Codex); they were kept for a while as shortcuts, but four bindings
+        // to maintain is the very thing the hub exists to remove. Pages are chosen by clicking
+        // a tab now.
         public static ModKeybind ToggleEterniaMenu;
 
-        public static ModKeybind ToggleSoulUI;
-        public static ModKeybind ToggleStatsUI;
-        public static ModKeybind TogglePassiveUI;
-        public static ModKeybind ToggleBossLog;
         public static ModKeybind SkillKey;
         public static ModKeybind ChangeNote;
         public static ModKeybind UltimateKey;
@@ -25,31 +23,6 @@ namespace Eternia
                     "M"
                 );
 
-            ToggleSoulUI =
-                KeybindLoader.RegisterKeybind(
-                    Mod,
-                    "Toggle Soul UI",
-                    "K"
-                );
-
-            ToggleStatsUI =
-                KeybindLoader.RegisterKeybind(
-                    Mod,
-                    "Toggle Stats UI",
-                    "L"
-                );
-            TogglePassiveUI =
-                KeybindLoader.RegisterKeybind(
-                    Mod,
-                    "Toggle Passive UI",
-                    "J"
-                );
-            ToggleBossLog =
-                KeybindLoader.RegisterKeybind(
-                    Mod,
-                    "Toggle Boss Codex",
-                    "N"
-                );
             SkillKey = KeybindLoader.RegisterKeybind(
                 Mod,
                 "Class Skill",
@@ -75,10 +48,6 @@ namespace Eternia
         public override void Unload()
         {
             ToggleEterniaMenu = null;
-            ToggleSoulUI = null;
-            ToggleStatsUI = null;
-            TogglePassiveUI = null;
-            ToggleBossLog = null;
             SkillKey = null;
             ChangeNote = null;
             UltimateKey = null;

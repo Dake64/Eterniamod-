@@ -15,18 +15,14 @@ namespace Eternia.Content.UI
     {
         public static bool Visible;
 
-        public override void UpdateUI(GameTime gameTime)
+        // Each panel owns how it opens; the hub tab only decides WHICH one, so the "opening me
+        // closes the others" rule lives with the panel rather than in the navigation layer.
+        internal static void OpenPanel()
         {
-            if (EterniaKeybinds.ToggleStatsUI.JustPressed)
-            {
-                Visible = !Visible;
+            Visible = true;
 
-                if (Visible)
-                {
-                    EterniaUI.CloseMajorPanelsExcept(
-                        EterniaUI.MajorPanel.Stats);
-                }
-            }
+            EterniaUI.CloseMajorPanelsExcept(
+                EterniaUI.MajorPanel.Stats);
         }
 
         public override void Unload()

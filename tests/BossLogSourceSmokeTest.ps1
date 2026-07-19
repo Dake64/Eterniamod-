@@ -79,14 +79,17 @@ if ($global -notmatch "Main\.dedServ") {
     throw "BossLogGlobalNPC must never try to record on a dedicated server (no local player)."
 }
 
-# --- The UI: a scrollable panel, toggled by a keybind ------------------------
+# --- The UI: a scrollable panel, reached from the hub ------------------------
+# The Codex no longer owns a keybind; it is a page of the Eternia menu, opened by its tab.
 
-if ($keybinds -notmatch "ToggleBossLog" -or $keybinds -notmatch '"Toggle Boss Codex"') {
-    throw "A keybind should open the Boss Codex."
+if ($keybinds -notmatch "ToggleEterniaMenu") {
+    throw "The hub keybind should exist -- it is now the only way in to the Codex."
 }
 
-if ($ui -notmatch "EterniaKeybinds\.ToggleBossLog" -or $ui -notmatch "MajorPanel\.Bosses") {
-    throw "BossLogUI should toggle on the keybind and cooperate with the other major panels."
+$hub = Read-File "Content\UI\EterniaHubUI.cs"
+
+if ($hub -notmatch "MajorPanel\.Bosses" -or $hub -notmatch "BossLogUI\.Visible") {
+    throw "The hub should expose the Boss Codex as one of its pages."
 }
 
 if ($ui -notmatch "ScrollWheel") {
@@ -134,11 +137,17 @@ if ($ui -notmatch "RateText" -or $ui -notmatch "DrawItemIcon") {
     throw "BossLogUI should show each drop's icon and its drop rate."
 }
 
-# Keybind localization (guarded by the keybind test too, asserted here for locality).
+# The Codex lost its own keybind when it became a page of the hub, so what has to be
+# localised now is the single menu key. A leftover "Toggle Boss Codex" entry would show a
+# dead binding in the Controls menu.
 $loc = Read-File "en-US.hjson"
 
-if ($loc -notmatch '"Toggle Boss Codex\.DisplayName"') {
-    throw "en-US.hjson should localize the Boss Codex keybind."
+if ($loc -match '"Toggle Boss Codex\.DisplayName"') {
+    throw "The retired Boss Codex keybind should no longer be localised."
+}
+
+if ($loc -notmatch '"Open Eternia Menu\.DisplayName"') {
+    throw "en-US.hjson should localize the hub keybind that now opens the Codex."
 }
 
 Write-Host "Boss log source smoke test passed."

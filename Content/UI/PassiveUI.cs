@@ -51,22 +51,20 @@ namespace Eternia.Content.UI
             Unlocked
         }
 
-        public override void UpdateUI(GameTime gameTime)
+        // Opening the tree is not just a flag: the view has to be recentred, or you reopen it
+        // still panned and zoomed wherever you left off, sometimes looking at empty canvas.
+        // The hub tab routes through here so it cannot get that wrong.
+        internal static void OpenPanel()
         {
-            if (EterniaKeybinds.TogglePassiveUI.JustPressed)
-            {
-                Visible = !Visible;
+            Visible = true;
 
-                if (Visible)
-                {
-                    panX = 0;
-                    panY = 0;
-                    zoom = 1f;
-                    dragging = false;
-                    EterniaUI.CloseMajorPanelsExcept(
-                        EterniaUI.MajorPanel.Passive);
-                }
-            }
+            panX = 0;
+            panY = 0;
+            zoom = 1f;
+            dragging = false;
+
+            EterniaUI.CloseMajorPanelsExcept(
+                EterniaUI.MajorPanel.Passive);
         }
 
         public override void Unload()

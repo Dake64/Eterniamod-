@@ -20,11 +20,20 @@ if ($hub -notmatch "ToggleEterniaMenu\.JustPressed") {
     throw "The hub should react to its own keybind."
 }
 
-# The per-panel keys stay as direct shortcuts -- removing them would break muscle memory for
-# no gain, since the hub is about not NEEDING four keys, not about forbidding them.
-foreach ($shortcut in @("ToggleSoulUI", "ToggleStatsUI", "TogglePassiveUI", "ToggleBossLog")) {
-    if ($keybinds -notmatch $shortcut) {
-        throw "The direct shortcut '$shortcut' should still exist alongside the hub key."
+# The per-panel keys are GONE. Keeping them meant four bindings to maintain, which is the
+# very thing the hub exists to remove; pages are chosen by clicking a tab.
+foreach ($retired in @("ToggleSoulUI", "ToggleStatsUI", "TogglePassiveUI", "ToggleBossLog")) {
+    if ($keybinds -match $retired) {
+        throw "'$retired' should be retired: the hub key plus tabs replaces the per-panel keys."
+    }
+}
+
+# Their localisation entries must go too, or the Controls menu lists keys that do nothing.
+$hjson = Get-Content -Raw (Join-Path $repoRoot "en-US.hjson")
+
+foreach ($retired in @("Toggle Soul UI", "Toggle Stats UI", "Toggle Passive UI", "Toggle Boss Codex")) {
+    if ($hjson -match [regex]::Escape($retired)) {
+        throw "Localisation still lists the retired keybind '$retired'."
     }
 }
 
@@ -46,13 +55,27 @@ if ($hub -match "SoulUISystem\.Visible = true") {
 }
 
 # --- Switching tabs must not stack panels -------------------------------------
-if ($hub -notmatch "CloseMajorPanelsExcept") {
-    throw "Opening a page should close the others, or panels pile on top of each other."
+# Each panel owns how it opens, so the "opening me closes the others" rule lives WITH the
+# panel and not in the navigation layer. The hub must therefore route through those methods
+# rather than flipping Visible itself, or a tab could leave two panels stacked.
+foreach ($opener in @(
+    "SoulUISystem\.OpenSoulPanel\(\)",
+    "StatsUI\.OpenPanel\(\)",
+    "PassiveUI\.OpenPanel\(\)",
+    "BossLogUI\.OpenPanel\(\)")) {
+    if ($hub -notmatch $opener) {
+        throw "The hub should open each page through its own opener ($opener)."
+    }
+}
+
+if ($hub -match "\.Visible = true") {
+    throw "The hub must not flip Visible directly; each panel's opener does more than that."
 }
 
 if ($toolkit -notmatch "public static void CloseAllMajorPanels") {
     throw "The toolkit should expose CloseAllMajorPanels so the hub key can close the book."
 }
+
 
 # --- The strip must not move between tabs -------------------------------------
 # A navigation bar that jumps as you switch pages is worse than none, so it anchors to the

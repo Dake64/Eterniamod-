@@ -94,23 +94,6 @@ namespace Eternia.Content.UI
 
         public override void UpdateUI(GameTime gameTime)
         {
-            if (EterniaKeybinds.ToggleSoulUI.JustPressed)
-            {
-                Visible = !Visible;
-
-                if (Visible)
-                {
-                    EterniaUI.CloseMajorPanelsExcept(
-                        EterniaUI.MajorPanel.Soul);
-
-                    SoulInterface?.SetState(SoulUI);
-                }
-                else
-                {
-                    CloseSoulPanel();
-                }
-            }
-
             if (Visible)
             {
                 SoulInterface?.Update(gameTime);

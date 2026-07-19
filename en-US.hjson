@@ -2,10 +2,6 @@ Mods: {
 	Eternia: {
 		Keybinds: {
 			"Open Eternia Menu.DisplayName": Open Eternia Menu
-			"Toggle Soul UI.DisplayName": Toggle Soul UI
-			"Toggle Stats UI.DisplayName": Toggle Stats UI
-			"Toggle Passive UI.DisplayName": Toggle Passive UI
-			"Toggle Boss Codex.DisplayName": Toggle Boss Codex
 			"Class Skill.DisplayName": Class Skill
 			"Change Note.DisplayName": Change Note
 			"Elemental Ultimate.DisplayName": Elemental Ultimate

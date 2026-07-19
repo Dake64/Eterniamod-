@@ -41,23 +41,22 @@ namespace Eternia.Content.UI
         {
             lastPage = page;
 
-            EterniaUI.CloseMajorPanelsExcept(page);
-
+            // Every panel owns its own opening: the Soul page has to push a UIState or it
+            // renders empty, and the tree has to recentre or you reopen it staring at blank
+            // canvas. The hub only decides WHICH page, never how one is opened.
             switch (page)
             {
                 case EterniaUI.MajorPanel.Soul:
-                    // Routed through the system so its UIState gets pushed as well; setting
-                    // the flag alone opens an empty panel.
                     SoulUISystem.OpenSoulPanel();
                     break;
                 case EterniaUI.MajorPanel.Stats:
-                    StatsUI.Visible = true;
+                    StatsUI.OpenPanel();
                     break;
                 case EterniaUI.MajorPanel.Passive:
-                    PassiveUI.Visible = true;
+                    PassiveUI.OpenPanel();
                     break;
                 case EterniaUI.MajorPanel.Bosses:
-                    BossLogUI.Visible = true;
+                    BossLogUI.OpenPanel();
                     break;
             }
         }
@@ -118,18 +117,24 @@ namespace Eternia.Content.UI
             Rectangle bar = TabStrip();
             Point mouse = new Point(Main.mouseX, Main.mouseY);
 
-            (EterniaUI.MajorPanel page, string label, bool open)[] tabs =
+            // Each page carries its own accent so the strip belongs to the page under it. A
+            // single fixed colour made the tabs read as a separate widget floating above an
+            // unrelated window instead of as the top of one.
+            (EterniaUI.MajorPanel page, string label, bool open, Color tint)[] tabs =
             {
-                (EterniaUI.MajorPanel.Soul, "SOUL", SoulUISystem.Visible),
-                (EterniaUI.MajorPanel.Stats, "STATS", StatsUI.Visible),
-                (EterniaUI.MajorPanel.Passive, "PASSIVES", PassiveUI.Visible),
-                (EterniaUI.MajorPanel.Bosses, "CODEX", BossLogUI.Visible)
+                (EterniaUI.MajorPanel.Soul, "SOUL", SoulUISystem.Visible,
+                    new Color(150, 120, 220)),
+                (EterniaUI.MajorPanel.Stats, "STATS", StatsUI.Visible,
+                    new Color(120, 190, 255)),
+                (EterniaUI.MajorPanel.Passive, "PASSIVES", PassiveUI.Visible,
+                    new Color(235, 120, 80)),
+                (EterniaUI.MajorPanel.Bosses, "CODEX", BossLogUI.Visible,
+                    new Color(230, 190, 90))
             };
 
             const int gap = 6;
             int tabW = (bar.Width - gap * (tabs.Length - 1)) / tabs.Length;
 
-            var accent = new Color(150, 120, 220);
 
             for (int i = 0; i < tabs.Length; i++)
             {
@@ -138,24 +143,27 @@ namespace Eternia.Content.UI
 
                 bool active = tabs[i].open;
                 bool hover = rect.Contains(mouse);
+                Color tint = tabs[i].tint;
 
                 Color fill =
-                    active ? Color.Lerp(EterniaUI.PanelSurface, accent, 0.28f) :
-                    hover ? EterniaUI.PanelSurfaceAlt : EterniaUI.PanelSurface * 0.9f;
+                    active ? Color.Lerp(EterniaUI.PanelSurface, tint, 0.28f) :
+                    hover ? Color.Lerp(EterniaUI.PanelSurfaceAlt, tint, 0.16f)
+                          : EterniaUI.PanelSurface * 0.9f;
 
                 spriteBatch.Draw(pixel, rect, fill);
 
                 // The active tab is underlined into the page below it; the rest get a faint
-                // baseline so the strip still reads as one connected row.
+                // baseline in their own colour so the strip reads as one connected row while
+                // still hinting where each tab leads.
                 spriteBatch.Draw(
                     pixel,
                     new Rectangle(rect.X, rect.Bottom - 2, rect.Width, 2),
-                    active ? accent : accent * 0.28f);
+                    active ? tint : tint * 0.30f);
 
                 if (active)
                 {
                     spriteBatch.Draw(
-                        pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), accent);
+                        pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), tint);
                 }
 
                 EterniaUI.DrawCenteredText(

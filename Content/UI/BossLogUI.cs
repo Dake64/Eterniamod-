@@ -57,19 +57,17 @@ namespace Eternia.Content.UI
                 "ETERNIA/Content/Items/Souls/EmptySoul",
                 AssetRequestMode.ImmediateLoad)).Value;
 
+        // Each panel owns how it opens; the hub tab only decides WHICH one.
+        internal static void OpenPanel()
+        {
+            Visible = true;
+
+            EterniaUI.CloseMajorPanelsExcept(
+                EterniaUI.MajorPanel.Bosses);
+        }
+
         public override void UpdateUI(GameTime gameTime)
         {
-            if (EterniaKeybinds.ToggleBossLog != null &&
-                EterniaKeybinds.ToggleBossLog.JustPressed)
-            {
-                Visible = !Visible;
-
-                if (Visible)
-                {
-                    EterniaUI.CloseMajorPanelsExcept(EterniaUI.MajorPanel.Bosses);
-                }
-            }
-
             if (!Visible)
             {
                 return;

@@ -9,7 +9,9 @@ $matches = [regex]::Matches(
     'KeybindLoader\.RegisterKeybind\(\s*Mod,\s*"([^"]+)",\s*"([^"]+)"\s*\)',
     [System.Text.RegularExpressions.RegexOptions]::Singleline)
 
-if ($matches.Count -lt 7) {
+# Was 7 before the four per-panel keys (Soul/Stats/Passives/Codex) were retired in favour of
+# the single hub key plus clickable tabs.
+if ($matches.Count -lt 5) {
     throw "Expected all Eternia keybind registrations to use explicit default keys."
 }
 
