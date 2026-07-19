@@ -3,6 +3,7 @@ using Terraria.ModLoader;
 using Eternia.Content.Souls;
 using Eternia.Content.Globals;
 using Eternia.Content.Buffs;
+using Eternia.Content.NPCs;
 
 namespace Eternia.Content.Players
 {
@@ -13,6 +14,18 @@ namespace Eternia.Content.Players
         // "open the wound, then bank the blood" -- and the old split rewarded the opposite, paying
         // double for first blood and turning the subclass into a hit-and-move-on crowd farmer.
         private const int TrailPerBleedingHit = 6;
+
+        // Blood already drawn keeps paying: once a second, every enemy still bleeding from YOUR
+        // wound feeds the Trail. Opening wounds and then keeping them open IS the mechanic, so
+        // the resource should flow from the field bleeding, not only from swinging at it.
+        private const int TrailPerBleedingEnemy = 1;
+
+        // Without a ceiling this breaks at the Hemorrhage tier, where one press bleeds a whole
+        // 28-tile zone: during an event thirty bleeding enemies would refill the bar faster than
+        // the technique's own cooldown, turning it into a held button.
+        private const int MaxBleedingEnemiesCounted = 8;
+
+        private int bleedIncomeTimer;
 
         // The Swordsman is the bleed MASTER: their edge-weapon hits always inflict
         // bleed, bypassing the hidden chance other Warriors roll. Every edge hit also
@@ -92,6 +105,59 @@ namespace Eternia.Content.Players
 
             Player.GetModPlayer<CrimsonTrailPlayer>()
                 .Add(TrailPerBleedingHit + milestoneBonus);
+        }
+
+        public override void PostUpdate()
+        {
+            if (!IsActiveSwordsman())
+            {
+                bleedIncomeTimer = 0;
+                return;
+            }
+
+            bleedIncomeTimer++;
+
+            if (bleedIncomeTimer < 60)
+            {
+                return;
+            }
+
+            bleedIncomeTimer = 0;
+
+            int bleedType =
+                ModContent.BuffType<BleedDebuff>();
+
+            int bleeding = 0;
+
+            foreach (NPC npc in Main.npc)
+            {
+                if (!npc.active
+                    || npc.friendly
+                    || npc.life <= 0
+                    || !npc.HasBuff(bleedType))
+                {
+                    continue;
+                }
+
+                // Only YOUR wounds pay you -- another Warrior's bleed is their income.
+                if (npc.GetGlobalNPC<BleedGlobalNPC>().BleedOwner != Player.whoAmI)
+                {
+                    continue;
+                }
+
+                bleeding++;
+
+                if (bleeding >= MaxBleedingEnemiesCounted)
+                {
+                    break;
+                }
+            }
+
+            if (bleeding > 0)
+            {
+                Player.GetModPlayer<CrimsonTrailPlayer>()
+                    .Add(bleeding * TrailPerBleedingEnemy);
+            }
         }
 
         public bool IsActiveSwordsman()

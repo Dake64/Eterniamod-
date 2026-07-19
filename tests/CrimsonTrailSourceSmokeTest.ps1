@@ -87,6 +87,28 @@ if ($swordsman -match "FirstBloodGain") {
     throw "The first-blood bonus contradicts banking from existing bleed; it should stay removed."
 }
 
+# --- Standing bleed income ------------------------------------------------------
+# Blood already drawn keeps paying, so the resource flows from the field bleeding rather
+# than only from swinging at it.
+$income = [regex]::Match(
+    $swordsman,
+    'public override void PostUpdate\(\)[\s\S]+?\n\s{8}\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($income -notmatch "TrailPerBleedingEnemy") {
+    throw "Bleeding enemies should feed the Trail over time, not only on hit."
+}
+
+if ($income -notmatch "BleedOwner != Player\.whoAmI") {
+    throw "Only your own bleeds should pay you; another Warrior's bleed is their income."
+}
+
+# The Hemorrhage tier bleeds a whole 28-tile zone. Uncapped, an event would refill the bar
+# faster than the technique's cooldown and turn it into a held button.
+if ($income -notmatch "MaxBleedingEnemiesCounted") {
+    throw "Bleed income must be capped, or mass bleeding trivialises the technique's cost."
+}
+
 # --- Spent only by a Skill-key technique ------------------------------------
 if ($skill -notmatch "ProcessTriggers") {
     throw "SwordsmanSkillPlayer should handle the technique in ProcessTriggers."
