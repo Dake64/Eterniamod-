@@ -4,6 +4,10 @@ namespace Eternia
 {
     public class EterniaKeybinds : ModSystem
     {
+        // One door into every panel. The per-panel keys below still work as direct shortcuts,
+        // so nobody's muscle memory breaks -- this just means you no longer NEED four of them.
+        public static ModKeybind ToggleEterniaMenu;
+
         public static ModKeybind ToggleSoulUI;
         public static ModKeybind ToggleStatsUI;
         public static ModKeybind TogglePassiveUI;
@@ -14,6 +18,13 @@ namespace Eternia
         public static ModKeybind CursedBurst;
         public override void Load()
         {
+            ToggleEterniaMenu =
+                KeybindLoader.RegisterKeybind(
+                    Mod,
+                    "Open Eternia Menu",
+                    "M"
+                );
+
             ToggleSoulUI =
                 KeybindLoader.RegisterKeybind(
                     Mod,
@@ -63,6 +74,7 @@ namespace Eternia
 
         public override void Unload()
         {
+            ToggleEterniaMenu = null;
             ToggleSoulUI = null;
             ToggleStatsUI = null;
             TogglePassiveUI = null;

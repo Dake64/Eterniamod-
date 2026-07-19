@@ -15,6 +15,33 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Los 4 paneles pasan a ser paginas de un solo menu (tecla M)
+
+- Pedido: combinar Stats / Arbol de pasivas / Codice / Souls en una sola UI por paginas, para
+  no tener que recordar cuatro teclas.
+- DECISION DE ENFOQUE: se hizo como una CAPA por encima, no como una reescritura. Los cuatro
+  paneles conservan intacto su dibujado, scroll y manejo de clics; el hub solo anade la tira de
+  pestanas y la navegacion. Fusionarlos de verdad habria significado reescribir cuatro UIs
+  grandes que no puedo probar -- justo donde romperia cosas.
+- `EterniaHubUI` (NUEVO): tira de pestanas SOUL / STATS / PASSIVES / CODEX sobre el panel
+  abierto. Clic cambia de pagina. Copia el patron de interaccion que ya usaba el Codice para
+  sus filtros internos (hover -> mouseInterface, click -> mouseLeftRelease).
+- Tecla nueva "Open Eternia Menu" (M por defecto): abre el hub en la ULTIMA pagina que usaste
+  y lo cierra si ya estaba abierto. Las cuatro teclas viejas SIGUEN funcionando como atajo
+  directo -- el hub es para no NECESITAR cuatro teclas, no para prohibirlas.
+- La tira se ancla a la pagina MAS ALTA (1120x628) en vez de al panel abierto, para que no
+  salte al cambiar de pestana. Una barra de navegacion que se mueve es peor que ninguna.
+- `SoulUISystem.OpenSoulPanel()` (NUEVO): abrir el panel de Souls no es solo `Visible = true`,
+  tambien hay que empujar su UIState o sale vacio. El hub enruta por ahi para no equivocarse.
+- `EterniaUI.CloseAllMajorPanels()` (NUEVO) para que la tecla cierre el libro entero.
+- LIMPIEZA: se quitaron 9 keybinds fantasma del perfil del owner, restos de sistemas ya
+  borrados (Draw Cards, Card Slot 1-3, Open Soul UI, Open Stats UI, Toggle Stats Panel,
+  Toggle Passive Tree, Open Passives UI). Con backup y validacion del JSON.
+- Test nuevo `EterniaHubSourceSmokeTest`, incluida una asercion de que los paneles NO conozcan
+  al hub: en cuanto el hub empiece a dibujar contenido de un panel, se pierde la seguridad de
+  todo este enfoque.
+- Verificacion: compila 0/0; suite 118/118.
+
 ## 2026-07-16 - El arbol de Sangrado por fin alimenta al Rastro Carmesi
 
 - Pedido: "crees que puedas mejorarlo? o variarlo mas?" sobre el arbol del Espadachin.

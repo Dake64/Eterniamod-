@@ -1,6 +1,7 @@
 Mods: {
 	Eternia: {
 		Keybinds: {
+			"Open Eternia Menu.DisplayName": Open Eternia Menu
 			"Toggle Soul UI.DisplayName": Toggle Soul UI
 			"Toggle Stats UI.DisplayName": Toggle Stats UI
 			"Toggle Passive UI.DisplayName": Toggle Passive UI

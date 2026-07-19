@@ -265,6 +265,14 @@ namespace Eternia.Content.UI
             return ShouldDrawPlayerUI(player) && !AnyMajorPanelOpen();
         }
 
+        public static void CloseAllMajorPanels()
+        {
+            SoulUISystem.Visible = false;
+            StatsUI.Visible = false;
+            PassiveUI.Visible = false;
+            BossLogUI.Visible = false;
+        }
+
         public static void CloseMajorPanelsExcept(
             MajorPanel panel)
         {

@@ -122,6 +122,18 @@ namespace Eternia.Content.UI
             NecromancerInterface?.Update(gameTime);
         }
 
+        // Opening the Soul panel is not just a flag: its UIState has to be pushed too, or the
+        // panel shows up empty. The hub tabs route through here so they cannot get that wrong.
+        internal static void OpenSoulPanel()
+        {
+            Visible = true;
+
+            EterniaUI.CloseMajorPanelsExcept(
+                EterniaUI.MajorPanel.Soul);
+
+            SoulInterface?.SetState(SoulUI);
+        }
+
         internal static void CloseSoulPanel()
         {
             Visible = false;
