@@ -64,7 +64,7 @@ namespace Eternia.Content.Players
                 Player.GetModPlayer<MilestonePlayer>().Milestones;
 
             Player.GetModPlayer<CrimsonTrailPlayer>()
-                .Add(TrailPerBleedingHit + milestoneBonus);
+                .Add(TrailPerHit() + milestoneBonus);
         }
 
         // The Swordsman's bleeding slash also inflicts guaranteed bleed and feeds
@@ -106,7 +106,36 @@ namespace Eternia.Content.Players
                 Player.GetModPlayer<MilestonePlayer>().Milestones;
 
             Player.GetModPlayer<CrimsonTrailPlayer>()
-                .Add(TrailPerBleedingHit + milestoneBonus);
+                .Add(TrailPerHit() + milestoneBonus);
+        }
+
+        // Blood Tithe (deep Bleed node) is the only passive that pays into the Trail per swing.
+        private int TrailPerHit()
+        {
+            return TrailPerBleedingHit
+                + (HasActivePassive("Blood Tithe") ? 2 : 0);
+        }
+
+        // Open Veins widens how much of the field can pay you at once.
+        private int BleedingEnemyCap()
+        {
+            return MaxBleedingEnemiesCounted
+                + (HasActivePassive("Open Veins") ? 2 : 0);
+        }
+
+        public bool HasActivePassive(string passiveName)
+        {
+            var soul =
+                Player.GetModPlayer<EterniaPlayer>();
+
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .HasActivePassive(soul.EffectiveSoul, passiveName);
+        }
+
+        public bool HasKeystone(string keystone)
+        {
+            return Player.GetModPlayer<EterniaStatsPlayer>()
+                .UnlockedPassives.Contains(keystone);
         }
 
         public override void PostUpdate()
@@ -115,6 +144,14 @@ namespace Eternia.Content.Players
             {
                 bleedIncomeTimer = 0;
                 return;
+            }
+
+            // KEYSTONE Hemorrhagic Frenzy: raw melee power, paid for at the finisher (see
+            // SwordsmanSkillPlayer.EffectiveCost) rather than with attack speed, which would
+            // have starved the very resource the keystone sits on top of.
+            if (HasKeystone("Hemorrhagic Frenzy"))
+            {
+                Player.GetDamage(DamageClass.Melee) += 0.20f;
             }
 
             bleedIncomeTimer++;
@@ -149,7 +186,7 @@ namespace Eternia.Content.Players
 
                 bleeding++;
 
-                if (bleeding >= MaxBleedingEnemiesCounted)
+                if (bleeding >= BleedingEnemyCap())
                 {
                     break;
                 }

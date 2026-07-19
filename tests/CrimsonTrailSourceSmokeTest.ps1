@@ -105,8 +105,36 @@ if ($income -notmatch "BleedOwner != Player\.whoAmI") {
 
 # The Hemorrhage tier bleeds a whole 28-tile zone. Uncapped, an event would refill the bar
 # faster than the technique's cooldown and turn it into a held button.
-if ($income -notmatch "MaxBleedingEnemiesCounted") {
+if ($income -notmatch "BleedingEnemyCap\(\)") {
     throw "Bleed income must be capped, or mass bleeding trivialises the technique's cost."
+}
+
+if ($swordsman -notmatch "MaxBleedingEnemiesCounted = 3") {
+    throw "The bleed income cap should stay low; at 8 the technique refilled itself in ~6s."
+}
+
+# --- The tree must actually feed the subclass's own resource --------------------
+# Every node above these was generic melee/bleed power: the signature mechanic had no
+# passive support at all in its own branch.
+foreach ($node in @("Blood Tithe", "Open Veins")) {
+    if ($swordsman -notmatch [regex]::Escape($node)) {
+        throw "The Bleed branch node '$node' should have a runtime effect on the Trail."
+    }
+}
+
+if ($skill -notmatch "Merciless" -or $skill -notmatch "public int EffectiveCost") {
+    throw "The execution's cost should be dynamic so Merciless and the keystone can move it."
+}
+
+# The keystone used to cost attack speed, which starved the very resource it sits on.
+if ($skill -notmatch "Hemorrhagic Frenzy") {
+    throw "The Bleed keystone should pay its price at the finisher, not with attack speed."
+}
+
+$ui = Get-Content -Raw (Join-Path $contentRoot "UI\CrimsonTrailUI.cs")
+
+if ($ui -notmatch "EffectiveCost\(\)") {
+    throw "The gauge's fire line must track the real cost, or it points at a stale number."
 }
 
 # --- Spent only by a Skill-key technique ------------------------------------

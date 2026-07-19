@@ -53,8 +53,13 @@ namespace Eternia.Content.UI
             var crimson =
                 player.GetModPlayer<CrimsonTrailPlayer>();
 
-            bool ready =
-                crimson.CrimsonTrail >= SwordsmanSkillPlayer.TechniqueCost;
+            // Read the REAL cost, so Merciless and the Hemorrhagic Frenzy keystone move the
+            // fire line on the gauge instead of leaving it drawn at a number that no longer
+            // applies.
+            int cost =
+                player.GetModPlayer<SwordsmanSkillPlayer>().EffectiveCost();
+
+            bool ready = crimson.CrimsonTrail >= cost;
 
             // The bar never prints the skill key: players rebind it, and a printed key goes
             // stale without anyone noticing. The one thing worth surfacing is the genuinely
@@ -78,8 +83,7 @@ namespace Eternia.Content.UI
                 alwaysShow: true,
                 bloodTheme: true,
                 thresholdPercent:
-                    SwordsmanSkillPlayer.TechniqueCost
-                        / (float)CrimsonTrailPlayer.MaxCrimsonTrail);
+                    cost / (float)CrimsonTrailPlayer.MaxCrimsonTrail);
 
             return true;
         }

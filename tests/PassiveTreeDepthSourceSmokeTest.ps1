@@ -75,7 +75,9 @@ function Get-ListBody($text, $marker) {
 }
 
 $expectedCounts = @{
-    "List<PassiveNode> WarriorPassives"  = 49
+    # Bleed grew from 9 to 12: the branch gained Blood Tithe / Open Veins / Merciless, the
+    # first nodes in it that pay into Crimson Trail rather than generic melee power.
+    "List<PassiveNode> WarriorPassives"  = 52
     "List<PassiveNode> RangerPassives"   = 32
     # Mage = Curse(8) + Infinity(8) + Arcane(8) + 5 element sub-branches x 3 (15)
     #        + Elemental Mastery spoke (3) = 42.

@@ -30,6 +30,30 @@ namespace Eternia.Content.Players
     {
         public const int TechniqueCost = 50;
 
+        // What the execution ACTUALLY costs you, once the deep Bleed nodes have their say.
+        // Merciless discounts it; the Hemorrhagic Frenzy keystone buys constant melee power by
+        // making the finisher far rarer. Both the skill and the bar read this, so the fire line
+        // drawn on the gauge always matches the real cost.
+        public int EffectiveCost()
+        {
+            var swordsman =
+                Player.GetModPlayer<SwordsmanPlayer>();
+
+            int cost = TechniqueCost;
+
+            if (swordsman.HasActivePassive("Merciless"))
+            {
+                cost -= 10;
+            }
+
+            if (swordsman.HasKeystone("Hemorrhagic Frenzy"))
+            {
+                cost += 25;
+            }
+
+            return System.Math.Clamp(cost, 10, CrimsonTrailPlayer.MaxCrimsonTrail);
+        }
+
         private const int TechniqueCooldown = 90;
 
         public const int TierFinisher = 1;
@@ -94,10 +118,12 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            if (crimson.CrimsonTrail < TechniqueCost)
+            int cost = EffectiveCost();
+
+            if (crimson.CrimsonTrail < cost)
             {
                 Announce(
-                    $"CRIMSON {crimson.CrimsonTrail}/{TechniqueCost}",
+                    $"CRIMSON {crimson.CrimsonTrail}/{cost}",
                     new Color(200, 70, 70));
                 SoundEngine.PlaySound(SoundID.MenuClose, Player.position);
                 return;
@@ -118,7 +144,7 @@ namespace Eternia.Content.Players
 
             // --- Commit the execution ---
 
-            crimson.TrySpend(TechniqueCost);
+            crimson.TrySpend(cost);
             skillPlayer.SetCooldown(TechniqueCooldown);
 
             int annihilated = PerformCrimsonExecution(tier, radius);

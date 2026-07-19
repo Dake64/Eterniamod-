@@ -15,6 +15,36 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - El arbol de Sangrado por fin alimenta al Rastro Carmesi
+
+- Pedido: "crees que puedas mejorarlo? o variarlo mas?" sobre el arbol del Espadachin.
+- CORRECCION DE UN DIAGNOSTICO MIO ERRONEO: primero dije que los 132 nodos del mod eran
+  cadenas lineales sin bifurcaciones. Falso. El campo `RequiredPassive` de PassiveNode esta
+  MUERTO (nadie lo lee); los prerequisitos se generan proceduralmente en `BuildTiers` /
+  `TierSize`, y la rama Bleed sale con forma 1-2-1-1-3-1, o sea CON rombos. Yo grepee el
+  campo equivocado.
+- Lo que si era cierto: los rombos no son una decision, porque `GetPrerequisites` exige TODOS
+  los nodos del nivel anterior. Se compran los 9 igual.
+- PROBLEMA REAL Y MAS GRAVE: ninguno de los 9 nodos tocaba el Rastro Carmesi. El arbol se
+  escribio antes que la mecanica y nunca se conectaron: todo era dano melee / critico / sangrado
+  generico. La mecanica insignia de la subclase no tenia soporte en su propio arbol.
+- Nodos nuevos al final de la rama (Bleed pasa de 9 a 12 nodos):
+  - Blood Tithe   (coste 4, +12 afinidad): +2 Rastro por golpe sangrante.
+  - Open Veins    (coste 4, +13 afinidad): el ingreso pasivo cuenta 2 enemigos mas.
+  - Merciless     (coste 5, +14 afinidad): la Ejecucion Carmesi cuesta 10 menos.
+- KEYSTONE "Hemorrhagic Frenzy": estaba MUERTO -- solo existia el texto que prometia
+  "+20% dano melee, -10% velocidad de ataque", sin una sola linea que lo implementara.
+  Ahora existe de verdad, y su precio cambio: -10% de velocidad de ataque significaba MENOS
+  golpes y por tanto MENOS Rastro, o sea que el keystone saboteaba el recurso sobre el que se
+  monta. El precio ahora lo paga el rematador: +25 al coste de la ejecucion.
+- `SwordsmanSkillPlayer.EffectiveCost()` (nuevo): el coste deja de ser una constante. Merciless
+  lo baja, el keystone lo sube, y la BARRA lo lee tambien, asi que la linea de disparo grabada
+  en el medidor siempre marca el coste real en vez de un 50 fijo que ya no aplica.
+- Verificacion: compila 0/0; suite 117/117.
+- PENDIENTE (no hecho, decision del owner): que los rombos sean una ELECCION real exigiria
+  cambiar `GetPrerequisites` a "cualquiera del nivel anterior", y eso reequilibra los 18
+  arboles del mod a la vez, no solo el del Espadachin.
+
 ## 2026-07-16 - El Rastro Carmesi se carga con la SANGRE, no con los golpes
 
 - Dos cambios pedidos en playtest, en este orden:

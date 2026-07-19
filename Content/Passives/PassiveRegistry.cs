@@ -287,6 +287,43 @@ new List<PassiveNode>()
         1000
     ),
 
+    // The deep end of the branch finally pays into CRIMSON TRAIL itself. Every node above
+    // this point is generic melee/bleed power: the Swordsman's signature resource had no
+    // passive support at all in its own tree, which is what these three fix.
+
+    new PassiveNode(
+        "Blood Tithe",
+        "+2 Crimson Trail per bleeding hit",
+        4,
+        "Bleed",
+        12,
+        "Bloodthirst",
+        80,
+        1110
+    ),
+
+    new PassiveNode(
+        "Open Veins",
+        "Standing bleed income counts 2 more enemies",
+        4,
+        "Bleed",
+        13,
+        "Blood Tithe",
+        80,
+        1220
+    ),
+
+    new PassiveNode(
+        "Merciless",
+        "Crimson Execution costs 10 less",
+        5,
+        "Bleed",
+        14,
+        "Open Veins",
+        80,
+        1330
+    ),
+
     // =================================================
     // FIGHTER
     // =================================================
@@ -1951,7 +1988,11 @@ new List<PassiveNode>()
         {
             return affinity switch
             {
-                "Bleed" => "KEYSTONE: +20% melee damage, but -10% attack speed.",
+                // The old cost was -10% attack speed, which fought the subclass instead of
+                // testing it: fewer swings means less Crimson Trail, so the keystone quietly
+                // broke the resource it was supposed to complement. The price is now paid by
+                // the finisher itself -- you hit harder all the time, and execute far less often.
+                "Bleed" => "KEYSTONE: +20% melee damage, but Crimson Execution costs 25 more.",
                 "Combo" => "KEYSTONE - FRENZY: while at max Combo, +15% melee damage, +10% attack speed and +8% damage reduction.",
                 "Defense" => "KEYSTONE: +15% damage reduction, but -25% move speed.",
                 "Precision" => "KEYSTONE: +30% melee crit, but -15% melee damage.",
