@@ -35,9 +35,11 @@ namespace Eternia.Content.Players
         public const int TierHemorrhage = 2;
         public const int TierAnnihilation = 3;
 
-        private const float RadiusFinisher = 128f;      // 8 tiles
-        private const float RadiusHemorrhage = 192f;    // 12 tiles
-        private const float RadiusAnnihilation = 320f;  // 20 tiles
+        // Playtest: 8 tiles felt cramped to fight inside, so the whole ladder moved up while
+        // keeping a clean 1.5x step between tiers -- the endgame still reads as a zone wipe.
+        private const float RadiusFinisher = 192f;      // 12 tiles
+        private const float RadiusHemorrhage = 288f;    // 18 tiles
+        private const float RadiusAnnihilation = 448f;  // 28 tiles
 
         public static int CurrentTier()
         {

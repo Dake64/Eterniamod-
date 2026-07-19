@@ -15,6 +15,15 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Radios de la Ejecucion Carmesi subidos (playtest)
+
+- Playtest: el escalon 1 con 8 bloques se sentia apretado para pelear dentro.
+- Toda la escalera sube manteniendo el paso limpio de x1.5 entre escalones:
+  FINISHER 8 -> 12 bloques (128 -> 192px), HEMORRAGIA 12 -> 18 (192 -> 288px),
+  ANIQUILACION 20 -> 28 (320 -> 448px).
+- El escalon 3 sigue leyendose como barrido de zona (56 bloques de diametro, ~media pantalla).
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - La Ejecucion Carmesi ahora ESCALA hasta el poder de late game
 
 - Pedido: "quiero que en un futuro ya en late game aplique sangrado a todos y con el ejecutar
