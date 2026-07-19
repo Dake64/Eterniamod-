@@ -13,7 +13,7 @@ namespace Eternia.Content.Players
         // wound earns nothing; every strike after it collects. That is the Swordsman's creed --
         // "open the wound, then bank the blood" -- and the old split rewarded the opposite, paying
         // double for first blood and turning the subclass into a hit-and-move-on crowd farmer.
-        private const int TrailPerBleedingHit = 6;
+        private const int TrailPerBleedingHit = 3;
 
         // Blood already drawn keeps paying: once a second, every enemy still bleeding from YOUR
         // wound feeds the Trail. Opening wounds and then keeping them open IS the mechanic, so
@@ -29,12 +29,16 @@ namespace Eternia.Content.Players
 
         private int bleedIncomeTimer;
 
+        // Two problems, one window.
+        //
         // OnHitNPCWithItem fires once PER ENEMY STRUCK, so a wide swing through five bleeding
-        // enemies banked five times over -- +30 from a single swing, which is why hordes filled
-        // the bar instantly while a boss crawled. A short window caps how many of those hits can
-        // pay, so cleaving a crowd is still worth more than hitting one target, just not fivefold.
-        // A lone boss is completely unaffected: its swings are far further apart than the window.
-        private const int TrailWindowFrames = 10;
+        // enemies banked five times over -- which is why hordes filled the bar instantly.
+        //
+        // And banking per swing made the rate depend on WEAPON SPEED: a useTime 14 blade charged
+        // half again as fast as a useTime 21 one, for no design reason at all. At half a second
+        // the window is wider than any sword's swing, so the Trail now fills at the same pace
+        // whatever you wield, and the choice of weapon goes back to being about damage.
+        private const int TrailWindowFrames = 30;
         private const int MaxTrailGainsPerWindow = 2;
 
         private int trailWindowTimer;
