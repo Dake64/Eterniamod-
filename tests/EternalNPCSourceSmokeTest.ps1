@@ -103,13 +103,29 @@ $hints = [regex]::Match(
     'private static string\[\] MechanicGrowthHints\([\s\S]+?\n\s{8}\}',
     [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
 
-if ($hints -notmatch "downedPlantBoss" -or $hints -notmatch "downedMoonlord") {
-    throw "Growth hints should track the real world milestones that stage the upgrades."
+if ($hints -notmatch "MechanicTier\.") {
+    throw "Growth hints should read the shared ladder rather than re-deriving milestones."
 }
 
-# Only subclasses that genuinely have staged upgrades may be promised any.
-if ($hints -notmatch "Array\.Empty") {
-    throw "Subclasses without staged upgrades must be promised nothing, not invented growth."
+# The Eternal now promises growth to EVERY subclass, so that promise has to be backed by a
+# real implementation -- otherwise it is the invented growth this test exists to prevent.
+$tierPlayer = Read-File "Content\Players\MechanicTierPlayer.cs"
+
+if ($tierPlayer -notmatch "public override void PostUpdateEquips") {
+    throw "MechanicTierPlayer must apply in PostUpdateEquips, before subclasses read their hooks."
+}
+
+if ($tierPlayer -notmatch "MechanicTier\.Steps\(\)" -or
+    $tierPlayer -notmatch "steps <= 0") {
+    throw "Tier growth must be driven by the shared ladder and be a no-op at tier 1."
+}
+
+# Feeding only one or two subclasses would make the Eternal's promise a lie for the rest.
+$fed = [regex]::Matches($tierPlayer, "\.Acc[A-Za-z]+")
+
+if ($fed.Count -lt 20) {
+    throw ("MechanicTierPlayer should grow the mechanics of every subclass that exposes hooks " +
+        "(found only $($fed.Count) Acc* boosts).")
 }
 
 # The ceremony is the single source of truth for mechanic names.

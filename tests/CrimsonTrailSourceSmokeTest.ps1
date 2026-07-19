@@ -129,8 +129,16 @@ if ($skill -notmatch "TierFinisher" -or
     throw "Crimson Execution should define its three hardmode escalation tiers."
 }
 
-if ($skill -notmatch "NPC\.downedPlantBoss" -or
-    $skill -notmatch "NPC\.downedMoonlord") {
+# The gates themselves now live in the shared MechanicTier ladder, so the execution, the
+# central Acc* growth and the Eternal's advice can never disagree about the player's progress.
+if ($skill -notmatch "MechanicTier\.Current\(\)") {
+    throw "Execution tiers should come from the shared MechanicTier ladder, not a private copy."
+}
+
+$tierLadder = Get-Content -Raw (Join-Path $contentRoot "Progression\MechanicTier.cs")
+
+if ($tierLadder -notmatch "NPC\.downedPlantBoss" -or
+    $tierLadder -notmatch "NPC\.downedMoonlord") {
     throw "The tiers should be gated on hardmode milestones (Plantera, Moon Lord)."
 }
 

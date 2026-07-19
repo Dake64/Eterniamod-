@@ -15,6 +15,34 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - TODAS las subclases escalan con los hitos, no solo el Espadachin
+
+- Pedido: "puedes hacer lo mismo para las demas subclases que su mecanica igual mejore".
+- Se evito el camino obvio (tocar 16 archivos de subclase, uno por uno, sin poder probarlos).
+  En su lugar se aprovecho un canal que YA existia: cada subclase expone campos publicos `Acc*`
+  que accesorios, armaduras y tonicos alimentan. Un solo sistema central puede alimentarlos
+  igual, sin tocar la logica de ninguna subclase.
+- `Content/Progression/MechanicTier.cs` (NUEVO): unica fuente de verdad de la escalera.
+  Awakened (Muro) -> Deepened (Plantera) -> Perfected (Moon Lord). `Steps()` devuelve 0/1/2.
+- `Content/Players/MechanicTierPlayer.cs` (NUEVO): en PostUpdateEquips (antes de que las
+  subclases lean sus hooks en PostUpdate, igual que MechanicTonicPlayer) aplica curvas
+  COMPARTIDAS para que ninguna subclase escale mas rapido que otra por accidente:
+  recursos +20%/+40%, decaimiento a 85%/70%, dano de pago +10%/+20%, ventanas +1s/+2s.
+  Con steps=0 hace `return` inmediato: el balance del tier 1 queda EXACTAMENTE igual que antes.
+- Cubre 11 subclases (Espadachin, Peleador, Guardian, Elementalista, Nigromante, Energy Gunner,
+  Arquero, Gunner, Domador, Advanced Summoner, Tech Summoner).
+- PENDIENTE, y hay que decirlo claro: Berserker, Stunner, Yoyo Master, Cursed Mage,
+  Infinity Mage, Arcane Bard y Virtuoso NO tienen campos `Acc*`, asi que todavia no escalan.
+  Necesitan que se les anada el gancho primero.
+- `SwordsmanSkillPlayer.CurrentTier()` ahora delega en `MechanicTier.Current()`: se elimina la
+  segunda definicion de "nivel" que podia desincronizarse.
+- El Eternal ahora da consejo de crecimiento a TODAS las subclases (antes solo al Espadachin),
+  diciendo en que escalon estas y que trae el siguiente hito.
+- Tests actualizados: dos aserciones quedaron obsoletas POR DISENO (ya no se exige
+  `Array.Empty`, porque ahora todas crecen de verdad). La nueva verificacion es mas fuerte:
+  exige que la promesa del Eternal este respaldada por al menos 20 boosts `Acc*` reales.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - El Eternal ahora explica que tu mecanica SIGUE CRECIENDO
 
 - Pedido: "me gustaria que el eternal el npc te diga como mejorar tu mecanica de subclase para

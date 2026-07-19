@@ -8,6 +8,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 using Eternia.Content.Buffs;
+using Eternia.Content.Progression;
 
 namespace Eternia.Content.Players
 {
@@ -43,20 +44,9 @@ namespace Eternia.Content.Players
         private const float RadiusHemorrhage = 448f;    // 28 tiles
         private const float RadiusAnnihilation = 640f;  // 40 tiles
 
-        public static int CurrentTier()
-        {
-            if (NPC.downedMoonlord)
-            {
-                return TierAnnihilation;
-            }
-
-            if (NPC.downedPlantBoss)
-            {
-                return TierHemorrhage;
-            }
-
-            return TierFinisher;
-        }
+        // Delegates to the shared ladder so the execution, the central Acc* growth in
+        // MechanicTierPlayer and the Eternal's advice can never disagree about your progress.
+        public static int CurrentTier() => MechanicTier.Current();
 
         public static float TierRadius(int tier)
         {

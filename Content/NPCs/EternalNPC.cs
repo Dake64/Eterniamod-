@@ -322,39 +322,43 @@ namespace Eternia.Content.NPCs
                 accent.R, accent.G, accent.B);
         }
 
-        // World milestones that visibly upgrade a subclass mechanic later on, phrased as the
-        // next thing to look forward to. Only subclasses that genuinely HAVE staged upgrades
-        // appear here -- promising growth that isn't implemented would be worse than silence.
+        // Where your mechanic stands on the shared ladder, and what the next milestone brings.
+        // EVERY subclass grows now (MechanicTierPlayer feeds their Acc* hooks), so everyone gets
+        // the general line; the Swordsman adds the specific transformation of its execution,
+        // which is the one subclass whose mechanic changes in kind and not only in degree.
         private static string[] MechanicGrowthHints(string subclass)
         {
+            var lines = new List<string>
+            {
+                $"Your mechanic stands {MechanicTier.Name(MechanicTier.Current())}. " +
+                MechanicTier.NextMilestoneHint()
+            };
+
             if (subclass != "Swordsman")
             {
-                return System.Array.Empty<string>();
+                return lines.ToArray();
             }
 
             if (!NPC.downedPlantBoss)
             {
-                return new[]
-                {
-                    "When Plantera falls, your execution will open its own wounds -- it will no " +
-                    "longer need you to bleed them first, and it will reach further."
-                };
+                lines.Add(
+                    "For you it goes further: when Plantera falls your execution will open its " +
+                    "own wounds -- it will no longer need you to bleed them first.");
+            }
+            else if (!NPC.downedMoonlord)
+            {
+                lines.Add(
+                    "Your execution already opens its own wounds. When the Moon Lord falls it " +
+                    "will stop wounding the dying and simply erase them.");
+            }
+            else
+            {
+                lines.Add(
+                    "Your execution is complete: all that bleeds within the zone dies outright. " +
+                    "Only ascending your Soul widens that mercy further.");
             }
 
-            if (!NPC.downedMoonlord)
-            {
-                return new[]
-                {
-                    "Plantera's death widened your reach. When the Moon Lord falls, your " +
-                    "execution will stop wounding the dying and simply erase them."
-                };
-            }
-
-            return new[]
-            {
-                "Your execution has reached its final form: all that still bleeds within the " +
-                "zone dies outright. Only ascending your Soul widens that mercy further."
-            };
+            return lines.ToArray();
         }
 
         private static void GiveEmptySoul(Player player)
