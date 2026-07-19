@@ -294,15 +294,19 @@ namespace Eternia.Content.NPCs
                 string mechanic =
                     AwakeningCeremony.MechanicOf(sub.CurrentSubclass);
 
+                int tier = MechanicTier.Current();
+
+                // "(1 of 3)" is the part that actually lands: it says there ARE more steps,
+                // which the tier name alone never communicated.
                 Main.NewText(
-                    $"But {mechanic} is not finished. Every point you feed {affinity} deepens it, " +
-                    "and what you wear can feed it further.",
+                    $"{mechanic} stands {MechanicTier.Name(tier).ToUpper()} " +
+                    $"({tier} of {MechanicTier.Perfected}). Every point of {affinity} deepens it, " +
+                    "as does what you wear.",
                     accent.R, accent.G, accent.B);
 
-                foreach (string line in MechanicGrowthHints(sub.CurrentSubclass))
-                {
-                    Main.NewText(line, 255, 220, 120);
-                }
+                Main.NewText(
+                    MechanicGrowthLine(sub.CurrentSubclass),
+                    255, 220, 120);
 
                 Main.NewText(
                     "A Soul Reforge would undo it -- and cost you dearly.",
@@ -322,43 +326,31 @@ namespace Eternia.Content.NPCs
                 accent.R, accent.G, accent.B);
         }
 
-        // Where your mechanic stands on the shared ladder, and what the next milestone brings.
-        // EVERY subclass grows now (MechanicTierPlayer feeds their Acc* hooks), so everyone gets
-        // the general line; the Swordsman adds the specific transformation of its execution,
-        // which is the one subclass whose mechanic changes in kind and not only in degree.
-        private static string[] MechanicGrowthHints(string subclass)
+        // ONE line about what the next milestone brings. A subclass whose mechanic changes in
+        // KIND describes that change; everyone else gets the shared promise. They are never
+        // both printed: the generic line only restated the same milestone in vaguer words,
+        // which read as the Eternal repeating himself.
+        private static string MechanicGrowthLine(string subclass)
         {
-            var lines = new List<string>
-            {
-                $"Your mechanic stands {MechanicTier.Name(MechanicTier.Current())}. " +
-                MechanicTier.NextMilestoneHint()
-            };
-
             if (subclass != "Swordsman")
             {
-                return lines.ToArray();
+                return MechanicTier.NextMilestoneHint();
             }
 
             if (!NPC.downedPlantBoss)
             {
-                lines.Add(
-                    "For you it goes further: when Plantera falls your execution will open its " +
-                    "own wounds -- it will no longer need you to bleed them first.");
-            }
-            else if (!NPC.downedMoonlord)
-            {
-                lines.Add(
-                    "Your execution already opens its own wounds. When the Moon Lord falls it " +
-                    "will stop wounding the dying and simply erase them.");
-            }
-            else
-            {
-                lines.Add(
-                    "Your execution is complete: all that bleeds within the zone dies outright. " +
-                    "Only ascending your Soul widens that mercy further.");
+                return "When Plantera falls your execution will open its own wounds -- it will " +
+                    "no longer need you to bleed them first, and it will reach further.";
             }
 
-            return lines.ToArray();
+            if (!NPC.downedMoonlord)
+            {
+                return "Your execution already opens its own wounds. When the Moon Lord falls " +
+                    "it will stop wounding the dying and simply erase them.";
+            }
+
+            return "Your execution is complete: all that bleeds within the zone dies outright. " +
+                "Only ascending your Soul widens that mercy further.";
         }
 
         private static void GiveEmptySoul(Player player)

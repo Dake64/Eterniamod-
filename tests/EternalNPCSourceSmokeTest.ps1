@@ -90,21 +90,29 @@ if ($eternal -notmatch "AwakeningCeremony\.MechanicOf") {
     throw "The Eternal should name your mechanic via AwakeningCeremony, not a second copy of that table."
 }
 
-if ($eternal -notmatch "is not finished") {
-    throw "Reading a promoted soul should say the mechanic still grows, not just how it was sealed."
+# "(1 of 3)" is what actually tells the player more steps exist; the tier NAME alone never did.
+if ($eternal -notmatch "MechanicTier\.Name" -or
+    $eternal -notmatch "of \{MechanicTier\.Perfected\}") {
+    throw "Reading a promoted soul should show which rung of the ladder you stand on, out of how many."
 }
 
-if ($eternal -notmatch "MechanicGrowthHints") {
+if ($eternal -notmatch "MechanicGrowthLine") {
     throw "The Eternal should hint at the milestones that upgrade the mechanic."
 }
 
 $hints = [regex]::Match(
     $eternal,
-    'private static string\[\] MechanicGrowthHints\([\s\S]+?\n\s{8}\}',
+    'private static string MechanicGrowthLine\([\s\S]+?\n\s{8}\}',
     [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
 
 if ($hints -notmatch "MechanicTier\.") {
     throw "Growth hints should read the shared ladder rather than re-deriving milestones."
+}
+
+# Exactly ONE growth line is printed. Printing the generic promise alongside a subclass's
+# specific one made the Eternal announce the same milestone twice in a row.
+if ($eternal -match "foreach \(string line in MechanicGrowthLine") {
+    throw "The Eternal should print a single growth line, not a list that can repeat a milestone."
 }
 
 # The Eternal now promises growth to EVERY subclass, so that promise has to be backed by a
