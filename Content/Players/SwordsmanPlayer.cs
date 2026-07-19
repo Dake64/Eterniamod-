@@ -20,10 +20,12 @@ namespace Eternia.Content.Players
         // the resource should flow from the field bleeding, not only from swinging at it.
         private const int TrailPerBleedingEnemy = 1;
 
-        // Without a ceiling this breaks at the Hemorrhage tier, where one press bleeds a whole
-        // 28-tile zone: during an event thirty bleeding enemies would refill the bar faster than
-        // the technique's own cooldown, turning it into a held button.
-        private const int MaxBleedingEnemiesCounted = 8;
+        // The ceiling has to be LOW, because from the Hemorrhage tier the technique makes its own
+        // fuel: one press bleeds a whole 28-tile zone, and every enemy it just wounded then pays
+        // you back. Playtest at a cap of 8 gave +8/s, refilling the 50 cost in about six seconds
+        // with no input at all -- the technique fired itself. At 3 the same crowd takes roughly
+        // seventeen seconds to refill passively, so a press has to be earned by swinging again.
+        private const int MaxBleedingEnemiesCounted = 3;
 
         private int bleedIncomeTimer;
 
