@@ -15,13 +15,15 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
-## 2026-07-16 - Radios de la Ejecucion Carmesi subidos (playtest)
+## 2026-07-16 - Radios de la Ejecucion Carmesi subidos (playtest, 2 pasadas)
 
-- Playtest: el escalon 1 con 8 bloques se sentia apretado para pelear dentro.
-- Toda la escalera sube manteniendo el paso limpio de x1.5 entre escalones:
-  FINISHER 8 -> 12 bloques (128 -> 192px), HEMORRAGIA 12 -> 18 (192 -> 288px),
-  ANIQUILACION 20 -> 28 (320 -> 448px).
-- El escalon 3 sigue leyendose como barrido de zona (56 bloques de diametro, ~media pantalla).
+- Playtest: el escalon 1 con 8 bloques se sentia apretado para pelear dentro; a 12 seguia
+  quedandose corto.
+- Valores finales: FINISHER 8 -> 12 -> 14 bloques (224px), HEMORRAGIA 12 -> 18 -> 20 (320px),
+  ANIQUILACION 20 -> 28 (448px).
+- En la 2a pasada el escalon 3 se dejo QUIETO en 28: ya son ~media pantalla, y subirlo cada vez
+  que se ajusta el escalon base inflaba el endgame sin necesidad. La escalera queda con un paso
+  parejo de ~x1.4.
 - Verificacion: compila 0/0; suite 117/117.
 
 ## 2026-07-16 - La Ejecucion Carmesi ahora ESCALA hasta el poder de late game
