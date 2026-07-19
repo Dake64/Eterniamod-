@@ -15,6 +15,26 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - El sangrado ahora prende en TODO, gusanos mecanicos incluidos
+
+- Pedido: "quiero que el sangrado del Espadachin se le pueda aplicar a todos y tambien al
+  gusano mecanico" (The Destroyer).
+- Eran DOS causas distintas, y los jefes-gusano caian en las dos a la vez:
+  1. INMUNIDAD A BUFFS: vanilla marca bastantes NPCs como inmunes, y `NPC.AddBuff` respeta
+     `buffImmune`, asi que el AddBuff se descartaba en silencio.
+  2. VIDA COMPARTIDA (realLife): los segmentos de un gusano comparten una sola reserva de vida
+     a traves de `npc.realLife`. Al sangrar solo el segmento que golpeabas, el DoT corria contra
+     la vida de bookkeeping del segmento y la reserva REAL no se tocaba -> The Destroyer parecia
+     totalmente inmune aunque el debuff si estuviera puesto.
+- `WarriorBleedPlayer.ApplyBleed` ahora: limpia `buffImmune` del debuff antes de aplicarlo
+  (nada resiste la herida de un Guerrero) y ademas hiere al segmento duenno de la vida
+  (`Main.npc[target.realLife]`), asi que los gusanos sangran de verdad.
+- Tests: fijan las dos causas por separado (realLife + buffImmune) y ademas vigilan que nadie
+  reintroduzca una exclusion de jefes dentro del DoT.
+- OJO en playtest: contra gusanos ahora pueden sangrar varios segmentos A LA VEZ mas la cabeza;
+  si el DoT se siente excesivo contra The Destroyer, ahi esta la razon.
+- Verificacion: compila 0/0; suite 117/117.
+
 ## 2026-07-16 - Radios de la Ejecucion Carmesi subidos (playtest, 3 pasadas, todas al alza)
 
 - Playtest: 8 bloques se sentia apretado, 12 y 14 seguian quedandose cortos. Tres peticiones

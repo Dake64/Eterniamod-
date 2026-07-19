@@ -99,6 +99,31 @@ if ($warriorBleed -notmatch "if \(!IsActiveWarrior\(\)\)") {
     throw "WarriorBleedPlayer application should be gated by an active Warrior Soul."
 }
 
+# --- Bleed must stick to EVERYTHING, worm bosses included ----------------------
+# Playtest 2026-07-16: bleed would not take on The Destroyer. Two separate causes, and
+# segmented bosses hit both: buff immunity, and body parts sharing one health pool via
+# realLife (bleeding only the struck segment left the real pool untouched).
+$applyBleed = [regex]::Match(
+    $warriorBleed,
+    'public void ApplyBleed\(NPC target\)[\s\S]+?\n\s{8}\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($applyBleed -notmatch "realLife") {
+    throw "ApplyBleed should also wound the realLife owner, or worm bosses never actually bleed."
+}
+
+if ($warriorBleed -notmatch "buffImmune\[bleedType\] = false") {
+    throw "ApplyBleed should clear buff immunity so nothing can shrug off a Warrior's bleed."
+}
+
+# Guard against re-introducing a boss/enemy exclusion in the DoT itself.
+$bleedGlobal = Get-Content -Raw (Join-Path $contentRoot "NPCs\BleedGlobalNPC.cs")
+
+if ($bleedGlobal -match "if \(npc\.boss\)" -or
+    $bleedGlobal -match "npc\.boss\s*&&\s*return") {
+    throw "The bleed DoT must not exclude bosses -- bleed is meant to apply to everything."
+}
+
 if ($warriorBleed -notmatch "CanInflictBleed\(" -or
     $warriorBleed -notmatch "Main\.rand" -or
     $warriorBleed -notmatch "BleedDebuff") {

@@ -190,13 +190,45 @@ namespace Eternia.Content.Players
 
         // Shared entry point so the Swordsman's mastery can guarantee bleed
         // without duplicating the application logic.
+        //
+        // Bleed is meant to stick to EVERYTHING -- it is the Warrior's identity, so nothing
+        // shrugs it off. Two things used to block that, and worm bosses hit both at once:
+        //  * buff immunity (vanilla marks plenty of NPCs immune), and
+        //  * segmented bosses, whose body parts share one health pool through realLife --
+        //    bleeding only the segment you struck left the real pool untouched, so The
+        //    Destroyer looked completely immune.
         public void ApplyBleed(NPC target)
         {
             int duration = GetBleedDuration();
 
-            target.AddBuff(
-                ModContent.BuffType<BleedDebuff>(),
-                duration);
+            ApplyBleedTo(target, duration);
+
+            // Also wound the segment that actually owns the health, so worms really bleed.
+            if (target.realLife >= 0 &&
+                target.realLife < Main.maxNPCs &&
+                target.realLife != target.whoAmI)
+            {
+                NPC lifeOwner = Main.npc[target.realLife];
+
+                if (lifeOwner.active)
+                {
+                    ApplyBleedTo(lifeOwner, duration);
+                }
+            }
+        }
+
+        private void ApplyBleedTo(NPC target, int duration)
+        {
+            int bleedType =
+                ModContent.BuffType<BleedDebuff>();
+
+            // Nothing is immune to a Warrior's wound.
+            if (bleedType < target.buffImmune.Length)
+            {
+                target.buffImmune[bleedType] = false;
+            }
+
+            target.AddBuff(bleedType, duration);
 
             var bleedNPC =
                 target.GetGlobalNPC<BleedGlobalNPC>();
