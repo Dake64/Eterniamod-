@@ -42,25 +42,31 @@ Formato sugerido por entrada:
   todo este enfoque.
 - Verificacion: compila 0/0; suite 118/118.
 
-## 2026-07-16 - Armaduras de subclase para el Guerrero en hardmode (tanda 1)
+## 2026-07-16 - Armadura de subclase: cobertura COMPLETA de las 12 jugables en HM
 
-- Pedido: armaduras por subclase para que el crecimiento sea unico. Antes solo 7 de 17
-  subclases tenian armadura propia; el resto usaba las genericas de mineral.
-- Aclaracion estructural (ver decision-log): pre-HM va por CLASE BASE (las subclases no
-  existen aun), HM por subclase. Esta tanda son las 5 subclases de GUERRERO que faltaban en
-  hardmode. Con esto el Guerrero queda COMPLETO en HM (Espadachin ya tenia Hemocarnage).
-- Sets nuevos (Adamantita/Titanio + Almas de la Noche, tier de jefes mecanicos):
+- Pedido: armaduras por subclase para que el crecimiento sea unico.
+- ERROR MIO Y CORRECCION: primero hice 5 sets de Guerrero, sin acordarme de que en v1 solo hay
+  3 subclases JUGABLES por clase (allowlist `V1VisibleAffinities`). Berserker, Stunner y Yoyo
+  Master estan OCULTAS (afinidades Rage/Control/Precision no visibles), asi que su armadura
+  seria craftable pero su bonus (gateado por subclase) nunca se activaria -> contenido muerto,
+  una trampa. El usuario me lo recordo. Borre Warpath/Concussor/Whipcord.
+- Al revisar cobertura descubri que las armaduras de las OTRAS clases YA existian y yo las habia
+  clasificado mal: Prismatic ES Elementalista, Blightweave ES Cursed Mage. Asi que de las 12
+  jugables solo faltaba UNA de verdad.
+- Sets que quedan de esta sesion (2 nuevos utiles + 1 de Mago):
   - Ironknuckle (Peleador): +8 al tope de Combo y +2s de ventana (via Acc*).
-  - Wardplate  (Guardian):  el Aura Defensiva pega 25% mas fuerte y llega mas lejos (via Acc*).
-  - Warpath    (Berserker): en Overrage, +15% dano melee y 10% de reduccion (lee estado).
-  - Concussor  (Stunner):   con carga completa, +20% dano melee y +5 penetracion (lee estado).
-  - Whipcord   (Yoyo Master): +4% dano melee por stack de Precision (lee estado).
-- Cada set solo hace efecto si eres esa subclase: las que no tienen gancho Acc* leen su estado
-  publico (Overrage / FullyCharged / precisionStacks) gateado tras IsActive<Subclase>().
-- Test nuevo `SubclassArmorSourceSmokeTest`: cada subclase con armadura debe tocar SU mecanica,
-  y los sets que leen estado deben gatear por subclase (o el bonus se filtraria a cualquiera).
+  - Wardplate  (Guardian):  el Aura pega 25% mas fuerte y llega mas lejos (via Acc*).
+  - Everflow   (Infinity Mage): con Overflow lleno, los hechizos cuestan 20% menos mana y
+    pegan 12% mas (lee estado, gateado por IsActiveInfinityMage).
+- RESULTADO: las 12 subclases jugables de v1 tienen ahora armadura de hardmode que potencia SU
+  mecanica. Cobertura completa.
+- Test nuevo `SubclassArmorSourceSmokeTest`: fija que las 12 JUGABLES (no las ocultas) tengan
+  set, y que los sets que leen estado gateen por subclase.
+- OJO (no tocado): `LichRegalia` es armadura de Nigromante, subclase OCULTA -> tambien es
+  contenido muerto en v1, igual que lo eran mis 3 sets. Es contenido del owner, no lo borre;
+  queda señalado por si quiere quitarlo o dejarlo pre-montado para cuando abra el Nigromante.
 - Verificacion: compila 0/0; suite 120/120. Sin probar en juego.
-- PENDIENTE: pre-HM por clase base (4), Mago HM (5), Ranger HM (Virtuoso).
+- PENDIENTE: pre-HM por clase base (4 sets).
 
 ## 2026-07-16 - El arbol de Sangrado por fin alimenta al Rastro Carmesi
 

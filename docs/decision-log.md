@@ -39,14 +39,19 @@ Formato sugerido:
 - Como se enganchan los sets a la mecanica:
   - Subclase CON gancho Acc* (Fighter, Guardian, Swordsman...): el set alimenta el Acc* como
     los accesorios (deepen del recurso).
-  - Subclase SIN gancho (Berserker, Stunner, Yoyo Master): el set LEE el estado publico
-    (Overrage / FullyCharged / precisionStacks) gateado tras IsActive<Subclase>() y aplica el
-    bonus en UpdateArmorSet. No hace falta anadir ganchos nuevos.
-- PLAN POR TANDAS (mucho contenido, imposible de probar por mi): T1 = 5 subclases Guerrero HM
-  (HECHO). Pendiente: pre-HM por clase base (4), Mago HM (5: Elementalista, Cursed Mage,
-  Nigromante, Infinity Mage, Arcane Bard), Ranger HM (Virtuoso). Summoner HM ya esta completo.
-- Archivos: Content/Items/Armor/{Ironknuckle,Wardplate,Warpath,Concussor,Whipcord}Set.cs,
-  tests/SubclassArmorSourceSmokeTest.ps1.
+  - Subclase SIN gancho (Infinity Mage...): el set LEE el estado publico (Overflow lleno...)
+    gateado tras IsActive<Subclase>() y aplica el bonus en UpdateArmorSet. No hace falta anadir
+    ganchos nuevos.
+- SOLO PARA SUBCLASES JUGABLES. En v1 solo 3 subclases por clase estan desbloqueadas (allowlist
+  V1VisibleAffinities). Las OCULTAS (Berserker, Stunner, Yoyo Master, Nigromante, Arcane Bard,
+  Virtuoso) NO deben recibir armadura: seria craftable pero su bonus por-subclase nunca se
+  activaria (nadie puede volverse esa subclase todavia). Es una trampa, como el Soul Alloy.
+- Las 12 subclases JUGABLES ya tienen armadura HM que potencia su mecanica (cobertura completa).
+  Pendiente: pre-HM por CLASE BASE (4 sets).
+- NOTA: LichRegalia (Nigromante, oculta) ya existia como armadura muerta en v1. Queda señalado
+  sin tocar -- puede ser pre-montaje para cuando se abra el Nigromante, o convendria gatearla.
+- Archivos: Content/Items/Armor/{Ironknuckle,Wardplate}Set.cs (Guerrero), EverflowSet.cs
+  (Infinity Mage), tests/SubclassArmorSourceSmokeTest.ps1.
 
 ## 2026-07-16 - La Ejecucion Carmesi ESCALA en 3 escalones dentro de hardmode
 
