@@ -10,16 +10,12 @@ namespace Eternia.Content.UI
 {
     public class SoulUI : UIState
     {
-        private bool dragging;
-        private Vector2 offset;
-
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
             Player player = Main.LocalPlayer;
 
             if (!EterniaUI.ShouldDrawPlayerUI(player))
             {
-                dragging = false;
                 return;
             }
 
@@ -28,48 +24,18 @@ namespace Eternia.Content.UI
 
             if (!soulPlayer.HasAnySoul)
             {
-                dragging = false;
                 return;
             }
 
-            Vector2 panelPos =
-                soulPlayer.soulUIPosition;
-
+            // Centred like every other page. This used to be a draggable floating widget, from
+            // back when it was the mod's only panel -- but it is read-only (no slots, nothing
+            // behind it you need to uncover), and once the panels became tabs of one menu a
+            // page that reopens somewhere different every time costs more than it gives: the
+            // close button and the tab strip stop being where your hand expects them.
             Rectangle panel =
-                EterniaUI.ClampToScreen(
-                    new Rectangle(
-                        (int)panelPos.X,
-                        (int)panelPos.Y,
-                        384,
-                        500));
+                EterniaUI.GetCenteredPanel(384, 500);
 
-            panelPos =
-                new Vector2(panel.X, panel.Y);
-
-            if (!Main.mouseLeft)
-            {
-                dragging = false;
-            }
-
-            if (dragging)
-            {
-                panel =
-                    EterniaUI.ClampToScreen(
-                        new Rectangle(
-                            (int)(Main.MouseScreen.X - offset.X),
-                            (int)(Main.MouseScreen.Y - offset.Y),
-                            panel.Width,
-                            panel.Height));
-
-                soulPlayer.soulUIPosition =
-                    new Vector2(panel.X, panel.Y);
-
-                panelPos =
-                    new Vector2(panel.X, panel.Y);
-            }
-
-            if (panel.Contains(Main.MouseScreen.ToPoint()) ||
-                dragging)
+            if (panel.Contains(Main.MouseScreen.ToPoint()))
             {
                 Main.LocalPlayer.mouseInterface = true;
             }
@@ -87,26 +53,8 @@ namespace Eternia.Content.UI
 
             if (EterniaUI.DrawCloseButton(spriteBatch, panel, accent))
             {
-                dragging = false;
                 SoulUISystem.CloseSoulPanel();
                 return;
-            }
-
-            Rectangle dragHandle =
-                new Rectangle(
-                    panel.X,
-                    panel.Y,
-                    panel.Width - 48,
-                    64);
-
-            if (dragHandle.Contains(Main.MouseScreen.ToPoint()) &&
-                Main.mouseLeft &&
-                Main.mouseLeftRelease &&
-                !dragging)
-            {
-                Main.mouseLeftRelease = false;
-                dragging = true;
-                offset = Main.MouseScreen - panelPos;
             }
 
             Rectangle content =

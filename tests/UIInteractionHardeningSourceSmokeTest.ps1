@@ -75,19 +75,19 @@ if ($soul -notmatch "EterniaUI\.ShouldDrawPlayerUI\(player\)") {
     throw "SoulUI should use EterniaUI.ShouldDrawPlayerUI(player) before drawing player-bound state."
 }
 
-$closeButtonIndex = $soul.IndexOf("EterniaUI.DrawCloseButton")
-$dragHandleIndex = $soul.IndexOf("dragHandle.Contains")
-
-if ($dragHandleIndex -lt 0) {
-    throw "SoulUI dragging should start from a header dragHandle, not the whole panel."
+# The Soul panel is no longer draggable. It was a floating widget from when it was the mod's
+# only panel; now it is a page of the hub, and a page that reopens somewhere different every
+# time moves the close button and the tab strip out from under the player's hand.
+if ($soul -match "dragHandle" -or $soul -match "dragging") {
+    throw "SoulUI should no longer be draggable now that it is a centred page of the hub."
 }
 
-if ($closeButtonIndex -lt 0 -or $closeButtonIndex -gt $dragHandleIndex) {
-    throw "SoulUI should evaluate the close button before starting a drag so close clicks are not consumed."
+if ($soul -notmatch "EterniaUI\.GetCenteredPanel") {
+    throw "SoulUI should be centred like every other page."
 }
 
-if ($soul -notmatch "panel\.Contains\(Main\.MouseScreen\.ToPoint\(\)\)\s*\|\|\s*dragging") {
-    throw "SoulUI should keep mouseInterface active while the panel is hovered or currently dragging."
+if ($soul -notmatch "panel\.Contains\(Main\.MouseScreen\.ToPoint\(\)\)") {
+    throw "SoulUI should still claim mouseInterface while hovered, or clicks fall through to the world."
 }
 
 Write-Host "UI interaction hardening source smoke test passed."

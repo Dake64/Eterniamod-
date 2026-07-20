@@ -62,8 +62,10 @@ foreach ($pair in @(
 
 $soulUi = Get-Content -Raw (Join-Path $uiRoot "SoulUI.cs")
 
-if ($soulUi -notmatch "Main\.mouseLeftRelease") {
-    throw "SoulUI dragging should require a fresh mouse press, not any held left click."
+# The drag is gone (see UIInteractionHardening): what matters now is that the panel opens in
+# the same place as every other page, so navigating by tabs never moves the window.
+if ($soulUi -notmatch "EterniaUI\.GetCenteredPanel") {
+    throw "SoulUI should open centred like the other pages of the hub."
 }
 
 Write-Host "UI lifecycle source smoke test passed."

@@ -12,7 +12,6 @@ namespace Eternia.Content.Players
 {
     public class EterniaPlayer : ModPlayer
     {
-        public Vector2 soulUIPosition = new Vector2(40, 120);
 
         public SoulId ActiveSoul { get; private set; } = SoulId.None;
 
@@ -195,23 +194,8 @@ namespace Eternia.Content.Players
             }
         }
 
-        public override void SaveData(TagCompound tag)
-        {
-            tag["SoulUIPosX"] = soulUIPosition.X;
-            tag["SoulUIPosY"] = soulUIPosition.Y;
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            soulUIPosition.X =
-                tag.ContainsKey("SoulUIPosX")
-                ? tag.GetFloat("SoulUIPosX")
-                : 40f;
-
-            soulUIPosition.Y =
-                tag.ContainsKey("SoulUIPosY")
-                ? tag.GetFloat("SoulUIPosY")
-                : 120f;
-        }
+        // Nothing to persist here any more. This used to save where you had dragged the Soul
+        // panel; the panel is centred now, so the stored position became dead weight. Old
+        // characters simply keep an unread SoulUIPos tag, which is harmless.
     }
 }
