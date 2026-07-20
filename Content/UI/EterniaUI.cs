@@ -17,20 +17,38 @@ namespace Eternia.Content.UI
             Bosses
         }
 
+        // ETERNIA'S IDENTITY LIVES HERE.
+        //
+        // Every panel, border and label in the mod resolves to these five, so the whole UI
+        // shares one violet chrome instead of the neutral blue-grey it grew into by accident.
+        //
+        // What is deliberately NOT unified: colours that carry MEANING. Enemy rarity, each
+        // Soul's colour and the affinity branches stay as they are, because gold reads as
+        // Legendary and red reads as Bleed. Tinting those violet would trade information the
+        // player reads at a glance for decoration -- the same mistake as a passive node whose
+        // colour said nothing. Identity belongs to the chrome; the content keeps its meaning.
+        //
+        // The luminance ladder matches the old palette step for step, so contrast is preserved
+        // and nothing that was readable before becomes unreadable now.
         public static readonly Color PanelBackground =
-            new Color(8, 10, 14);
+            new Color(12, 8, 20);
 
         public static readonly Color PanelSurface =
-            new Color(18, 23, 31);
+            new Color(24, 18, 38);
 
         public static readonly Color PanelSurfaceAlt =
-            new Color(27, 34, 44);
+            new Color(36, 28, 54);
 
         public static readonly Color Border =
-            new Color(82, 95, 119);
+            new Color(104, 84, 148);
 
         public static readonly Color MutedText =
-            new Color(172, 182, 198);
+            new Color(186, 176, 208);
+
+        // The mod's signature violet, for chrome that needs an accent of its own rather than
+        // borrowing one from whatever content it happens to be framing.
+        public static readonly Color Brand =
+            new Color(150, 110, 230);
 
         public static Rectangle GetCenteredPanel(
             int preferredWidth,

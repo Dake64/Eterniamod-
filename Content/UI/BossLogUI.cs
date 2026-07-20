@@ -37,7 +37,11 @@ namespace Eternia.Content.UI
 
         public static bool Visible;
 
-        private static readonly Color Accent = new Color(230, 180, 90);
+        // The Codex's frame wears the mod's violet like every other panel. Its own gold was
+        // decorative, and it made the Codex look like a different program. What stays gold --
+        // and every other rarity hue -- is the per-boss gem, because that colour is INFORMATION:
+        // it is the highest rarity you have beaten. Chrome unifies; meaning does not.
+        private static readonly Color Accent = EterniaUI.Brand;
 
         private const int RowHeight = 46;
 

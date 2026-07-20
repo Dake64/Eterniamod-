@@ -117,19 +117,16 @@ namespace Eternia.Content.UI
             Rectangle bar = TabStrip();
             Point mouse = new Point(Main.mouseX, Main.mouseY);
 
-            // Each page carries its own accent so the strip belongs to the page under it. A
-            // single fixed colour made the tabs read as a separate widget floating above an
-            // unrelated window instead of as the top of one.
-            (EterniaUI.MajorPanel page, string label, bool open, Color tint)[] tabs =
+            // The strip is NAVIGATION, so it wears the mod's colour rather than the page's. It
+            // is the one element present on every page, which makes it the thing that says
+            // "this is Eternia" -- if it changed hue per tab it would be the least consistent
+            // part of the most consistent surface.
+            (EterniaUI.MajorPanel page, string label, bool open)[] tabs =
             {
-                (EterniaUI.MajorPanel.Soul, "SOUL", SoulUISystem.Visible,
-                    new Color(150, 120, 220)),
-                (EterniaUI.MajorPanel.Stats, "STATS", StatsUI.Visible,
-                    new Color(120, 190, 255)),
-                (EterniaUI.MajorPanel.Passive, "PASSIVES", PassiveUI.Visible,
-                    new Color(235, 120, 80)),
-                (EterniaUI.MajorPanel.Bosses, "CODEX", BossLogUI.Visible,
-                    new Color(230, 190, 90))
+                (EterniaUI.MajorPanel.Soul, "SOUL", SoulUISystem.Visible),
+                (EterniaUI.MajorPanel.Stats, "STATS", StatsUI.Visible),
+                (EterniaUI.MajorPanel.Passive, "PASSIVES", PassiveUI.Visible),
+                (EterniaUI.MajorPanel.Bosses, "CODEX", BossLogUI.Visible)
             };
 
             const int gap = 6;
@@ -143,27 +140,26 @@ namespace Eternia.Content.UI
 
                 bool active = tabs[i].open;
                 bool hover = rect.Contains(mouse);
-                Color tint = tabs[i].tint;
+                Color brand = EterniaUI.Brand;
 
                 Color fill =
-                    active ? Color.Lerp(EterniaUI.PanelSurface, tint, 0.28f) :
-                    hover ? Color.Lerp(EterniaUI.PanelSurfaceAlt, tint, 0.16f)
+                    active ? Color.Lerp(EterniaUI.PanelSurface, brand, 0.30f) :
+                    hover ? Color.Lerp(EterniaUI.PanelSurfaceAlt, brand, 0.18f)
                           : EterniaUI.PanelSurface * 0.9f;
 
                 spriteBatch.Draw(pixel, rect, fill);
 
                 // The active tab is underlined into the page below it; the rest get a faint
-                // baseline in their own colour so the strip reads as one connected row while
-                // still hinting where each tab leads.
+                // baseline so the strip still reads as one connected row.
                 spriteBatch.Draw(
                     pixel,
                     new Rectangle(rect.X, rect.Bottom - 2, rect.Width, 2),
-                    active ? tint : tint * 0.30f);
+                    active ? brand : brand * 0.30f);
 
                 if (active)
                 {
                     spriteBatch.Draw(
-                        pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), tint);
+                        pixel, new Rectangle(rect.X, rect.Y, rect.Width, 2), brand);
                 }
 
                 EterniaUI.DrawCenteredText(
