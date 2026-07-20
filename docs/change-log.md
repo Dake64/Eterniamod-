@@ -42,6 +42,26 @@ Formato sugerido por entrada:
   todo este enfoque.
 - Verificacion: compila 0/0; suite 118/118.
 
+## 2026-07-16 - Armaduras de subclase para el Guerrero en hardmode (tanda 1)
+
+- Pedido: armaduras por subclase para que el crecimiento sea unico. Antes solo 7 de 17
+  subclases tenian armadura propia; el resto usaba las genericas de mineral.
+- Aclaracion estructural (ver decision-log): pre-HM va por CLASE BASE (las subclases no
+  existen aun), HM por subclase. Esta tanda son las 5 subclases de GUERRERO que faltaban en
+  hardmode. Con esto el Guerrero queda COMPLETO en HM (Espadachin ya tenia Hemocarnage).
+- Sets nuevos (Adamantita/Titanio + Almas de la Noche, tier de jefes mecanicos):
+  - Ironknuckle (Peleador): +8 al tope de Combo y +2s de ventana (via Acc*).
+  - Wardplate  (Guardian):  el Aura Defensiva pega 25% mas fuerte y llega mas lejos (via Acc*).
+  - Warpath    (Berserker): en Overrage, +15% dano melee y 10% de reduccion (lee estado).
+  - Concussor  (Stunner):   con carga completa, +20% dano melee y +5 penetracion (lee estado).
+  - Whipcord   (Yoyo Master): +4% dano melee por stack de Precision (lee estado).
+- Cada set solo hace efecto si eres esa subclase: las que no tienen gancho Acc* leen su estado
+  publico (Overrage / FullyCharged / precisionStacks) gateado tras IsActive<Subclase>().
+- Test nuevo `SubclassArmorSourceSmokeTest`: cada subclase con armadura debe tocar SU mecanica,
+  y los sets que leen estado deben gatear por subclase (o el bonus se filtraria a cualquiera).
+- Verificacion: compila 0/0; suite 120/120. Sin probar en juego.
+- PENDIENTE: pre-HM por clase base (4), Mago HM (5), Ranger HM (Virtuoso).
+
 ## 2026-07-16 - El arbol de Sangrado por fin alimenta al Rastro Carmesi
 
 - Pedido: "crees que puedas mejorarlo? o variarlo mas?" sobre el arbol del Espadachin.

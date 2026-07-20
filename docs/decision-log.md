@@ -22,6 +22,32 @@ Formato sugerido:
 - Archivos relacionados:
 ```
 
+## 2026-07-16 - Armadura de subclase: pre-HM por CLASE BASE, HM por SUBCLASE
+
+- Estado: Aceptada (decision del usuario: "quiero que el crecimiento del jugador sea unico").
+- Contexto: el usuario pidio armaduras por subclase en pre-hardmode Y hardmode. Correccion
+  estructural: las subclases NO existen antes del Muro de Carne (se resuelven con Main.hardMode;
+  pre-HM eres una clase base). Por eso una "armadura de subclase pre-HM" es imposible.
+- Decision:
+  - PRE-HARDMODE: una armadura por CLASE BASE (Guerrero/Mago/Ranger/Summoner). Ya existe
+    HuntersGarb ("pre-HM Ranger"), que confirma el patron.
+  - HARDMODE: una armadura por SUBCLASE. El set bonus DEBE potenciar la mecanica insignia de
+    esa subclase y no hacer nada para las demas -- variedad real, no stats genericos.
+  - Las armaduras de MINERAL (Wraithite, Aetherium, Nullsteel, Soulstone...) siguen siendo
+    GENERICAS a proposito (una decision previa): sirven al que va multiclase y cubren el hueco
+    con pocas piezas. NO se convierten.
+- Como se enganchan los sets a la mecanica:
+  - Subclase CON gancho Acc* (Fighter, Guardian, Swordsman...): el set alimenta el Acc* como
+    los accesorios (deepen del recurso).
+  - Subclase SIN gancho (Berserker, Stunner, Yoyo Master): el set LEE el estado publico
+    (Overrage / FullyCharged / precisionStacks) gateado tras IsActive<Subclase>() y aplica el
+    bonus en UpdateArmorSet. No hace falta anadir ganchos nuevos.
+- PLAN POR TANDAS (mucho contenido, imposible de probar por mi): T1 = 5 subclases Guerrero HM
+  (HECHO). Pendiente: pre-HM por clase base (4), Mago HM (5: Elementalista, Cursed Mage,
+  Nigromante, Infinity Mage, Arcane Bard), Ranger HM (Virtuoso). Summoner HM ya esta completo.
+- Archivos: Content/Items/Armor/{Ironknuckle,Wardplate,Warpath,Concussor,Whipcord}Set.cs,
+  tests/SubclassArmorSourceSmokeTest.ps1.
+
 ## 2026-07-16 - La Ejecucion Carmesi ESCALA en 3 escalones dentro de hardmode
 
 - Estado: Aceptada (decision del usuario: "quiero que se sienta ese poder").
