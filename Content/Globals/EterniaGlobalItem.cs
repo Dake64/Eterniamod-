@@ -132,7 +132,11 @@ namespace Eternia.Content.Globals
             if (item.ModItem is IBleedWeapon)
             {
                 item.shoot = ModContent.ProjectileType<CrimsonSlash>();
-                item.shootSpeed = 11f;
+
+                // Playtest against the Twins: at 11 the slash was too slow to lead a boss that
+                // circles at range, so the Swordsman's only ranged option kept missing exactly
+                // when it was the only thing that could reach.
+                item.shootSpeed = 15f;
             }
         }
 

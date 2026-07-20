@@ -27,7 +27,9 @@ namespace Eternia.Content.Projectiles.Warrior
             Projectile.friendly = true;
             Projectile.DamageType = DamageClass.Melee;
             Projectile.penetrate = 2;
-            Projectile.timeLeft = 42;   // ~29 tiles of reach at shootSpeed 11
+            // Reach = shootSpeed * timeLeft / 16. At 15 x 55 that is ~51 tiles, up from ~29:
+            // a flying boss that keeps its distance was simply out of range before.
+            Projectile.timeLeft = 55;
             Projectile.tileCollide = true;
             Projectile.ignoreWater = true;
             Projectile.aiStyle = -1;
