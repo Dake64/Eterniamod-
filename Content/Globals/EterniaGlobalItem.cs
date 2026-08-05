@@ -140,6 +140,10 @@ namespace Eternia.Content.Globals
             }
         }
 
+        // Half of CrimsonSlash's 30x30 hitbox, so the spawn point centres the slash on the
+        // player instead of hanging it down-right of the intended origin.
+        private static readonly Vector2 SlashHalfSize = new Vector2(15f, 15f);
+
         public override void ModifyShootStats(
             Item item,
             Player player,
@@ -149,10 +153,26 @@ namespace Eternia.Content.Globals
             ref int damage,
             ref float knockback)
         {
-            if (item.ModItem is IBleedWeapon)
+            if (item.ModItem is not IBleedWeapon)
             {
-                damage = (int)(damage * BeamDamageFactor);
+                return;
             }
+
+            damage = (int)(damage * BeamDamageFactor);
+
+            // The slash used to spawn from Terraria's default melee position, which sits low on
+            // the body -- it read as coming out near the feet. Launch it from the player's
+            // CENTRE, nudged toward the aim so it emerges from the blade. The aim DIRECTION is
+            // kept from the velocity Terraria already computed, so mouse, gamepad and auto-aim
+            // all still point true; only the origin moves.
+            Vector2 origin =
+                player.RotatedRelativePoint(player.MountedCenter);
+
+            Vector2 dir =
+                velocity.SafeNormalize(new Vector2(player.direction, 0f));
+
+            velocity = dir * item.shootSpeed;
+            position = origin + dir * 24f - SlashHalfSize;
         }
     }
 }

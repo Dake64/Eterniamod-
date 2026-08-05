@@ -42,6 +42,19 @@ Formato sugerido por entrada:
   todo este enfoque.
 - Verificacion: compila 0/0; suite 118/118.
 
+## 2026-07-16 - El tajo de sangrado sale del CENTRO del jugador, no de los pies
+
+- Sintoma (playtest): "el proyectil sale muy abajo".
+- Causa: `ModifyShootStats` solo tocaba el dano, nunca la posicion, asi que el tajo salia de
+  la posicion por defecto de Terraria para un espadazo -- baja en el cuerpo, cerca de los pies.
+  Y CrimsonSlash vuela recto (sin gravedad), asi que si sale bajo va bajo todo el trayecto.
+- Arreglo: se lanza desde `RotatedRelativePoint(MountedCenter)` (centro real del jugador,
+  respeta gravedad invertida y monturas), empujado 24px hacia el apuntado para que emerja del
+  filo. Se CONSERVA la direccion del velocity que Terraria ya calculo -> raton, gamepad y
+  autoaim siguen apuntando bien; solo se movio el origen. `- (15,15)` centra el hitbox 30x30.
+- Verificacion: compila 0/0, 0 avisos; suite 120/120. Matematica de coordenadas verificada a
+  mano (no probado en juego).
+
 ## 2026-07-16 - Armadura de subclase: cobertura COMPLETA de las 12 jugables en HM
 
 - Pedido: armaduras por subclase para que el crecimiento sea unico.
