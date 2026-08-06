@@ -128,3 +128,57 @@ multi-parte (Moon Lord) una pulsación los pone a sangrar todos a la vez.
 - ❌ **La barra no sube** → golpeas enemigos que aún no sangran, o los matas de un golpe.
 - ❌ **Sale `NOTHING BLEEDING`** → el sangrado se acabó; pega y ejecuta más seguido.
 - ❌ **Subes stats que no sean Afinidad de Sangrado** → dejas daño en la mesa.
+
+---
+
+## 13. Progresión por jefe — PRE-HARDMODE
+
+> ⚠️ **Antes del Muro NO eres Espadachín todavía** — eres un Guerrero base. No tienes Rastro
+> Carmesí ni la Q; tu sangrado es solo un daño-por-tiempo. Por eso los accesorios de Rastro
+> (Bloodletter Band, etc.) **no hacen nada aquí** — usa accesorios melee normales de Terraria.
+> Tu único objetivo pre-HM: **subir afinidad de Sangrado** en el árbol para salir Espadachín.
+
+| Jefe | Arma de sangrado | Armadura | Accesorios (vanilla) |
+|---|---|---|---|
+| **King Slime** | Serrated Iron Blade (13) | Soulstone (mineral del mod) o vanilla | Hermes Boots, Cloud in a Bottle, Shackle |
+| **Eye of Cthulhu** | Serrated Iron Blade → dropea **Dread Reaver (22)** al matarlo | Soulstone / Animite | + Band of Regeneration |
+| **Eater / Brain** | Corruptor's Ripper (22, barras del mal) | Animite | + Feral Claws (velocidad melee) |
+| **Queen Bee** | **Thornrender (24)** (lo dropea, o crafteas con cera+aguijón) | Animite / Revenite | + Shark Tooth Necklace (penetración) |
+| **Skeletron** | Thornrender / **Bonewarden Sabre (24)** (drop raro de esqueletos de mazmorra) | Revenite | + Obsidian Shield |
+| **Deerclops** | Bonewarden Sabre (24) | Revenite | + Fledgling Wings si las tienes |
+| **Prototype-01** (jefe del mod) | Revenite Cleaver (25) o **Molten Gutripper (27)** | **Revenite** (tope pre-HM del mod) | Feral Claws, Cross Necklace, botas + globo |
+| **Wall of Flesh** | Molten Gutripper (27) — lo mejor pre-HM | Revenite o Molten vanilla | Wings, Feral Claws, Lifeforce/Rage potions |
+
+> 🩸 **Al matar el Muro te conviertes en Espadachín** y recibes de recompensa la
+> **Bloodletter Blade (42)** — tu arma insignia. Aquí empieza el Rastro Carmesí y la Q.
+
+---
+
+## 14. Progresión por jefe — HARDMODE
+
+> Ahora SÍ eres Espadachín: tienes barra, Q, y los accesorios de Rastro por fin funcionan.
+> Recuerda los desbloqueos de tu mecánica: **Hemorragia al matar Plantera**, **Aniquilación al
+> matar Moon Lord**.
+
+| Jefe | Arma de sangrado | Armadura | Accesorios clave |
+|---|---|---|---|
+| **Queen Slime** | Bloodletter Blade (42) → **Quicksilver Fang (44)** (Mithril/Oricalco) | Transición a **Hemocarnage** en cuanto tengas Adamantita/Titanio | **Hemophage Sigil** (×1.60 Rastro), Warrior Emblem, botas, wings |
+| **Prototype-02** (jefe del mod) | **Sanguine Cleaver (56)** (14 barras Adamantita/Titanio) | Hemocarnage (+60% Rastro) | Hemophage Sigil, Feral/Power Glove |
+| **Los Gemelos** | Sanguine Cleaver (56) — usa el **tajo a distancia** (vuelan) | Hemocarnage | Hemophage Sigil, Mechanical Glove, wings |
+| **The Destroyer** | Sanguine Cleaver (56) — tu sangrado prende en **todos los segmentos** | Hemocarnage | Hemophage Sigil, Ankh Shield en progreso |
+| **Skeletron Prime** | **Hallowed Bloodletter (62)** (Hallowed + almas mecánicas) | Hemocarnage | + su alma da acceso al **Crimson Chalice** (×1.35) |
+| **Plantera** 🔓 | Hallowed Bloodletter (62) / **Nullsteel Reaver (62)** / Chlorophyte Hemoblade (64) | Hemocarnage | Hemophage Sigil + **Crimson Chalice** (×2.16 combinados) |
+| **Golem** | Chlorophyte Hemoblade (64) → dropea Beetle Husk para la siguiente | Hemocarnage | Fire Gauntlet, Celestial Stone |
+| **Duke Fishron** | **Titan's Gutcleaver (84)** (Beetle Husk + Chlorophyte) | Hemocarnage | Wings imprescindibles, Celestial Shell |
+| **Empress of Light** | Titan's Gutcleaver (84) | Hemocarnage | Ankh Shield, Master Ninja Gear |
+| **Lunatic Cultist** | **Crimson Requiem (92)** (Broken Hero Sword + Hallowed + Chlorophyte; también dropea de Mothron) | Hemocarnage | full kit |
+| **Moon Lord** 🔓 | mejor disponible → tras los Pilares, **Exsanguinator (112)** (barras lunares) | Hemocarnage | **Eternal Bulwark** (×1.30 Rastro + 12% melee) |
+| **The Eternal** (jefe final del mod) | Exsanguinator (112) full equipado | Hemocarnage | todo lo anterior + pociones |
+
+> 🩸 **Contra jefes multi-parte (Gemelos, Destructor, Moon Lord):** desde Plantera, una sola Q
+> hace sangrar TODAS las partes a la vez y cada una te paga ingreso pasivo. Es el mejor
+> escenario de tu mecánica.
+
+> **Nota de armadura:** no hay un set de Guerrero pre-HM orientado a sangrado (el que existe,
+> Steelbound, potencia Combo). Hasta Hemocarnage, usa mineral genérico o armadura vanilla —
+> lo que importa pre-HM es subir afinidad, no el set.
