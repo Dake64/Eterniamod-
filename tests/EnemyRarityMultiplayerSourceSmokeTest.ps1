@@ -19,4 +19,21 @@ if ($content -notmatch "public override void ReceiveExtraAI\(") {
     throw "EterniaGlobalNPC must implement ReceiveExtraAI to receive synced rarity/level."
 }
 
+# The audit found damage/defence scaling worked in singleplayer but was inert online: the
+# multipliers were applied on the server but never sent, and the mod skips SetDefaults on
+# clients. Both must be transmitted AND re-applied to npc.damage/npc.defense on the client.
+$send = [regex]::Match($content,
+    'public override void SendExtraAI\([\s\S]+?\n\s{8}\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+$receive = [regex]::Match($content,
+    'public override void ReceiveExtraAI\([\s\S]+?\n\s{8}\}',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($send -notmatch "damageMultiplier" -or $send -notmatch "defenseMultiplier") {
+    throw "SendExtraAI must transmit damage/defence multipliers, or elites are base-stat online."
+}
+if ($receive -notmatch "npc\.damage =" -or $receive -notmatch "npc\.defense =") {
+    throw "ReceiveExtraAI must reapply npc.damage/npc.defense, or the rarity scaling is inert online."
+}
+
 Write-Host "Enemy rarity multiplayer source smoke test passed."

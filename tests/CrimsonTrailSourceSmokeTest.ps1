@@ -301,4 +301,22 @@ if ($ui -notmatch "class CrimsonTrailUI\s*:\s*ModSystem" -or
     throw "CrimsonTrailUI should draw a Swordsman-only resource bar."
 }
 
+# --- The keystone must not be applied twice (audit finding) ---------------------
+# KeystonePlayer is the single central place that applies the Hemorrhagic Frenzy melee bonus.
+# SwordsmanPlayer applied it a SECOND time this session, stacking to +40%. It must not.
+if ($swordsman -match "HasKeystone\(.Hemorrhagic Frenzy.\)[\s\S]{0,120}GetDamage\(DamageClass\.Melee\)") {
+    throw "SwordsmanPlayer must not apply the Hemorrhagic Frenzy melee bonus; KeystonePlayer already does."
+}
+
+# The keystone's price is the +25 execution cost, NOT an attack-speed penalty (which would
+# starve the Crimson Trail). The Bleed case in KeystonePlayer must not slow attacks.
+$keystone = Get-Content -Raw (Join-Path $contentRoot "Players\KeystonePlayer.cs")
+$bleedCase = [regex]::Match($keystone,
+    'case "Bleed":[\s\S]+?break;',
+    [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+if ($bleedCase -match "GetAttackSpeed") {
+    throw "The Bleed keystone must not cut attack speed; its cost is the +25 execution price."
+}
+
 Write-Host "Crimson Trail source smoke test passed."

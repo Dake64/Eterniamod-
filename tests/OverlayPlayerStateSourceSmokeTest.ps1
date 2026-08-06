@@ -32,7 +32,15 @@ $worldSpaceOverlays = @(
     "BerserkerUI.cs",
     "CrimsonTrailUI.cs",
     "SubclassResourceUI.cs",
-    "TechSummonerUI.cs"
+    "TechSummonerUI.cs",
+    # Added after the audit found these six drawing over open panels: the world-overlay
+    # split had missed them.
+    "GunnerUI.cs",
+    "ArcherFocusUI.cs",
+    "VirtuosoUI.cs",
+    "EnergyHeatUI.cs",
+    "StunnerChargeUI.cs",
+    "FighterComboUI.cs"
 )
 
 foreach ($file in $worldSpaceOverlays) {
