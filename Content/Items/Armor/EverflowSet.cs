@@ -34,8 +34,12 @@ namespace Eternia.Content.Items.Armor
 
             var mage = player.GetModPlayer<InfinityMagePlayer>();
 
+            // "Brims" = at or near full, NOT exactly full: Overflow is pushed to Max during
+            // ItemCheck (after this UpdateArmorSet runs) and then decays 0.12/frame in
+            // PostUpdate, so it is never observed at exactly Max here. 90% reads as brimming
+            // while you keep casting, and drops off once you stop -- which is the intent.
             if (mage.IsActiveInfinityMage() &&
-                mage.Overflow >= InfinityMagePlayer.MaxOverflow)
+                mage.Overflow >= InfinityMagePlayer.MaxOverflow * 0.9f)
             {
                 player.manaCost *= 0.80f;
                 player.GetDamage(DamageClass.Magic) += 0.12f;

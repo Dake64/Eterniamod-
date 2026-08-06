@@ -14,7 +14,7 @@ namespace Eternia.Content.UI
         {
             Player player = Main.LocalPlayer;
 
-            if (!EterniaUI.ShouldDrawPlayerUI(player))
+            if (!EterniaUI.ShouldDrawWorldOverlay(player))
             {
                 return;
             }

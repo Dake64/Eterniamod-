@@ -110,6 +110,14 @@ namespace Eternia.Content.Globals
             binaryWriter.Write(enemyLevel);
             binaryWriter.Write(lifeMultiplier);
             binaryWriter.Write(scaleMultiplier);
+
+            // Damage and defence must ride along too. Vanilla's NPC sync assumes these are
+            // deterministic from SetDefaults, but this mod skips SetDefaults on clients, so
+            // without sending them an elite dealt only BASE contact damage and had only BASE
+            // defence in multiplayer -- the whole damage/defence half of the rarity system was
+            // inert online while working in singleplayer.
+            binaryWriter.Write(damageMultiplier);
+            binaryWriter.Write(defenseMultiplier);
         }
 
         public override void ReceiveExtraAI(
@@ -121,13 +129,21 @@ namespace Eternia.Content.Globals
             enemyLevel = binaryReader.ReadInt32();
             lifeMultiplier = binaryReader.ReadSingle();
             scaleMultiplier = binaryReader.ReadSingle();
+            damageMultiplier = binaryReader.ReadSingle();
+            defenseMultiplier = binaryReader.ReadSingle();
 
-            // Re-apply the visual/health scaling once on the client so the enemy
-            // matches the server. Guarded so repeated syncs don't compound it.
+            // Re-apply the scaling once on the client so the enemy matches the server. Guarded
+            // so repeated syncs don't compound it. The formulas mirror ApplyRarityProfile
+            // exactly; the client's npc.damage/defense are still the vanilla base here, so
+            // multiplying them reproduces the server's elite values.
             if (!applied)
             {
                 npc.lifeMax =
                     (int)(npc.lifeMax * lifeMultiplier) + enemyLevel * 5;
+                npc.damage =
+                    (int)(npc.damage * damageMultiplier) + enemyLevel / 2;
+                npc.defense =
+                    (int)(npc.defense * defenseMultiplier) + enemyLevel / 3;
                 npc.scale *= scaleMultiplier;
                 applied = true;
             }

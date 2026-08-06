@@ -42,6 +42,33 @@ Formato sugerido por entrada:
   todo este enfoque.
 - Verificacion: compila 0/0; suite 118/118.
 
+## 2026-07-16 - Auditoria adversarial: 4 bugs confirmados, arreglados
+
+- Se lanzo una revision multi-agente (6 dimensiones, cada hallazgo refutado adversarialmente)
+  sobre los 69 archivos que cambiaron esta sesion. Confirmo 4 bugs que los 120 tests NO
+  atrapaban (verifican estructura, no comportamiento). 3 los introduje yo esta sesion.
+- BUG 4 [alto] Keystone de Sangrado DUPLICADO. `KeystonePlayer` ya aplicaba el keystone
+  "Hemorrhagic Frenzy" (+20% melee, -10% velocidad). Al "reescribirlo" esta sesion anadi OTRO
+  +20% en SwordsmanPlayer y cambie texto/costo, sin tocar KeystonePlayer -> daba +40% melee,
+  -10% velocidad (que el texto ya no menciona) Y +25 de coste. Arreglo: quitado mi +20% de
+  SwordsmanPlayer, quitada la penalizacion de velocidad de KeystonePlayer. Queda +20% melee
+  (central) + 25 de coste (EffectiveCost), como dice el texto.
+- BUG 3 [medio] Set Everflow MUERTO. El bonus se activaba con Overflow == 100 exacto, pero
+  Overflow se pone a 100 en ItemCheck (despues de UpdateArmorSet) y decae 0.12/frame, asi que
+  nunca vale 100 cuando el set lo lee -> el bonus nunca se aplicaba. Umbral bajado a 90%.
+- BUG 2 [medio] 6 HUD de subclase sobre paneles. Mi split ShouldDrawPlayerUI ->
+  ShouldDrawWorldOverlay se dejo GunnerUI, ArcherFocusUI, VirtuosoUI, EnergyHeatUI,
+  StunnerChargeUI y FighterComboUI sin migrar -> se dibujaban encima del Codice/arbol.
+  Migrados los 6.
+- BUG 1 [alto, PRE-EXISTENTE] Rareza sin sincronizar en multijugador. El daño/defensa de
+  elite se aplicaba en el servidor pero SendExtraAI/ReceiveExtraAI no lo mandaban, y el mod se
+  salta SetDefaults en clientes -> online los enemigos de elite pegaban dano BASE y tenian
+  defensa BASE (toda la mitad dano/defensa del sistema de rareza era inerte online). Arreglo:
+  se envian damageMultiplier/defenseMultiplier y el cliente reaplica npc.damage/npc.defense con
+  la misma formula que el servidor.
+- Verificacion: compila 0/0, 0 avisos; suite 120/120. Los arreglos NO estan probados en juego
+  (el de multijugador requiere una partida MP real).
+
 ## 2026-07-16 - El tajo de sangrado sale del CENTRO del jugador, no de los pies
 
 - Sintoma (playtest): "el proyectil sale muy abajo".

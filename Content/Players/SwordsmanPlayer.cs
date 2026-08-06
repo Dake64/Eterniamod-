@@ -196,13 +196,9 @@ namespace Eternia.Content.Players
                 return;
             }
 
-            // KEYSTONE Hemorrhagic Frenzy: raw melee power, paid for at the finisher (see
-            // SwordsmanSkillPlayer.EffectiveCost) rather than with attack speed, which would
-            // have starved the very resource the keystone sits on top of.
-            if (HasKeystone("Hemorrhagic Frenzy"))
-            {
-                Player.GetDamage(DamageClass.Melee) += 0.20f;
-            }
+            // NOTE: the Hemorrhagic Frenzy keystone's +20% melee is applied CENTRALLY by
+            // KeystonePlayer, not here. It used to be applied in both places, which stacked to
+            // +40%. Its price (the +25 execution cost) lives in SwordsmanSkillPlayer.EffectiveCost.
 
             bleedIncomeTimer++;
 

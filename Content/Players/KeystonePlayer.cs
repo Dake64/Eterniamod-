@@ -59,8 +59,11 @@ namespace Eternia.Content.Players
             switch (affinity)
             {
                 case "Bleed":
+                    // Hemorrhagic Frenzy: raw melee power. Its price is paid at the finisher
+                    // (+25 Crimson Execution cost, in SwordsmanSkillPlayer.EffectiveCost), NOT
+                    // in attack speed -- fewer swings would starve the Crimson Trail the
+                    // keystone sits on top of.
                     Player.GetDamage(DamageClass.Melee) += 0.20f;
-                    Player.GetAttackSpeed(DamageClass.Melee) -= 0.10f;
                     break;
                 case "Combo":
                     // FRENZY: handled by FighterPlayer (a conditional buff while the
