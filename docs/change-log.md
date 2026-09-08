@@ -42,6 +42,25 @@ Formato sugerido por entrada:
   todo este enfoque.
 - Verificacion: compila 0/0; suite 118/118.
 
+## 2026-07-16 - Rediseno de armas del Espadachin (tanda 2: identidades ON-HIT)
+
+- Encima de los estilos de proyectil (tanda 1), cada hoja gana lo que hace al GOLPEAR, en un
+  `SwordIdentityGlobalItem` centralizado (ramifica por tipo de arma; AppliesToEntity solo a
+  IBleedWeapon). Toda la tabla de identidades on-hit en un sitio, sin tocar archivos de arma.
+- Identidades:
+  - Hunter's Warblade: +20% dano a enemigos SANGRANDO (caza presa herida; base bajo a proposito).
+  - Serrated Iron Blade: refresca el sangrado a 480t en cada mordida (la sierra no deja cerrar
+    la herida) -> presion sostenida, corto alcance.
+  - Corruptor's Ripper: Cursed Inferno junto al sangrado (la herida arde).
+  - Molten Gutripper: En Llamas (acero al rojo).
+  - Nullsteel Reaver: Ichor -baja defensa- (el vacio corroe la armadura).
+  - Bloodletter Blade (SIGNATURE): +4 Rastro Carmesi por mordida (gateado: nada hasta ser Espadachin).
+  - Exsanguinator (endgame): contra enemigo sangrando, drena +3 Rastro y +4 vida.
+- Aplica al espadazo directo; el tajo conserva su bleed/Trail via SwordsmanPlayer.
+- Verificacion: compila 0/0, 0 avisos; suite 121/121. Sin probar en juego.
+- PENDIENTE (tanda 3): proyectiles a medida (onda del Titan, carga del Sanguine, bone-spikes del
+  Bonewarden, marca+detona del Requiem) y el doc de sprites/paletas por arma.
+
 ## 2026-07-16 - Rediseno de armas del Espadachin (tanda 1: comportamiento del proyectil)
 
 - Pedido: cada espada de sangrado con identidad propia; matar la sensacion de "mismo misil,
