@@ -108,6 +108,44 @@ namespace Eternia.Content.Globals
                             0f, player.whoAmI);
                     }
                     break;
+
+                // Crimson Requiem: each hit lays a mark; when the marks reach the threshold the
+                // requiem DETONATES them -- a crimson burst that executes the whole group around
+                // the marked foe. Marks fade if the Swordsman stops pressing (see BleedGlobalNPC).
+                case CrimsonRequiem:
+                    MarkForRequiem(item, player, target, damageDone);
+                    break;
+            }
+        }
+
+        // How many marks a foe must carry before the requiem detonates them.
+        private const int RequiemThreshold = 5;
+
+        private static void MarkForRequiem(Item item, Player player, NPC target, int damageDone)
+        {
+            var g = target.GetGlobalNPC<BleedGlobalNPC>();
+
+            g.RequiemMarks++;
+            g.RequiemMarkTimer = 300; // marks persist ~5s since the last strike
+
+            if (g.RequiemMarks < RequiemThreshold)
+            {
+                return;
+            }
+
+            g.RequiemMarks = 0;
+            g.RequiemMarkTimer = 0;
+
+            // Detonation deals twice the strike that triggered it, in a radius. Owner-only spawn
+            // so multiplayer stays in sync; the blast itself carries bleed/Trail as a melee hit.
+            if (Main.myPlayer == player.whoAmI)
+            {
+                Projectile.NewProjectile(
+                    player.GetSource_ItemUse(item),
+                    target.Center, Vector2.Zero,
+                    ModContent.ProjectileType<RequiemDetonation>(),
+                    System.Math.Max(1, damageDone * 2),
+                    4f, player.whoAmI);
             }
         }
 

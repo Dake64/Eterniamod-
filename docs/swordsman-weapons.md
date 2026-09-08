@@ -85,10 +85,11 @@ del arma. Las mecánicas on-hit viven en `SwordIdentityGlobalItem`.
   - Paleta: `#3E6B2A` hoja vegetal · `#6FA83A` filo · `#1E2E12` sombra · `#C23A3A` savia sangrienta.
 - **Balance:** cobertura de área por fragmentos. **+** grupos dispersos **−** menos foco single-target.
 
-### Bonewarden Sabre  ·  daño 24  ·  `Straight` (🔜 bone-spikes)
+### Bonewarden Sabre  ·  daño 24  ·  `Straight` + proyectil ✅
 - **Concepto:** sable guardián de los muertos de la mazmorra.
-- **Nombre:** "bone" + "warden" → **al golpear, brotan púas de hueso del enemigo** (daño persistente). 🔜
-- **Mecánica (pendiente):** proyectil-púa que queda clavado unos segundos. **Secundaria:** temática ósea.
+- **Nombre:** "bone" + "warden" → **al golpear, brota una púa de hueso del enemigo** (`BoneSpike`) que
+  aguanta ~42t mordiendo un par de veces. ✅
+- **Mecánica principal:** zona de negación clavada a la herida. **Secundaria:** temática ósea.
 - **Partículas:** fragmentos de hueso blancos al golpear.
 - **Sonido:** `SoundID.NPCHit2` (hueso).
 - **Sprite (≈32px):** sable curvo hecho de **hueso**, guardia de costillas, filo amarillento.
@@ -143,15 +144,18 @@ del arma. Las mecánicas on-hit viven en `SwordIdentityGlobalItem`.
   - Paleta: `#C8D0DA` mercurio · `#FFFFFF` brillo · `#7A8494` sombra · `#C23A3A` punta.
 - **Balance:** DPS altísimo, poco por golpe, corto. **+** cadencia + auto-apunta **−** frágil per-hit.
 
-### Sanguine Cleaver  ·  daño 56  ·  `Wide` ✅ (🔜 carga)
+### Sanguine Cleaver  ·  daño 56  ·  `Wide` + carga ✅
 - **Concepto:** guillotina de sangre.
-- **Nombre:** "sanguine" (sangre) + "cleaver" → **media luna pesada** (✅); 🔜 **mantener para cargar** un corte único brutal.
-- **Mecánica principal:** golpe pesado AoE. **Secundaria (pendiente):** carga liberable.
-- **Partículas:** spray grueso carmesí.
+- **Nombre:** "sanguine" (sangre) + "cleaver" → click izq. = **media luna pesada** (✅); click der. =
+  **mantener para cargar** (`SanguineCharge`) y soltar una **guillotina** (`SanguineGuillotine`)
+  escalada por la carga: ~1.3x un espadazo al mínimo, ~3.4x a full. ✅
+- **Mecánica principal:** golpe pesado AoE. **Secundaria:** carga liberable (alt-fire).
+- **Partículas:** spray grueso carmesí; sangre que se agolpa en la hoja al cargar.
 - **Sonido:** `SoundID.Item71`.
 - **Sprite (≈40px, macizo):** cuchilla-guillotina enorme, rojo profundo, filo pulido.
   - Paleta: `#8A1420` hoja · `#C83040` filo · `#2A0808` sombra · `#5A5A5A` dorso metálico.
-- **Balance:** mucho por golpe, lentísimo (useTime 30). **+** golpe demoledor **−** se telegrafía.
+- **Balance:** mucho por golpe, lentísimo (useTime 30). **+** golpe demoledor y pico de carga enorme
+  **−** te quedas quieto y vulnerable mientras cargas la guillotina.
 
 ### Hallowed Bloodletter  ·  daño 62  ·  `Split` ✅
 - **Concepto:** sangre bendita.
@@ -183,20 +187,23 @@ del arma. Las mecánicas on-hit viven en `SwordIdentityGlobalItem`.
   - Paleta: `#3AA85A` cristal · `#7AE89A` brillo · `#1A4A2A` sombra · `#C23030` venas de sangre.
 - **Balance:** casi imposible de fallar. **+** auto-apunta fuerte **−** daño medio para su tier.
 
-### Titan's Gutcleaver  ·  daño 84  ·  `Wide` ✅ (🔜 onda de choque)
+### Titan's Gutcleaver  ·  daño 84  ·  `Wide` + proyectil ✅
 - **Concepto:** hacha colosal que sacude el suelo.
-- **Nombre:** "titan" (colosal) → **media luna gigante** (✅); 🔜 **onda de choque** que recorre el suelo al golpear.
-- **Mecánica principal:** el arma más pesada, mayor impacto. **Secundaria (pendiente):** onda terrestre.
+- **Nombre:** "titan" (colosal) → **media luna gigante** (✅) + **onda de choque** (`TitanShockwave`)
+  que recorre el suelo desde el jugador al golpear (par izq/der, una por espadazo). ✅
+- **Mecánica principal:** el arma más pesada, mayor impacto. **Secundaria:** onda terrestre que barre.
 - **Partículas:** polvo y escombros al impactar.
 - **Sonido:** `SoundID.Item70` (impacto pesado).
 - **Sprite (≈44px, el más grande):** cuchilla titánica de placas de beetle, naranja/bronce, remaches.
   - Paleta: `#B0762A` placas · `#E8A850` brillo · `#5A3A10` sombra · `#C23030` filo ensangrentado.
 - **Balance:** daño y AoE brutales, el más lento (useTime 32). **+** devastador **−** cadencia mínima.
 
-### Crimson Requiem  ·  daño 92  ·  `Straight` (🔜 marca + detona)
+### Crimson Requiem  ·  daño 92  ·  `Straight` + marca/detona ✅
 - **Concepto:** el canto fúnebre. Ejecución.
-- **Nombre:** "requiem" (misa de muerte) → 🔜 **marca enemigos; al acumular marcas, una onda de réquiem los detona**.
-- **Mecánica (pendiente):** marcas + detonación en umbral (ejecución de grupo).
+- **Nombre:** "requiem" (misa de muerte) → cada golpe **marca** al enemigo; a las **5 marcas** el réquiem
+  **detona** (`RequiemDetonation`): un estallido carmesí que ejecuta al grupo alrededor. Las marcas
+  se desvanecen si dejas de golpear (hay que "cantar" el réquiem). ✅
+- **Mecánica principal:** marcas + detonación en umbral (ejecución de grupo). **Secundaria:** presión constante para no perder marcas.
 - **Partículas:** notas/sigilos carmesí flotando sobre los marcados.
 - **Sonido:** `SoundID.Item122` (energía) + un tono grave al detonar.
 - **Sprite (≈38px):** espada Terra-Blade reforjada en carmesí, **partitura grabada** en la hoja, aura tenue.

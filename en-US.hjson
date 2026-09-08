@@ -2124,6 +2124,51 @@ Mods: {
 				DisplayName: Legion Leggings
 				Tooltip: +10% summon speed and +8% movement speed
 			}
+
+			EverflowRobe: {
+				Tooltip: ""
+				DisplayName: Everflow Robe
+			}
+
+			EverflowLeggings: {
+				Tooltip: ""
+				DisplayName: Everflow Leggings
+			}
+
+			EverflowCrown: {
+				Tooltip: ""
+				DisplayName: Everflow Crown
+			}
+
+			IronknuckleChest: {
+				DisplayName: Ironknuckle Chest
+				Tooltip: ""
+			}
+
+			IronknuckleGreaves: {
+				DisplayName: Ironknuckle Greaves
+				Tooltip: ""
+			}
+
+			IronknuckleHelm: {
+				DisplayName: Ironknuckle Helm
+				Tooltip: ""
+			}
+
+			WardplateChest: {
+				DisplayName: Wardplate Chest
+				Tooltip: ""
+			}
+
+			WardplateGreaves: {
+				DisplayName: Wardplate Greaves
+				Tooltip: ""
+			}
+
+			WardplateHelm: {
+				DisplayName: Wardplate Helm
+				Tooltip: ""
+			}
 		}
 
 		Tiles: {
@@ -2216,6 +2261,8 @@ Mods: {
 			PrototypePlasmaBolt.DisplayName: Prototype Plasma Bolt
 			PrototypeShockwave.DisplayName: Prototype Shockwave
 			SoulSlash.DisplayName: Soul Slash
+			BoneSpike.DisplayName: Bone Spike
+			TitanShockwave.DisplayName: Titan Shockwave
 		}
 	}
 }

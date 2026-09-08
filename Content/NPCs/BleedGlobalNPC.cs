@@ -43,6 +43,12 @@ namespace Eternia.Content.NPCs
         // whoAmI of the Warrior who applied the bleed (-1 = none / fall back).
         public int BleedOwner = -1;
 
+        // Crimson Requiem's mark stacks and how long since the last one was laid. When the stacks
+        // reach the threshold the blade detonates them (SwordIdentityGlobalItem); if the Swordsman
+        // stops pressing, the marks fade so the requiem has to be actively "sung".
+        public int RequiemMarks;
+        public int RequiemMarkTimer;
+
         public override void ResetEffects(NPC npc)
         {
             if (BleedTimer > 0)
@@ -52,6 +58,25 @@ namespace Eternia.Content.NPCs
             else
             {
                 BleedOwner = -1;
+            }
+
+            if (RequiemMarkTimer > 0)
+            {
+                RequiemMarkTimer--;
+
+                // A faint crimson sigil hovering on a marked foe -- the visible tell that the
+                // requiem is building toward its detonation.
+                if (!Main.dedServ && RequiemMarks > 0 && Main.rand.NextBool(14))
+                {
+                    Dust d = Dust.NewDustPerfect(
+                        npc.Center + Main.rand.NextVector2Circular(npc.width * 0.5f, npc.height * 0.5f),
+                        DustID.Blood, new Vector2(0f, -1.2f), 80, default, 1.1f);
+                    d.noGravity = true;
+                }
+            }
+            else
+            {
+                RequiemMarks = 0;
             }
         }
 

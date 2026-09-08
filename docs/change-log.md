@@ -15,6 +15,36 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Rediseno de armas del Espadachin (tanda 3b: carga del Sanguine + marca/detona del Requiem)
+
+- Cierra las dos mecanicas que faltaban de la tanda 3, las que tocan el bucle de uso / estado
+  por-enemigo (por eso iban aparte).
+- SANGUINE CLEAVER -> carga mantenida (alt-fire). Click izq. sigue siendo el mismo espadazo Wide
+  (CrimsonSlash intacto). Click DER. canaliza:
+  - `SanguineCharge` (NUEVO, held projectile): se ancla a la mano, carga mientras se mantiene el
+    boton (`player.channel`), acumula sangre. Autoritativo del dueno (solo el dueno lee su channel
+    y suelta el pago); las copias remotas se autolimpian por el `timeLeft` de seguridad. Al soltar
+    dispara `SanguineGuillotine`.
+  - `SanguineGuillotine` (NUEVO): el corte cargado. Tamano y dano escalan con la carga -- ~1.3x un
+    espadazo al minimo util, ~3.4x a full, usando el dano real (con bonus de clase) del arma como
+    base. Lento, penetra la fila, aguanta. Melee -> hereda bleed/Trail.
+  - Enganche en el arma: `AltFunctionUse`, `CanUseItem` (marca channel + pose Shoot en alt),
+    `Shoot` (genera la carga una vez por canalizacion, suprime el slash normal; izq. return true).
+- CRIMSON REQUIEM -> marca + detonacion. Cada golpe pone una MARCA en el enemigo; a las 5 marcas
+  el requiem DETONA: `RequiemDetonation` (NUEVO), un estallido carmesi que golpea una vez a todo
+  en el radio (ejecucion de grupo). Marcas guardadas en `BleedGlobalNPC` (RequiemMarks +
+  RequiemMarkTimer) con decaimiento -- si dejas de golpear, se desvanecen (hay que "cantar" el
+  requiem). Un dust de sigilo sobre el marcado avisa. Detonacion owner-only (multiplayer).
+- Archivos: `Content/Projectiles/Warrior/SanguineCharge.cs`, `SanguineGuillotine.cs`,
+  `RequiemDetonation.cs`, `Content/Items/Weapons/Warrior/SanguineCleaver.cs`,
+  `Content/NPCs/BleedGlobalNPC.cs`, `Content/Globals/SwordIdentityGlobalItem.cs`,
+  `docs/swordsman-weapons.md`, `tests/SwordChargeRequiemSourceSmokeTest.ps1`.
+- Verificacion: compila 0/0, 0 avisos; suite 123/123. Sin probar en juego.
+- Con esto TODAS las armas del arsenal del Espadachin juegan distinto: 7 estilos de tajo + 7
+  identidades on-hit + 4 mecanicas a medida (onda del Titan, bone-spikes del Bonewarden, carga del
+  Sanguine, marca/detona del Requiem). Unico 🔜 restante: el rastro de lava del Molten Gutripper
+  (ahora solo aplica En Llamas) -- mejora futura opcional, no bloquea.
+
 ## 2026-07-16 - Rediseno de armas del Espadachin (tanda 3: proyectiles a medida + doc de diseno)
 
 - DOC DE DISENO (`docs/swordsman-weapons.md`, NUEVO): la especificacion §13 del brief para las 18
