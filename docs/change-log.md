@@ -15,6 +15,32 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Rediseno de armas del Espadachin (tanda 3: proyectiles a medida + doc de diseno)
+
+- DOC DE DISENO (`docs/swordsman-weapons.md`, NUEVO): la especificacion §13 del brief para las 18
+  hojas -- por arma: concepto, inspiracion del NOMBRE, mecanica, particulas, sonido, diseno de
+  sprite PNG con PALETA hex, y balance (fortaleza/debilidad). Marca que mecanicas ya estan
+  codeadas (tandas 1-2) y cuales son solo diseno. Doble uso: es tambien el brief de arte, porque
+  todas las espadas siguen con textura placeholder.
+- PROYECTILES A MEDIDA (los dos mas autocontenidos de la tanda 3):
+  - `TitanShockwave` (NUEVO): la mecanica propia del Titan's Gutcleaver. Al golpear, una onda baja
+    rueda por el suelo desde el jugador (par izq/der), penetra todo, crece al avanzar. Se genera
+    UNA por espadazo (no una por enemigo clipeado): el on-hit escanea si ya hay una onda joven
+    (timeLeft>24) de este dueno antes de crear otra. Solo el dueno la genera (multijugador).
+  - `BoneSpike` (NUEVO): la mecanica del Bonewarden Sabre. Al golpear, una pua de hueso erupciona
+    en el enemigo y aguanta ~42t mordiendo un par de veces mas. Fija en su sitio, zona de negacion.
+  - Ambos son proyectiles MELEE del jugador, asi que heredan gratis el sangrado + Rastro Carmesi
+    por el pipeline (`WarriorBleedPlayer` / `SwordsmanPlayer.OnHitNPCWithProj`). Dibujados solo con
+    dust (PreDraw=>false) hasta que exista el PNG real.
+  - Conectados desde `SwordIdentityGlobalItem.OnHitNPC` (casos TitansGutcleaver / BonewardenSabre).
+- Archivos: `Content/Projectiles/Warrior/TitanShockwave.cs`, `BoneSpike.cs`,
+  `Content/Globals/SwordIdentityGlobalItem.cs`, `docs/swordsman-weapons.md`,
+  `tests/SwordBespokeProjectileSourceSmokeTest.ps1`.
+- Verificacion: compila 0/0, 0 avisos; suite 122/122. Sin probar en juego.
+- PENDIENTE (resto de tanda 3): la CARGA del Sanguine Cleaver (mantener para liberar un corte) y
+  la MARCA+DETONA del Crimson Requiem tocan el bucle de uso / estado por-enemigo; quedan para el
+  siguiente pase. El resto del arsenal ya juega distinto (7 estilos + 7 on-hit + 2 a medida).
+
 ## 2026-07-16 - Los 4 paneles pasan a ser paginas de un solo menu (tecla M)
 
 - Pedido: combinar Stats / Arbol de pasivas / Codice / Souls en una sola UI por paginas, para

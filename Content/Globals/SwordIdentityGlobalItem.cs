@@ -1,3 +1,5 @@
+using Microsoft.Xna.Framework;
+
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -8,6 +10,7 @@ using Eternia.Content.Items.Weapons.Warrior;
 using Eternia.Content.Items.Weapons.Promotion;
 using Eternia.Content.NPCs;
 using Eternia.Content.Players;
+using Eternia.Content.Projectiles.Warrior;
 
 namespace Eternia.Content.Globals
 {
@@ -84,6 +87,60 @@ namespace Eternia.Content.Globals
                         player.HealEffect(4);
                     }
                     break;
+
+                // Titan's Gutcleaver: the colossus's blow shakes the ground -- a low shockwave
+                // rolls outward from the player and rolls over everything in its path. Its own
+                // bespoke projectile (TitanShockwave); see that class.
+                case TitansGutcleaver:
+                    SpawnTitanShockwave(item, player, target, damageDone);
+                    break;
+
+                // Bonewarden Sabre: the warden turns the bone on its owner -- a spike erupts
+                // through the struck foe and lingers, biting a couple more times.
+                case BonewardenSabre:
+                    if (Main.myPlayer == player.whoAmI)
+                    {
+                        Projectile.NewProjectile(
+                            player.GetSource_ItemUse(item),
+                            target.Center, Vector2.Zero,
+                            ModContent.ProjectileType<BoneSpike>(),
+                            System.Math.Max(1, damageDone / 3),
+                            0f, player.whoAmI);
+                    }
+                    break;
+            }
+        }
+
+        // The shockwave is a per-SWING effect, not a per-enemy one: a wide Titan swing that clips
+        // three foes must still make ONE quake, not three. Only the owner spawns it (multiplayer),
+        // and only if this owner hasn't already sent a wave out in the last few frames.
+        private static void SpawnTitanShockwave(Item item, Player player, NPC target, int damageDone)
+        {
+            if (Main.myPlayer != player.whoAmI)
+            {
+                return;
+            }
+
+            int type = ModContent.ProjectileType<TitanShockwave>();
+
+            foreach (Projectile p in Main.projectile)
+            {
+                // timeLeft starts at 30; > 24 means it was born within the last ~6 frames, i.e.
+                // this same swing. If one is already out, don't stack another.
+                if (p.active && p.type == type && p.owner == player.whoAmI && p.timeLeft > 24)
+                {
+                    return;
+                }
+            }
+
+            int dmg = System.Math.Max(1, damageDone / 2);
+
+            for (int dir = -1; dir <= 1; dir += 2)
+            {
+                Projectile.NewProjectile(
+                    player.GetSource_ItemUse(item),
+                    player.Bottom, new Vector2(9f * dir, 0f),
+                    type, dmg, 2f, player.whoAmI);
             }
         }
     }
