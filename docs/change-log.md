@@ -42,6 +42,37 @@ Formato sugerido por entrada:
   todo este enfoque.
 - Verificacion: compila 0/0; suite 118/118.
 
+## 2026-07-16 - Rediseno de armas del Espadachin (tanda 1: comportamiento del proyectil)
+
+- Pedido: cada espada de sangrado con identidad propia; matar la sensacion de "mismo misil,
+  otro color". Analisis: las 18 espadas NO tenian ni un hook propio -- todas lanzaban el mismo
+  CrimsonSlash, cambiando solo SlashColor/SlashScale.
+- Enfoque: en vez de 18 proyectiles clonados, UN proyectil inteligente que se comporta distinto
+  segun el arma. `IBleedWeapon` gana un enum `SlashStyle` y una propiedad `Style`; `CrimsonSlash`
+  ramifica en el estilo (captura estilo/color/escala UNA vez del arma que dispara).
+- 7 comportamientos donde antes habia 1:
+  - Straight  (referencia): recto, un par de enemigos.
+  - Pierce    (Silverlight Rapier, Revenite Cleaver): atraviesa toda la linea.
+  - Wide      (Dread Reaver, Sanguine Cleaver, Titan's Gutcleaver): media luna enorme y lenta
+    que casi no viaja pero barre todo.
+  - Homing    (Quicksilver Fang): curva suave hacia el enemigo sangrando mas cercano.
+  - HomingAggressive (Chlorophyte Hemoblade, Exsanguinator): persigue fuerte a la presa herida.
+  - Return    (Nullsteel Reaver): bumeran que atraviesa y vuelve.
+  - Split     (Thornrender, Hallowed Bloodletter): estalla en 3 fragmentos al terminar
+    (fragmentos marcados con ai[1]=1 para no dividirse infinitamente).
+- Particulas por estilo (no genericas): niebla de sangre en la estela, spray grueso en los
+  Wide, motes oscuros de vacio en el Return; estallido de sangre del color de la hoja al golpear.
+- Multiplayer-safe: los fragmentos Split solo los crea el owner (Main.myPlayer); busqueda de
+  objetivo con guardas contra criaturas/inmunes/NRE.
+- Se CONSERVA todo: dano, useTime, rareza, recetas, nombres. Solo cambia el comportamiento.
+- Test nuevo `SwordSlashStyleSourceSmokeTest`: fija que el sistema existe, que el proyectil
+  ACTUA sobre cada estilo (no solo etiqueta), y que >=8 espadas divergen del tajo recto.
+- Verificacion: compila 0/0, 0 avisos; suite 121/121. Sin probar en juego.
+- PENDIENTE (tanda 2): identidades ON-HIT (Serrated re-sangra, Hunter +crit vs sangrando,
+  Corruptor desgarra, Bloodletter banca Rastro, Molten deja lava, Nullsteel anula regen,
+  Requiem marca+detona, Exsanguinator drena) y proyectiles a medida (onda del Titan, carga del
+  Sanguine, bone-spikes del Bonewarden). Mas los sprites/paletas por arma.
+
 ## 2026-07-16 - Auditoria adversarial: 4 bugs confirmados, arreglados
 
 - Se lanzo una revision multi-agente (6 dimensiones, cada hallazgo refutado adversarialmente)

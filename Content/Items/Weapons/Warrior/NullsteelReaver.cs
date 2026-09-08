@@ -22,6 +22,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
 
         public float SlashScale => 1.1f;
 
+        public SlashStyle Style => SlashStyle.Return;
+
         public override void SetDefaults()
         {
             Item.width = 50;
