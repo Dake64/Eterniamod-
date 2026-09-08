@@ -19,7 +19,7 @@ namespace Eternia.Content.Items.Weapons.Promotion
         public float SlashScale => 1.1f;
 
         protected override string TexturePath =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
+            "ETERNIA/Content/Items/Weapons/Promotion/BloodletterBlade";
 
         public override void SetDefaults()
         {

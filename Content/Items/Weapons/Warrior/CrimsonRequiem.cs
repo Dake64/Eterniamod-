@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,12 +10,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // Solar Eclipse tier -- BALANCED. Reforged from a Broken Hero Sword into a
     // bleed-hungry blade; strong all-round damage and a solid bleed. The Swordsman's
     // answer to the Terra Blade.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class CrimsonRequiem : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 18;
 
         public Color SlashColor => new Color(150, 210, 115);

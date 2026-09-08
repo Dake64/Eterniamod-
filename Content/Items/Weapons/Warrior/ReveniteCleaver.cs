@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 using Terraria;
 using Terraria.ID;
@@ -15,9 +15,6 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // underworld.
     public class ReveniteCleaver : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Souls/WarriorSoul";
-
         // Best bleed chance available before Hardmode -- this is the weapon's identity.
         public int BleedChance => 22;
 

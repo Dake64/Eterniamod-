@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,9 +9,6 @@ namespace Eternia.Content.Items.Weapons.Warrior
 {
     public class TrainingBlade : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         // Hidden base chance to inflict Bleed; tuned further by Bleed affinity.
         public int BleedChance => 10;
 

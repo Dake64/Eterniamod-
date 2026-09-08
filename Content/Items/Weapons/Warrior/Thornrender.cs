@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -12,9 +12,6 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // single target. Gated behind Queen Bee via her Bee Wax.
     public class Thornrender : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         // Signature bleed chance (percent); tuned further by Bleed affinity.
         public int BleedChance => 20;
 

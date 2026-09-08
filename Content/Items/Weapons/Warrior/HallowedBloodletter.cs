@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,12 +9,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
 {
     // Mechanical bosses tier -- BALANCED. Forged from Hallowed Bars and the three
     // souls; good damage and a dependable bleed. The do-anything sword of hardmode.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class HallowedBloodletter : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 16;
 
         public Color SlashColor => new Color(175, 70, 130);

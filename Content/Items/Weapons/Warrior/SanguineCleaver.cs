@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -13,12 +13,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // per-hit damage but a low bleed chance. Left click is the normal wide crescent; RIGHT click
     // CHANNELS a blood charge (SanguineCharge) that releases one brutal, scaled guillotine cut --
     // the "guillotine of blood" its name promises. Big blows and Crimson Trail banking.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class SanguineCleaver : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 10;
 
         public Color SlashColor => new Color(115, 18, 24);

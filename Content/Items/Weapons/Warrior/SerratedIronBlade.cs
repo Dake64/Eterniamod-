@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,9 +11,6 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // swing here, so it keeps bleed up better than anything at its tier.
     public class SerratedIronBlade : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         // Signature bleed chance (percent); tuned further by Bleed affinity.
         public int BleedChance => 16;
 

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,9 +11,6 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // per-hit damage plus a strong bleed -- the finisher of the Warrior sword line.
     public class MoltenGutripper : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         // Signature bleed chance (percent); tuned further by Bleed affinity.
         public int BleedChance => 16;
 

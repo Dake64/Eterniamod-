@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,12 +9,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
 {
     // Mythril / Orichalcum tier -- FAST identity. Blinding swings and one of the
     // highest bleed chances in the game; low per-hit but relentless uptime.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class QuicksilverFang : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 24;
 
         public Color SlashColor => new Color(200, 145, 155);

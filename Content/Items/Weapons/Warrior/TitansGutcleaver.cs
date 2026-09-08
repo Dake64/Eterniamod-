@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,12 +10,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // Golem tier -- HEAVY identity. A titanic cleaver forged with Beetle Husks:
     // crushing, slow hits and a low bleed chance. Peak Crimson Trail banking for the
     // Swordsman's biggest executions.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class TitansGutcleaver : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 12;
 
         public Color SlashColor => new Color(215, 155, 65);

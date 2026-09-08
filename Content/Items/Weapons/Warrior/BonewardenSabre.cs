@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,12 +10,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // Dungeon tier -- FAST identity. A wicked bone sabre: quick swings and a high
     // Bleed chance, crafted from the bones the Dungeon's skeletons drop. (A real
     // Dungeon-chest drop is a candidate for the second obtention pass.)
-    // NOTE: placeholder texture reused until real sword art exists.
     public class BonewardenSabre : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 20;
 
         public Color SlashColor => new Color(215, 185, 165);

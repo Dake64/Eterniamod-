@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,12 +9,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
 {
     // Chlorophyte tier -- FAST identity. A living, whirring blade: quick swings and
     // a very high bleed chance that keeps the wound flowing between technique bursts.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class ChlorophyteHemoblade : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 22;
 
         public Color SlashColor => new Color(125, 205, 115);

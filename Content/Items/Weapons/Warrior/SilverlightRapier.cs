@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,12 +10,8 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // Silver tier -- FAST identity. A light rapier: little damage per hit, but the
     // quickest swing of its tier and a very high Bleed chance, so it keeps the wound
     // open (and feeds the Swordsman's Crimson Trail) faster than anything here.
-    // NOTE: placeholder texture reused until real sword art exists.
     public class SilverlightRapier : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Weapons/Fighter/TrainingGauntlet";
-
         public int BleedChance => 24;
 
         public Color SlashColor => new Color(235, 95, 120);

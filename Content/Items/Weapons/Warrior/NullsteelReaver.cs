@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 using Terraria;
 using Terraria.ID;
@@ -13,9 +13,6 @@ namespace Eternia.Content.Items.Weapons.Warrior
     // blade; the dense metal barely rings, but it opens deep wounds.
     public class NullsteelReaver : ModItem, IBleedWeapon
     {
-        public override string Texture =>
-            "ETERNIA/Content/Items/Souls/WarriorSoul";
-
         public int BleedChance => 30;
 
         public Color SlashColor => new Color(120, 140, 175);
