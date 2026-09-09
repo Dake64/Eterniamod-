@@ -327,9 +327,29 @@ Todas positivas (filo convexo) y con el máximo cerca del centro. La aserción d
 cuatro bordes cazó de paso que el **gancho de punta del Exsanguinator** se salía del lienzo: los
 adornos de punta ahora se suman al ancho calculado.
 
-**Fase B — proyectiles.** Ampliar el sistema actual: mantener `CrimsonSlash` como base para las
-que son variaciones de tajo, y añadir `ModProjectile` propios solo donde la mecánica lo exige
-(serpenteo, siembra, eco, X, esquirlas, drenaje). Evita duplicar 19 clases casi idénticas.
+**Fase B — proyectiles. ✅ HECHA.**
+
+`SlashStyle` pasa de 7 a **19 valores, uno por arma**. Antes 8 armas compartían `Straight`; ahora
+**ninguna comparte estilo**, y eso lo fija un test que **verifiqué que falla** metiendo un
+duplicado a propósito (nombra las dos armas culpables).
+
+Un solo `CrimsonSlash` ramifica por estilo, en vez de 19 clases casi idénticas — las mecánicas que
+NO son un tajo sí tienen clase propia: `ThornSeed` y `EmberPatch` (nuevas), más las que ya
+existían (`TitanShockwave`, `BoneSpike`, `SanguineGuillotine`, `RequiemDetonation`).
+
+Los tres patrones que son **varios proyectiles** (ráfaga del Serrated, X del Quicksilver, eco del
+Bloodletter) se montan en un único `GlobalItem.Shoot`, no repitiendo el hook en tres armas.
+
+Partículas: **13 tipos de dust distintos** repartidos por estilo (virutas de hierro, esporas
+corruptas, hueso, piedra, brasas, motas doradas, tierra, sombra…), no `DustID.Blood` para todo.
+El test exige un mínimo de 8 tipos distintos.
+
+**Ajuste de rendimiento propio:** mi primera versión sembraba 7 espinas por tajo con 150 frames de
+vida (~45 proyectiles simultáneos de un arma). Bajado a 1 cada 10 frames y 110 de vida; las brasas
+del Molten, a 1 cada 9.
+
+**Verificación:** compila 0/0 (lo que confirma cada hook usado, ya que no hay
+`tmod_api_entities.json`); suite 124/124.
 
 **Se conserva sin tocar:** daño, useTime, rareza, recetas, progresión, nombres, `BleedChance`, el
 pipeline de sangrado / Rastro Carmesí y las mecánicas ya existentes (carga del Sanguine,

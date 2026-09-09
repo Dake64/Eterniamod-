@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework;
 
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -173,6 +175,73 @@ namespace Eternia.Content.Globals
 
             velocity = dir * item.shootSpeed;
             position = origin + dir * 24f - SlashHalfSize;
+        }
+
+        // Three blades attack as a PATTERN rather than a single slash, so the shape of the attack
+        // itself differs, not just how one projectile flies. Handled centrally here instead of
+        // giving three weapons their own Shoot override, which would be the same code three times.
+        //
+        // Shoot only runs on the client actually swinging, and NewProjectile syncs, so no
+        // Main.myPlayer guard is needed (nor does the default spawn use one).
+        public override bool Shoot(
+            Item item,
+            Player player,
+            EntitySource_ItemUse_WithAmmo source,
+            Vector2 position,
+            Vector2 velocity,
+            int type,
+            int damage,
+            float knockback)
+        {
+            if (item.ModItem is not IBleedWeapon bleed)
+            {
+                return true;
+            }
+
+            int slash = ModContent.ProjectileType<CrimsonSlash>();
+
+            switch (bleed.Style)
+            {
+                // Serrated Iron Blade: a saw does not cut once. Three short slashes strung out
+                // along the line, each slower than the last, so they read as a ragged burst.
+                case SlashStyle.Ripping:
+                    for (int i = 0; i < 3; i++)
+                    {
+                        Projectile.NewProjectile(
+                            source, position, velocity * (1f - i * 0.24f),
+                            slash, damage, knockback, player.whoAmI);
+                    }
+
+                    return false;
+
+                // Quicksilver Fang: two fangs crossing in an X.
+                case SlashStyle.Cross:
+                    for (int sgn = -1; sgn <= 1; sgn += 2)
+                    {
+                        Projectile.NewProjectile(
+                            source, position,
+                            velocity.RotatedBy(MathHelper.ToRadians(14 * sgn)),
+                            slash, damage, knockback, player.whoAmI);
+                    }
+
+                    return false;
+
+                // Bloodletter Blade: the real cut, and a ghost of it following behind. ai1 = 2
+                // marks the echo so it draws translucent and never echoes again.
+                case SlashStyle.Echo:
+                    Projectile.NewProjectile(
+                        source, position, velocity,
+                        slash, damage, knockback, player.whoAmI);
+
+                    Projectile.NewProjectile(
+                        source, position, velocity * 0.55f,
+                        slash, Math.Max(1, damage / 2), knockback * 0.5f, player.whoAmI,
+                        ai1: 2f);
+
+                    return false;
+            }
+
+            return true;
         }
     }
 }

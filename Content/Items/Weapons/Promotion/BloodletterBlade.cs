@@ -18,6 +18,8 @@ namespace Eternia.Content.Items.Weapons.Promotion
 
         public float SlashScale => 1.1f;
 
+        public SlashStyle Style => SlashStyle.Echo;
+
         protected override string TexturePath =>
             "ETERNIA/Content/Items/Weapons/Promotion/BloodletterBlade";
 

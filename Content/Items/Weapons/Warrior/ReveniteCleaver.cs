@@ -22,7 +22,7 @@ namespace Eternia.Content.Items.Weapons.Warrior
 
         public float SlashScale => 1f;
 
-        public SlashStyle Style => SlashStyle.Pierce;
+        public SlashStyle Style => SlashStyle.Braking;
 
         public override void SetDefaults()
         {

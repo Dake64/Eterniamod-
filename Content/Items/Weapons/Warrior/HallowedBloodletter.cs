@@ -17,7 +17,7 @@ namespace Eternia.Content.Items.Weapons.Warrior
 
         public float SlashScale => 1.15f;
 
-        public SlashStyle Style => SlashStyle.Split;
+        public SlashStyle Style => SlashStyle.Shatter;
 
         public override void SetDefaults()
         {

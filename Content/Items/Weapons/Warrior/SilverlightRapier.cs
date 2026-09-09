@@ -18,7 +18,7 @@ namespace Eternia.Content.Items.Weapons.Warrior
 
         public float SlashScale => 0.75f;
 
-        public SlashStyle Style => SlashStyle.Pierce;
+        public SlashStyle Style => SlashStyle.Lance;
 
         public override void SetDefaults()
         {

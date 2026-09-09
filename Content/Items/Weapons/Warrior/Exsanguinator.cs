@@ -18,7 +18,7 @@ namespace Eternia.Content.Items.Weapons.Warrior
 
         public float SlashScale => 0.9f;
 
-        public SlashStyle Style => SlashStyle.HomingAggressive;
+        public SlashStyle Style => SlashStyle.Phantom;
 
         public override void SetDefaults()
         {
