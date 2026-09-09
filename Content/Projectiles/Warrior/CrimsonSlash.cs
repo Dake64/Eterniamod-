@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using Terraria;
 using Terraria.ID;
@@ -24,6 +25,8 @@ namespace Eternia.Content.Projectiles.Warrior
         private Color slashColor = new Color(200, 45, 50);
         private SlashStyle style = SlashStyle.Straight;
         private bool configured;
+        private float baseScale = 1f; // the firing weapon's SlashScale, kept for draw sizing
+        private int age;              // frames alive, drives the scale "pop"
 
         private bool IsFragment => Projectile.ai[1] == 1f;
 
@@ -46,6 +49,7 @@ namespace Eternia.Content.Projectiles.Warrior
         public override void AI()
         {
             Player owner = Main.player[Projectile.owner];
+            age++;
 
             // Capture the firing sword's identity once, then configure per style.
             if (!configured)
@@ -53,6 +57,7 @@ namespace Eternia.Content.Projectiles.Warrior
                 if (IsFragment)
                 {
                     style = SlashStyle.Straight;
+                    baseScale = 0.8f; // fragments are small
                     configured = true;
                 }
                 else if (owner != null && owner.active &&
@@ -60,6 +65,7 @@ namespace Eternia.Content.Projectiles.Warrior
                 {
                     slashColor = bleed.SlashColor;
                     style = bleed.Style;
+                    baseScale = bleed.SlashScale;
                     Projectile.scale = bleed.SlashScale;
                     ConfigureForStyle();
                     configured = true;
@@ -265,10 +271,46 @@ namespace Eternia.Content.Projectiles.Warrior
             }
         }
 
-        public override Color? GetAlpha(Color lightColor)
+        // Draw a slash SHAPE chosen by the weapon's style (a wide crescent for cleavers, a thrust
+        // lens for piercers, a spinning blade for the boomerang, a plain crescent otherwise),
+        // tinted to the blade's colour. So the projectile no longer looks identical across swords:
+        // its shape follows the behaviour and its colour follows the blade.
+        public override bool PreDraw(ref Color lightColor)
         {
+            string path = "ETERNIA/Content/Projectiles/Warrior/CrimsonSlash";
+            float styleBase = 0.8f;
+            float extraRot = 0f;
+
+            switch (style)
+            {
+                case SlashStyle.Wide:
+                    path += "_Heavy"; styleBase = 1.1f; break;
+                case SlashStyle.Pierce:
+                    path += "_Pierce"; styleBase = 1.0f; break;
+                case SlashStyle.Return:
+                    path += "_Return"; styleBase = 0.9f;
+                    extraRot = Projectile.timeLeft * -0.22f; // the boomerang spins
+                    break;
+            }
+
+            Texture2D tex = ModContent.Request<Texture2D>(path).Value;
+            Vector2 origin = new Vector2(tex.Width, tex.Height) / 2f;
+
             float fade = MathHelper.Clamp(Projectile.timeLeft / 10f, 0f, 1f);
-            return slashColor * fade;
+            float pop = MathHelper.Clamp(age / 5f, 0.4f, 1f); // grow-in on the first frames
+            float drawScale = styleBase * baseScale * pop;
+
+            Main.EntitySpriteDraw(
+                tex,
+                Projectile.Center - Main.screenPosition,
+                null,
+                slashColor * fade,
+                Projectile.rotation + extraRot,
+                origin,
+                drawScale,
+                SpriteEffects.None);
+
+            return false;
         }
     }
 }

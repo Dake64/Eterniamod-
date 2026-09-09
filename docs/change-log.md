@@ -15,6 +15,30 @@ Formato sugerido por entrada:
 - Pendientes/riesgos:
 ```
 
+## 2026-07-16 - Rediseno de armas del Espadachin (tanda 4: SPRITES reales, por nombre)
+
+- El pedido que faltaba de verdad: el diseno del doc estaba, pero las ARMAS seguian con textura
+  placeholder ("MOD"/TrainingGauntlet) y el PROYECTIL era el mismo sprite (casi en blanco) para
+  todas. Ahora hay arte real generado por su NOMBRE.
+- ARMAS (19 sprites nuevos): pixel-art propio por hoja, dibujado con System.Drawing a 56-72px
+  segun la forma + paleta del doc: Serrated con dientes de sierra, Silverlight/Quicksilver
+  estoques finos, los cleavers (Sanguine/Titan/Revenite/Dread) anchos, los sables
+  (Bonewarden/Quicksilver) curvos, Thornrender/Corruptor con espinas, las hojas magicas
+  (Molten/Nullsteel/Chlorophyte/Hallowed/Exsanguinator/Requiem) con halo de brillo, las de canal
+  (Bloodletter/Hallowed/Exsanguinator) con canal de sangre. Se quito el override de Texture
+  placeholder (y el comentario "placeholder texture" obsoleto) de las 18 hojas de Warrior para que
+  cada una resuelva su ClassName.png; BloodletterBlade apunta su TexturePath a su propio sprite.
+- PROYECTIL: el tajo ya no es el mismo sprite para todas. Se crearon 4 FORMAS de tajo
+  (CrimsonSlash arco, _Heavy media luna gorda, _Pierce estocada/lente, _Return media luna que
+  gira) en blanco para teñirse con el color de cada hoja. `CrimsonSlash.PreDraw` elige la forma
+  segun el `SlashStyle` del arma, la tiñe con su SlashColor, gira el bumerán y hace un "pop" de
+  escala al aparecer (animacion). La guillotina del Sanguine usa la textura _Heavy.
+- Archivos: 19 `*.png` de arma (Warrior/ y Promotion/), 4 `CrimsonSlash*.png`,
+  `Content/Projectiles/Warrior/CrimsonSlash.cs`, `SanguineGuillotine.cs`, las 18 `*.cs` de
+  Warrior + `BloodletterBlade.cs`, `tests/SwordSpriteSourceSmokeTest.ps1`.
+- Verificacion: compila 0/0; suite 124/124. Sprites son procedurales (buen placeholder de calidad),
+  un/a artista puede refinarlos luego -- las formas, tamanos y paletas ya estan.
+
 ## 2026-07-16 - Rediseno de armas del Espadachin (tanda 3b: carga del Sanguine + marca/detona del Requiem)
 
 - Cierra las dos mecanicas que faltaban de la tanda 3, las que tocan el bucle de uso / estado

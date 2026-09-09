@@ -15,7 +15,7 @@ namespace Eternia.Content.Projectiles.Warrior
     // slash. Drawn with the shared slash sprite (default draw), tinted deep crimson.
     public class SanguineGuillotine : ModProjectile
     {
-        public override string Texture => "ETERNIA/Content/Projectiles/Warrior/CrimsonSlash";
+        public override string Texture => "ETERNIA/Content/Projectiles/Warrior/CrimsonSlash_Heavy";
 
         public override void SetDefaults()
         {
