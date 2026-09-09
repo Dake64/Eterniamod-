@@ -303,8 +303,29 @@ sangrado + Rastro Carmesí por el pipeline existente), y **solo el dueño los ge
 
 ## 6. Plan de implementación (para aprobar)
 
-**Fase A — sprites.** Corregir el arco (§1.2) y regenerar las 19 con la anatomía de §2 y los
-detalles de §4. Riesgo bajo: solo PNG, sin código. Verificación: volver a medir la desviación.
+**Fase A — sprites. ✅ HECHA.** Arco corregido y las 19 regeneradas con la anatomía de §2 y los
+detalles de §4.
+
+La verificación **está dentro del generador**: tras construir la tabla de filas, mide su propia
+flecha contra la cuerda base→punta y **lanza error** si la hoja sale recta, si la flecha es
+negativa (filo cóncavo) o si el máximo no cae cerca del centro. Resultado:
+
+```
+TrainingBlade         +2.9 px  t=0.62   SanguineCleaver      +3.9 px  t=0.61
+SerratedIronBlade     +2.9 px  t=0.62   HallowedBloodletter  +4.9 px  t=0.63
+SilverlightRapier     RECTA (chokuto)   NullsteelReaver      +5.9 px  t=0.63
+HuntersWarblade       +4.9 px  t=0.62   ChlorophyteHemoblade +4.9 px  t=0.63
+CorruptorsRipper      +5.9 px  t=0.63   TitansGutcleaver     +3.9 px  t=0.61
+DreadReaver           +3.9 px  t=0.63   CrimsonRequiem       +4.9 px  t=0.63
+Thornrender           +5.9 px  t=0.63   Exsanguinator        +3.9 px  t=0.63
+BonewardenSabre       +7.3 px  t=0.53   BloodletterBlade     +4.9 px  t=0.63
+ReveniteCleaver       +3.9 px  t=0.63   MoltenGutripper      +3.9 px  t=0.63
+QuicksilverFang       +6.3 px  t=0.62
+```
+
+Todas positivas (filo convexo) y con el máximo cerca del centro. La aserción de recorte en los
+cuatro bordes cazó de paso que el **gancho de punta del Exsanguinator** se salía del lienzo: los
+adornos de punta ahora se suman al ancho calculado.
 
 **Fase B — proyectiles.** Ampliar el sistema actual: mantener `CrimsonSlash` como base para las
 que son variaciones de tajo, y añadir `ModProjectile` propios solo donde la mecánica lo exige
