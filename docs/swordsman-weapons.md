@@ -222,6 +222,28 @@ del arma. Las mecánicas on-hit viven en `SwordIdentityGlobalItem`.
 
 ---
 
+## Cómo están construidos los sprites (técnica)
+
+Medí el `Murasama.png` de Calamity píxel a píxel (solo como **referencia de técnica** — no se copió
+nada de su arte) y de ahí salen las tres reglas que rigen nuestros sprites:
+
+1. **Escala 2x.** En Murasama cada color aparece en pares: está diseñada a media resolución y cada
+   píxel de diseño se pinta 2×2. Por eso se ve contundente. Nosotros dibujamos en píxeles
+   *lógicos* y duplicamos al final. Dibujar a 1x con detalles de 1px era lo que hacía que las
+   nuestras se vieran finas y "generadas".
+2. **Rampa de color larga.** 5-6 tonos cruzando una hoja de 4-5px: lomo oscuro → cuerpo → claro →
+   núcleo blanco → y un tono **saturado en el filo** (en Murasama el filo es rojo intenso, el
+   blanco va justo por dentro).
+3. **Más vertical que 45°.** Su arte mide 25 de ancho por 60 de alto (lógicos). Una hoja inclinada
+   lee como espada; a 45° y corta lee como cuchillo.
+
+Además: hoja de ~10:1 largo/ancho, **guarda grande y visible** (la nuestra antes era de 2px y
+desaparecía), y la hoja **se ensancha al salir de la guarda** en vez de arrancar a ancho completo.
+
+La forma no sale de fórmulas: cada hoja es una **tabla de filas explícita** (en qué columna va el
+filo y cuántos píxeles mide la hoja en esa fila), así se puede corregir una fila sin tocar el
+resto, y se verifica volcándola como texto en vez de adivinar mirando el render.
+
 ## Nota de arte — estilo KATANA
 
 **Ya NO son placeholder.** Cada una de las 19 hojas tiene su propio sprite pixel-art real, generado
