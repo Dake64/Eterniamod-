@@ -93,10 +93,26 @@ mirándolo: lo mido.
 Toda katana del mod parte de **esta misma estructura**. Lo que cambia por arma es material,
 ornamentación, guarda, empuñadura y efectos; **nunca la anatomía**.
 
+### 2.1 Densidad de pixel: 1x, no 2x -- correccion importante
+
+Murasama esta dibujada a **2x**: cada pixel de diseno pintado como un bloque de 2x2. Copie esa
+tecnica y fue un error de criterio: es un recurso de **Calamity para un arma endgame concreta**,
+no la forma en que Terraria dibuja sus sprites. Vanilla dibuja a **1x**, pixel real. Copiarlo es
+lo que hacia que los nuestros se vieran de otro juego.
+
+Ahora se dibujan **1:1**, con la rejilla logica al tamano de salida: mismo tamano fisico que
+antes, pero **el doble de detalle real**.
+
+Tamanos resultantes (46x62 a 69x96) contra la referencia medida: la mediana del lado mayor en los
+177 sprites cuerpo a cuerpo de Calamity es **72 px**, y vanilla ronda 46-60. Estamos dentro.
+
+Angulo: **2 columnas por cada 3 filas** (~56 grados), entre los 45 de la convencion de Terraria y
+los ~67 de Murasama -- sigue leyendose katana sin salirse del estilo del juego.
+
 | Elemento | Regla |
 |---|---|
-| Escala | Diseño en píxeles lógicos, salida **×2** |
-| Ángulo | Punta arriba-derecha, ~3 columnas por cada 4 filas |
+| Escala | **1:1** (densidad vanilla). Ver §2.1: el 2x de Murasama era el error |
+| Ángulo | Punta arriba-derecha, **2 columnas por cada 3 filas** (~56°) |
 | Curvatura | Arco `sin`, flecha 8% del largo, **convexa hacia el filo** |
 | Proporción | Hoja ~10:1 largo/ancho |
 | Ancho | Base 6 → medio 5 → alto 4 → punta 2 (lógicos), afinado suave |
@@ -108,7 +124,7 @@ ornamentación, guarda, empuñadura y efectos; **nunca la anatomía**.
 | Empuñadura | Más **estrecha** que la base de la hoja, corta (~25% del arma), envuelta en rombos |
 | Ensanche | La hoja se abre 1-2 px al salir del habaki |
 
-### 2.1 Hallazgo del prototipo: el ancho mínimo de hoja es 5, no 4
+### 2.2 Hallazgo del prototipo: el ancho mínimo de hoja es 5, no 4
 
 Al probar el arco descubrí un fallo colateral: con hoja de **4** lógicos la rampa queda
 `lomo → cuerpo → núcleo → filo`, o sea el **blanco toca directamente al rojo medio**. En diagonal
