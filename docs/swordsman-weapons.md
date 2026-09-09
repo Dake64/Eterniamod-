@@ -224,7 +224,13 @@ del arma. Las mecánicas on-hit viven en `SwordIdentityGlobalItem`.
 
 ## Nota de arte
 
-Todos los sprites actuales son **placeholder** (prestan textura de armas vanilla). Este doc es la
-guía para el/la artista: forma, tamaño (~30–44px), paleta hex y detalles por arma. Cuando exista
-el PNG real, va en `Content/Items/Weapons/Warrior/<Nombre>.png` (y el override `Texture` se quita).
-Los proyectiles con `🔜` necesitarán su propio PNG en `Content/Projectiles/Warrior/`.
+**Ya NO son placeholder.** Cada una de las 19 hojas tiene su propio sprite pixel-art real, generado
+por su nombre + la paleta de este doc (con System.Drawing, 56–72px), en
+`Content/Items/Weapons/Warrior/<Nombre>.png` (y `Promotion/BloodletterBlade.png`). El proyectil
+también: 4 formas de tajo (`CrimsonSlash`, `_Heavy`, `_Pierce`, `_Return`) que `CrimsonSlash`
+elige según el estilo del arma y tiñe con su color.
+
+Son sprites **procedurales** — buenos como base de calidad, con la forma/tamaño/paleta ya fijadas.
+Si más adelante un/a artista quiere pintarlos a mano, este doc sigue siendo la guía y basta
+reemplazar el PNG en su sitio. Los efectos a medida (onda del Titan, púas, detonación del Requiem)
+se dibujan con partículas a propósito y no necesitan PNG.
