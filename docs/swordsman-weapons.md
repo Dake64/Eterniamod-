@@ -222,13 +222,37 @@ del arma. Las mecánicas on-hit viven en `SwordIdentityGlobalItem`.
 
 ---
 
-## Nota de arte
+## Nota de arte — estilo KATANA
 
 **Ya NO son placeholder.** Cada una de las 19 hojas tiene su propio sprite pixel-art real, generado
-por su nombre + la paleta de este doc (con System.Drawing, 56–72px), en
-`Content/Items/Weapons/Warrior/<Nombre>.png` (y `Promotion/BloodletterBlade.png`). El proyectil
-también: 4 formas de tajo (`CrimsonSlash`, `_Heavy`, `_Pierce`, `_Return`) que `CrimsonSlash`
-elige según el estilo del arma y tiñe con su color.
+por su nombre + la paleta de este doc (con System.Drawing, 58–76px), en
+`Content/Items/Weapons/Warrior/<Nombre>.png` (y `Promotion/BloodletterBlade.png`).
+
+Todas siguen la **anatomía de katana** (estilo Terraria, diagonal arriba-derecha):
+*tsuka* (mango largo con envoltura en rombos) → *tsuba* (guarda) → *habaki* (collar brillante) →
+hoja de **un solo filo** con *sori* (curva), *shinogi* (línea de lomo), **hamon** (línea de temple
+ondulada, el sello de la katana) y *kissaki* (punta angulada con su *yokote*).
+
+La VARIACIÓN por arma sale del nombre, sobre esa base:
+
+| Perfil | Armas |
+|---|---|
+| `katana` estándar | Training, Serrated, Corruptor, Thornrender, Molten, Bloodletter, Hallowed, Chlorophyte |
+| `chokuto` (recta, ninja) | Silverlight Rapier |
+| `needle` (finísima) | Exsanguinator |
+| `wakizashi` (corta, muy curva) | Quicksilver Fang |
+| `broad` (ancha) | Hunter's Warblade |
+| `heavy` (pesada) | Dread Reaver, Revenite Cleaver |
+| `nodachi` (larga) | Bonewarden, Nullsteel, Crimson Requiem |
+| `odachi` (colosal) | Sanguine Cleaver, Titan's Gutcleaver |
+
+Más los detalles por nombre: dientes de sierra (Serrated), espinas (Thornrender/Corruptor), filo
+astillado (Molten), grieta + punta rota (Nullsteel), *bo-hi* o canal de sangre (Bloodletter,
+Hallowed, Chlorophyte, Requiem, Exsanguinator), punta de energía (Requiem), gancho (Exsanguinator),
+remaches (Titan), y tsuba grande en las insignia.
+
+El proyectil también varía: 4 formas de tajo (`CrimsonSlash`, `_Heavy`, `_Pierce`, `_Return`) que
+`CrimsonSlash` elige según el estilo del arma y tiñe con su color.
 
 Son sprites **procedurales** — buenos como base de calidad, con la forma/tamaño/paleta ya fijadas.
 Si más adelante un/a artista quiere pintarlos a mano, este doc sigue siendo la guía y basta
