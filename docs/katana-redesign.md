@@ -402,3 +402,19 @@ Lo que **nunca** cambia: las formas. Asi el arsenal se lee como una familia y co
 
 Regla para armas futuras: cualquier hoja nueva del Espadachin hereda esta guarnicion. Si algun dia
 una no la lleva, tiene que ser una decision deliberada y explicada, no un descuido.
+
+### 7.1 Variantes de guarda por rama
+
+Los colmillos y la gema no cambian nunca -- son la constante de la familia. Lo que cambia es la
+FORMA de la placa, segun el material y la rama de progresion del arma:
+
+| Variante | Forma | Armas |
+|---|---|---|
+| `plain` | Placa estandar de 3 filas | Training, Serrated, Silverlight, Hunter, Bonewarden, Molten, Quicksilver, Chlorophyte, Exsanguinator |
+| `heavy` | Losa mas ancha y alta, colmillos cortos y romos | Dread, Revenite, Sanguine, Titan (los cleavers pesados) |
+| `royal` | Doble placa superpuesta, colmillos largos | Bloodletter, Hallowed, Requiem (las insignia) |
+| `spiked` | Colmillos alargados con la punta en color de acento | Thornrender, Corruptor (las espinosas) |
+| `broken` | Un colmillo partido, asimetrica | Nullsteel (la del vacio) |
+
+Asi una Bonewarden se lee como hueso y una Sanguine como losa de carnicero, sin que ninguna deje
+de pertenecer a Eternia.
