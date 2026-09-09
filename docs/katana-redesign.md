@@ -376,3 +376,29 @@ marca/detonación del Requiem, onda del Titan, púas del Bonewarden).
 `GlobalItem.OnHitNPC / ModifyHitNPC`, `ModItem.Shoot / CanUseItem / AltFunctionUse`,
 `Projectile.NewProjectile`, `Dust.NewDustPerfect`.
 Ninguno inventado. Si en la fase B necesito algo nuevo, lo señalo y lo valido compilando antes.
+
+---
+
+## 7. LA FIRMA DE ETERNIA (identidad propia del mod)
+
+Comparando las nuestras contra una muestra de espadas de Calamity apareció el problema de fondo,
+y no era la densidad de pixel ni el tamano: **las suyas se leen como OBJETOS DISENADOS** porque
+sus empunaduras estan disenadas -- guardas con alas y puas, gemas engastadas, pomos, metal
+contrastando con la hoja. Las nuestras tenian una barra sin rasgos, asi que 19 armas salian como
+el mismo palo de colores.
+
+Ahora **toda katana de Eternia lleva el mismo lenguaje de guarnicion**, y ese lenguaje es la marca
+del mod:
+
+| Pieza | Forma | Por que |
+|---|---|---|
+| **Tsuba con COLMILLOS** | Placa con dos puas cayendo hacia delante | La gota de sangre: la subclase es el Espadachin y su recurso es el Rastro Carmesi |
+| **GEMA DE ALMA** | 2x2 engastada en el centro de la guarda, con faceta brillante | Es el Alma del arma. Lleva el color de acento de cada hoja |
+| **MENUKI** | Tachon del color de acento, a media empunadura | Remata la envoltura y repite el acento |
+| **KASHIRA en gota** | Pomo redondeado, no un tope plano | Cierra la silueta y repite el motivo de la gota |
+
+Lo que **cambia** por arma: el metal de la guarnicion, el color de la gema y el de la envoltura.
+Lo que **nunca** cambia: las formas. Asi el arsenal se lee como una familia y como *nuestro*.
+
+Regla para armas futuras: cualquier hoja nueva del Espadachin hereda esta guarnicion. Si algun dia
+una no la lleva, tiene que ser una decision deliberada y explicada, no un descuido.
