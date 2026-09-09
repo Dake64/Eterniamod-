@@ -8,10 +8,12 @@ namespace Eternia.Content.Items.Armor
     // Set bonus: +2 minions. The pre-Hardmode Summoner's whole problem is roster size.
     public class PackmasterHood : SummonerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/PackmasterHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 4, rare: ItemRarityID.Orange, valueSilver: 60);
-            Item.headSlot = ArmorIDs.Head.BeeHeadgear;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

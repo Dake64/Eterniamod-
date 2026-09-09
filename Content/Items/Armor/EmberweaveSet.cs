@@ -8,10 +8,12 @@ namespace Eternia.Content.Items.Armor
     // Set bonus: your spells cost far less -- the pre-Hardmode Mage's real problem is mana.
     public class EmberweaveHood : MageArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/EmberweaveHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 4, rare: ItemRarityID.Orange, valueSilver: 60);
-            Item.headSlot = ArmorIDs.Head.JungleHat;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

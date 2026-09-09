@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // and the plating is thick.
     public class NullsteelHelm : SoulMetalArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/NullsteelHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 18, rare: ItemRarityID.Lime, valueSilver: 400);
-            Item.headSlot = ArmorIDs.Head.TitaniumHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

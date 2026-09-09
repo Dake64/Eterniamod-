@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // you PARK in the 70-99% critical zone instead of just visiting it.
     public class ReactorSuitHelm : RangerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/ReactorSuitHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 12, rare: ItemRarityID.Yellow, valueSilver: 260);
-            Item.headSlot = ArmorIDs.Head.VortexHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

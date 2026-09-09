@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // Set bonus: the metal is dense enough to answer loudly; your class hits harder and crits more.
     public class ReveniteHelm : SoulMetalArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/ReveniteHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 7, rare: ItemRarityID.Green, valueSilver: 80);
-            Item.headSlot = ArmorIDs.Head.ShadowHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

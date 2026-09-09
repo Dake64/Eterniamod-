@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // straight back into its own damage.
     public class AegisBulwarkHelm : WarriorArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/AegisBulwarkHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 18, rare: ItemRarityID.Lime, valueSilver: 240);
-            Item.headSlot = ArmorIDs.Head.TurtleHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

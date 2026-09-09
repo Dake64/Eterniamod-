@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // Perfect Shots, each one deadlier. The sniper's set.
     public class HawkeyeGarbHood : RangerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/HawkeyeGarbHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 12, rare: ItemRarityID.Lime, valueSilver: 240);
-            Item.headSlot = ArmorIDs.Head.ChlorophyteMask;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

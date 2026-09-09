@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // you have filled it. Inert for any other class, and inert until the well is full.
     public class EverflowCrown : MageArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/EverflowCrown";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 10, rare: ItemRarityID.LightPurple, valueSilver: 200);
-            Item.headSlot = ArmorIDs.Head.ChlorophyteHeadgear;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

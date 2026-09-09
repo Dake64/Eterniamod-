@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // empowers whatever class your Soul is. First Eternia armour of Hardmode.
     public class WraithiteHelm : SoulMetalArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/WraithiteHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 11, rare: ItemRarityID.LightRed, valueSilver: 150);
-            Item.headSlot = ArmorIDs.Head.PalladiumHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

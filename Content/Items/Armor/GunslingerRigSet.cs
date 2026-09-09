@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // mechanic that the accessories make you choose between. Dead Eye becomes your default state.
     public class GunslingerRigHelm : RangerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/GunslingerRigHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 12, rare: ItemRarityID.Yellow, valueSilver: 260);
-            Item.headSlot = ArmorIDs.Head.ShroomiteMask;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // reserved life and drained mana; this set simply lets you raise a bigger one.
     public class LichRegaliaHood : MageArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/LichRegaliaHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 11, rare: ItemRarityID.Yellow, valueSilver: 280);
-            Item.headSlot = ArmorIDs.Head.NebulaHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

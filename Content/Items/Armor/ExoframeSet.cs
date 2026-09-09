@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // engineer's set: it leans into the subclass's defensive, always-uptime feel.
     public class ExoframeHelm : SummonerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/ExoframeHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 12, rare: ItemRarityID.Yellow, valueSilver: 280);
-            Item.headSlot = ArmorIDs.Head.StardustHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

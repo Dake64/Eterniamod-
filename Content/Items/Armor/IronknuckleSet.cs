@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // hooks the accessories use, and does nothing for any other class.
     public class IronknuckleHelm : WarriorArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/IronknuckleHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 12, rare: ItemRarityID.LightPurple, valueSilver: 200);
-            Item.headSlot = ArmorIDs.Head.AdamantiteHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

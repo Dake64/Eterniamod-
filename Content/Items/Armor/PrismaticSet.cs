@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // gives you BOTH halves of the mechanic, which the accessories force you to choose between.
     public class PrismaticHood : MageArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/PrismaticHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 10, rare: ItemRarityID.LightPurple, valueSilver: 220);
-            Item.headSlot = ArmorIDs.Head.HallowedHeadgear;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

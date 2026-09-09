@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // its fury sooner and that fury means more.
     public class AlphahideHood : SummonerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/AlphahideHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 10, rare: ItemRarityID.Yellow, valueSilver: 260);
-            Item.headSlot = ArmorIDs.Head.SpookyHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

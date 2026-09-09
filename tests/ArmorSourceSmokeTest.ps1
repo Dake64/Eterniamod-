@@ -56,11 +56,20 @@ foreach ($setName in $sets.Keys) {
         }
     }
 
-    # Real equip slots. Eternia has no armour art, so every piece BORROWS a vanilla
-    # armour's look -- without an equip slot the mod would not even load.
-    foreach ($slot in @("headSlot", "bodySlot", "legSlot")) {
-        if ($src -notmatch "Item\.$slot\s*=\s*ArmorIDs\.") {
-            throw "$setName must set $slot to a vanilla ArmorIDs slot (Eternia has no armour art)."
+    # Every piece needs a real equip slot or the mod will not even load. What changed: the
+    # HELMETS now have Eternia's own art, so they take their own equip slot through
+    # EquipLoader instead of borrowing a vanilla one. Body and legs still have no art, so
+    # they keep borrowing a vanilla look.
+    #
+    # (ArmorEquipTextureSourceSmokeTest is what guarantees the helms' declared textures
+    # actually exist -- a declared path with no file is what would break loading.)
+    if ($src -notmatch "Item\.headSlot\s*=\s*(ArmorIDs\.|EquipLoader\.GetEquipSlot)") {
+        throw "$setName must set headSlot, either to its own equip slot or a vanilla ArmorIDs one."
+    }
+
+    foreach ($slot in @("bodySlot", "legSlot")) {
+        if ($src -notmatch "Item\.$slot\s*=\s*(ArmorIDs\.|EquipLoader\.GetEquipSlot)") {
+            throw "$setName must set $slot to an equip slot."
         }
     }
 

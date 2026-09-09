@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // game is keeping the chain alive; this set is that, made into armour.
     public class IronchainHelm : WarriorArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/IronchainHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 14, rare: ItemRarityID.LightPurple, valueSilver: 200);
-            Item.headSlot = ArmorIDs.Head.TitaniumHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

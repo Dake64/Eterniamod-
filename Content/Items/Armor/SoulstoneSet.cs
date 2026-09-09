@@ -13,10 +13,12 @@ namespace Eternia.Content.Items.Armor
     // Set bonus: the metal answers to your Soul, whichever class that is.
     public class SoulstoneHelm : SoulMetalArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/SoulstoneHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 3, rare: ItemRarityID.White, valueSilver: 18);
-            Item.headSlot = ArmorIDs.Head.SilverHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

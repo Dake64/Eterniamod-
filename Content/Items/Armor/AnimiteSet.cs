@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // Set bonus: a stronger answer from the metal, plus a little extra plating.
     public class AnimiteHelm : SoulMetalArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/AnimiteHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 5, rare: ItemRarityID.Blue, valueSilver: 40);
-            Item.headSlot = ArmorIDs.Head.GoldHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // a full roster is worth more, and Command charges faster. Everything this class wants.
     public class LegionRegaliaHood : SummonerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/LegionRegaliaHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 10, rare: ItemRarityID.Yellow, valueSilver: 270);
-            Item.headSlot = ArmorIDs.Head.TikiMask;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

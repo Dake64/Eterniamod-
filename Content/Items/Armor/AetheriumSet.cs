@@ -10,10 +10,12 @@ namespace Eternia.Content.Items.Armor
     // HARDMODE TIER 2 SOUL-METAL SET. Borrows the Orichalcum look. Class-agnostic.
     public class AetheriumHelm : SoulMetalArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/AetheriumHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 14, rare: ItemRarityID.Pink, valueSilver: 260);
-            Item.headSlot = ArmorIDs.Head.OrichalcumHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

@@ -12,10 +12,12 @@ namespace Eternia.Content.Items.Armor
     // shield equipped, and nothing for any other class.
     public class WardplateHelm : WarriorArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/WardplateHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 15, rare: ItemRarityID.LightPurple, valueSilver: 200);
-            Item.headSlot = ArmorIDs.Head.AdamantiteHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

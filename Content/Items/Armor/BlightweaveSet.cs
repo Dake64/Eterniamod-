@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // the armour is not "safer" -- it shoves you further onto the ladder you already climb.
     public class BlightweaveHood : MageArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/BlightweaveHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 9, rare: ItemRarityID.Yellow, valueSilver: 260);
-            Item.headSlot = ArmorIDs.Head.SpectreHood;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player)

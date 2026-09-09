@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // Wall of Flesh, so this pays off long before you become an Archer.
     public class HuntersGarbHood : RangerArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/HuntersGarbHood";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 5, rare: ItemRarityID.Orange, valueSilver: 60);
-            Item.headSlot = ArmorIDs.Head.NecroHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>

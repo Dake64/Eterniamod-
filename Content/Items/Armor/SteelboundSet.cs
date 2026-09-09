@@ -11,10 +11,12 @@ namespace Eternia.Content.Items.Armor
     // and hangs on longer.
     public class SteelboundHelm : WarriorArmor
     {
+        public override string Texture => "ETERNIA/Content/Items/Armor/SteelboundHelm";
+
         public override void SetDefaults()
         {
             SetArmorDefaults(defense: 7, rare: ItemRarityID.Orange, valueSilver: 60);
-            Item.headSlot = ArmorIDs.Head.MoltenHelmet;
+            Item.headSlot = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
         }
 
         public override void UpdateEquip(Player player) =>
