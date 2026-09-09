@@ -110,4 +110,20 @@ if ($global -notmatch "ai1: 2f") {
     throw "The Echo pattern must tag its ghost slash (ai[1]=2) so it draws faint and never echoes."
 }
 
+# --- Held-blade glow ----------------------------------------------------------
+# Higher-tier blades light the player in their own colour. Plain steel must NOT glow:
+# if every blade glows the glow stops signalling anything.
+if ($global -notmatch "override void HoldItem") {
+    throw "EterniaGlobalItem should light the player while a bleed katana is held."
+}
+if ($global -notmatch "Lighting\.AddLight") {
+    throw "The held-blade glow must actually emit light."
+}
+if ($global -notmatch "SlashColor\.ToVector3") {
+    throw "The glow should use the blade's own SlashColor, not one shared colour."
+}
+if ($global -notmatch "ItemRarityID\.White" -or $global -notmatch "return 0f") {
+    throw "Plain-steel rarities must return zero glow so not every blade lights up."
+}
+
 Write-Host "Sword slash style source smoke test passed ($($styleOf.Count) blades, all distinct)."

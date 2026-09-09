@@ -177,6 +177,66 @@ namespace Eternia.Content.Globals
             position = origin + dir * 24f - SlashHalfSize;
         }
 
+        // How strongly a blade is LIT while held. Plain steel deliberately stays dark: the
+        // Training Blade and the iron ones are just metal, and if everything glows the glow stops
+        // meaning anything. From the mineral tiers up the blade is channelling something -- blood,
+        // void, chlorophyte, hellfire -- so it reads as charged even at rest.
+        private static float GlowFor(Item item)
+        {
+            switch (item.rare)
+            {
+                case ItemRarityID.White:
+                case ItemRarityID.Blue:
+                    return 0f;
+                case ItemRarityID.Green:
+                case ItemRarityID.Orange:
+                case ItemRarityID.LightRed:
+                    return 0.35f;
+                case ItemRarityID.Pink:
+                case ItemRarityID.LightPurple:
+                case ItemRarityID.Lime:
+                    return 0.55f;
+                default:
+                    return 0.75f;
+            }
+        }
+
+        // Holding a bleed katana lights the player in the blade's own colour, and swinging one
+        // sheds a little of whatever it is made of. Kept deliberately sparse -- one mote every few
+        // frames, only while the swing is actually running -- so it reads as an aura rather than
+        // clutter, and costs nothing when the weapon is sheathed.
+        public override void HoldItem(Item item, Player player)
+        {
+            if (item.ModItem is not IBleedWeapon bleed)
+            {
+                return;
+            }
+
+            float glow = GlowFor(item);
+
+            if (glow <= 0f)
+            {
+                return;
+            }
+
+            Lighting.AddLight(player.Center, bleed.SlashColor.ToVector3() * glow);
+
+            if (player.itemAnimation <= 0 || !Main.rand.NextBool(4))
+            {
+                return;
+            }
+
+            Vector2 at = player.MountedCenter + new Vector2(
+                player.direction * Main.rand.NextFloat(12f, 34f),
+                Main.rand.NextFloat(-24f, 6f));
+
+            Dust mote = Dust.NewDustPerfect(
+                at, DustID.Blood, Vector2.Zero, 140, bleed.SlashColor, 0.9f);
+
+            mote.noGravity = true;
+            mote.velocity *= 0.15f;
+        }
+
         // Three blades attack as a PATTERN rather than a single slash, so the shape of the attack
         // itself differs, not just how one projectile flies. Handled centrally here instead of
         // giving three weapons their own Shoot override, which would be the same code three times.
